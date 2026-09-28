@@ -18,6 +18,8 @@ Registry of deferred work and open items. Status lines updated as items move. De
 - **Postgres-backed pytest verification pending** — no Docker daemon in the Card 0 build environment; tests used the sqlite fallback (`DATABASE_URL` honored when set). Run `docker compose up -d db` + `pytest` locally to close. Status: open.
 - **Production `Site` row** — set the real domain (Sites framework) when the Railway URL exists (Card 11). Status: open.
 
+- **Remote push pending** — `origin` set to `github.com/robbbbb/dealwright` but push failed: git credential helper references `/usr/bin/gh` (not installed) and repo returns "not found". Fix `gh` install/auth or create repo, then `git push -u origin main`. Status: open.
+
 ## Post-pilot / deferred product work
 
 - Quality-mode toggle (Fast = Flash-writes ₱0.10 vs Premium = GLM-5.3 ₱0.52) — decide from pilot usage data. Status: deferred.
