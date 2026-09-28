@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dealwright — Auth screens (allauth + Google + MFA)</title>
+<style>
+  :root {
+    --dw-green-950:#04241B; --dw-green-900:#0B3D2E; --dw-green-800:#0E5941; --dw-green-700:#116E4F;
+    --dw-green-600:#15825D; --dw-green-500:#1DA06E; --dw-green-100:#D7F0E4; --dw-green-50:#EFF8F3;
+    --dw-gold-600:#B79121; --dw-gold-100:#FBF3D9;
+    --dw-amber-text:#9A6B13; --dw-amber-bg:#FDF3E2;
+    --dw-red-600:#C0392B; --dw-red-bg:#FBE9E9;
+    --dw-teal-600:#0E7490; --dw-teal-bg:#E0F2F7;
+    --dw-ink:#16241D; --dw-body:#374151; --dw-muted:#6B7280; --dw-line:#E6E8EE; --dw-canvas:#F6F8F7;
+    --dw-grad: linear-gradient(135deg, var(--dw-green-800), var(--dw-green-900));
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--dw-canvas); color:var(--dw-body); font-size:14px; line-height:1.55; padding:36px 24px 60px;
+  }
+  h1 { text-align:center; color:var(--dw-ink); font-size:20px; }
+  .page-sub { text-align:center; color:var(--dw-muted); font-size:13px; margin:6px 0 30px; }
+  .grid { display:flex; flex-wrap:wrap; gap:28px; justify-content:center; max-width:1400px; margin:0 auto; }
+  .frame-wrap { width:400px; }
+  .frame-label { font-weight:800; color:var(--dw-ink); font-size:13.5px; margin-bottom:2px; }
+  .frame-note { font-size:11.5px; color:var(--dw-muted); margin-bottom:8px; }
+  .frame-note code { background:#ECEEF2; border-radius:4px; padding:1px 5px; font-size:10.5px; }
+
+  .screen { background:#fff; border:1px solid var(--dw-line); border-radius:16px; overflow:hidden; box-shadow:0 3px 14px rgba(11,61,46,.06); }
+  .brand { background:var(--dw-grad); color:#fff; padding:22px 24px; }
+  .brand .logo { display:inline-flex; align-items:center; gap:9px; font-weight:800; font-size:16px; }
+  .brand .logo .mark { width:26px; height:26px; border-radius:7px; background:var(--dw-gold-600); display:inline-flex; align-items:center; justify-content:center; font-size:13px; }
+  .brand .tag { font-size:11.5px; opacity:.8; margin-top:4px; }
+  .body { padding:20px 24px 24px; }
+  h2 { color:var(--dw-ink); font-size:16.5px; margin-bottom:3px; }
+  .sub { color:var(--dw-muted); font-size:12px; margin-bottom:14px; }
+
+  .field { margin-bottom:12px; }
+  .field label { display:block; font-size:12px; font-weight:700; color:var(--dw-ink); margin-bottom:4px; }
+  .field input {
+    width:100%; border:1.5px solid var(--dw-line); border-radius:9px; padding:9px 12px;
+    font-size:13.5px; font-family:inherit; color:var(--dw-body); background:#fff;
+  }
+  .field .hint { font-size:10.5px; color:var(--dw-muted); margin-top:3px; }
+  .row-between { display:flex; align-items:center; justify-content:space-between; margin:2px 0 12px; }
+  .row-between label { font-size:12px; color:var(--dw-body); display:flex; gap:6px; align-items:center; }
+  .row-between a { font-size:12px; color:var(--dw-green-600); font-weight:600; text-decoration:none; }
+
+  .btn { display:block; width:100%; text-align:center; border-radius:10px; padding:10px; font-weight:700; font-size:13.5px; border:1.5px solid transparent; }
+  .btn.primary { background:var(--dw-green-700); color:#fff; }
+  .btn.google { background:#fff; color:var(--dw-ink); border-color:var(--dw-line); display:flex; align-items:center; justify-content:center; gap:9px; }
+  .btn.google .g { width:18px; height:18px; border-radius:50%; background:#fff; display:inline-flex; align-items:center; justify-content:center; font-weight:800; font-size:11px;
+    background:conic-gradient(#EA4335 0 25%, #4285F4 0 50%, #34A853 0 75%, #FBBC05 0); }
+  .btn.google .g::after { content:"G"; width:12px; height:12px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:8.5px; color:#4285F4; font-family:Arial; }
+
+  .or { display:flex; align-items:center; gap:10px; color:var(--dw-muted); font-size:11px; margin:13px 0; }
+  .or::before, .or::after { content:""; flex:1; height:1px; background:var(--dw-line); }
+  .swap { text-align:center; font-size:12.5px; color:var(--dw-muted); margin-top:14px; }
+  .swap a { color:var(--dw-green-600); font-weight:700; text-decoration:none; }
+  .fineprint { font-size:10.5px; color:var(--dw-muted); text-align:center; margin-top:12px; }
+  .fineprint a { color:var(--dw-green-600); }
+
+  .banner { border-radius:9px; padding:9px 12px; font-size:12px; margin-bottom:12px; display:flex; gap:8px; }
+  .banner.ok { background:var(--dw-green-50); color:var(--dw-green-800); border:1px solid var(--dw-green-100); }
+  .banner.warn { background:var(--dw-amber-bg); color:var(--dw-amber-text); border:1px solid #F0E2BE; }
+  .banner.info { background:var(--dw-teal-bg); color:#155E75; border:1px solid #C7E7F0; }
+
+  .otp { display:flex; gap:8px; justify-content:center; margin:14px 0 6px; }
+  .otp div {
+    width:42px; height:50px; border:1.5px solid var(--dw-line); border-radius:10px;
+    display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:800; color:var(--dw-ink); background:#fff;
+  }
+  .otp div.filled { border-color:var(--dw-green-600); background:var(--dw-green-50); }
+  .otp div.next { border-color:var(--dw-green-600); }
+
+  .strength { display:flex; gap:4px; margin-top:6px; }
+  .strength i { flex:1; height:4px; border-radius:2px; background:var(--dw-line); }
+  .strength i.on { background:var(--dw-green-500); }
+  .strength i.mid { background:var(--dw-gold-600); }
+
+  .qr { width:120px; height:120px; margin:8px auto; border:1.5px solid var(--dw-line); border-radius:10px;
+    background:
+      repeating-linear-gradient(0deg, var(--dw-ink) 0 6px, transparent 6px 12px),
+      repeating-linear-gradient(90deg, var(--dw-ink) 0 6px, transparent 6px 12px);
+    opacity:.85; position:relative; }
+  .qr::after { content:""; position:absolute; inset:38px; background:#fff; border:3px solid var(--dw-ink); }
+  .code-box { font-family:ui-monospace,monospace; font-size:11px; background:var(--dw-green-50); border:1px dashed var(--dw-green-600);
+    border-radius:8px; padding:7px 10px; text-align:center; color:var(--dw-green-800); margin:6px 0 12px; letter-spacing:1px; }
+
+  .recovery { background:var(--dw-green-950); border-radius:10px; padding:12px 14px; margin:8px 0; }
+  .recovery div { font-family:ui-monospace,monospace; color:#7FD8AC; font-size:12px; letter-spacing:1px; padding:2px 0; }
+  .steps { display:flex; gap:6px; margin-bottom:12px; }
+  .steps i { flex:1; height:4px; border-radius:2px; background:var(--dw-line); }
+  .steps i.on { background:var(--dw-green-600); }
+</style>
+</head>
+<body>
+
+<h1>Dealwright — Auth screens</h1>
+<div class="page-sub">django-allauth · Google social login · TOTP MFA + recovery codes · money-green theme · annotations map each screen to its allauth template</div>
+
+<div class="grid">
+
+  <!-- ============ 1. LOG IN ============ -->
+  <div class="frame-wrap">
+    <div class="frame-label">1 · Log in</div>
+    <div class="frame-note">allauth <code>account/login.html</code> — email-first, Google below the divider (never above email: keep the product feeling professional, Google is the shortcut)</div>
+    <div class="screen">
+      <div class="brand">
+        <div class="logo"><span class="mark">₱</span>Dealwright</div>
+        <div class="tag">Discovery calls, crafted into deals.</div>
+      </div>
+      <div class="body">
+        <h2>Welcome back</h2>
+        <div class="sub">Sign in to your workspace</div>
+        <div class="field"><label>Email</label><input type="email" value="robbb@example.com"></div>
+        <div class="field"><label>Password</label><input type="password" value="••••••••••"></div>
+        <div class="row-between">
+          <label><input type="checkbox" checked> Remember me</label>
+          <a href="#">Forgot password?</a>
+        </div>
+        <div class="btn primary">Log in</div>
+        <div class="or">or</div>
+        <div class="btn google"><span class="g"></span>Continue with Google</div>
+        <div class="swap">New to Dealwright? <a href="#">Create an account</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 2. SIGN UP ============ -->
+  <div class="frame-wrap">
+    <div class="frame-label">2 · Sign up</div>
+    <div class="frame-note">allauth <code>account/signup.html</code> — 14-day Professional trial starts without card; email verification banner shown after submit</div>
+    <div class="screen">
+      <div class="brand">
+        <div class="logo"><span class="mark">₱</span>Dealwright</div>
+        <div class="tag">Win one client and it's paid for the year.</div>
+      </div>
+      <div class="body">
+        <h2>Create your account</h2>
+        <div class="sub">14-day Professional trial · no card required</div>
+        <div class="field"><label>Full name</label><input value="Robb"></div>
+        <div class="field"><label>Work email</label><input type="email" value="robbb@example.com"></div>
+        <div class="field">
+          <label>Password</label><input type="password" value="••••••••••••">
+          <div class="strength"><i class="on"></i><i class="on"></i><i class="mid"></i><i></i></div>
+          <div class="hint">At least 10 characters. Mix words only you would know.</div>
+        </div>
+        <label class="row-between" style="justify-content:flex-start; margin-bottom:14px;">
+          <input type="checkbox" checked> <span style="font-size:11.5px; color:var(--dw-muted)">I agree to the Terms &amp; Privacy Policy</span>
+        </label>
+        <div class="btn primary">Create account</div>
+        <div class="or">or</div>
+        <div class="btn google"><span class="g"></span>Sign up with Google</div>
+        <div class="swap">Already have an account? <a href="#">Log in</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 3. VERIFY EMAIL ============ -->
+  <div class="frame-wrap">
+    <div class="frame-label">3 · Verify your email</div>
+    <div class="frame-note">allauth <code>account/verified_email_required.html</code> state — providers can browse, but proposals can't send until verified (anti-abuse for share links)</div>
+    <div class="screen">
+      <div class="brand">
+        <div class="logo"><span class="mark">₱</span>Dealwright</div>
+      </div>
+      <div class="body">
+        <h2>Check your inbox</h2>
+        <div class="sub">We sent a confirmation link to <b>robbb@example.com</b></div>
+        <div class="banner ok">✉ &nbsp;Click the link in the email to activate sending &amp; share links. Your workspace is ready to explore meanwhile.</div>
+        <div class="field"><label>Wrong address?</label><input value="robbb@example.com"><div class="hint">Change it and we'll resend the confirmation.</div></div>
+        <div class="btn primary">Resend confirmation</div>
+        <div class="or">or</div>
+        <div class="btn google"><span class="g"></span>Continue with Google — skips verification</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 4. FORGOT PASSWORD ============ -->
+  <div class="frame-wrap">
+    <div class="frame-label">4 · Forgot password</div>
+    <div class="frame-note">allauth <code>account/password_reset.html</code> — the green banner is the post-submit state; copy is anti-enumeration (same message whether or not the account exists)</div>
+    <div class="screen">
+      <div class="brand">
+        <div class="logo"><span class="mark">₱</span>Dealwright</div>
+      </div>
+      <div class="body">
+        <h2>Reset your password</h2>
+        <div class="sub">Enter your account email and we'll send a reset link</div>
+        <div class="banner ok">✓ &nbsp;If an account exists for that email, a reset link is on its way. Check spam if it doesn't arrive in a few minutes.</div>
+        <div class="field"><label>Email</label><input type="email" placeholder="you@example.com"></div>
+        <div class="btn primary">Send reset link</div>
+        <div class="swap"><a href="#">← Back to log in</a></div>
+        <div class="fineprint">Links expire in 24 hours and can be used once.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 5. SET NEW PASSWORD ============ -->
+  <div class="frame-wrap">
+    <div class="frame-label">5 · Recovery — set new password</div>
+    <div class="frame-note">allauth <code>account/password_reset_from_key.html</code> — opened from the email link; strength meter; after success all other sessions are logged out</div>
+    <div class="screen">
+      <div class="brand">
+        <div class="logo"><span class="mark">₱</span>Dealwright</div>
+      </div>
+      <div class="body">
+        <h2>Choose a new password</h2>
+        <div class="sub">You're resetting the password for robbb@example.com</div>
+        <div class="banner warn">⚠ &nbsp;This link works once. Creating the new password signs out all other devices.</div>
+        <div class="field">
+          <label>New password</label><input type="password" value="••••••••••••••">
+          <div class="strength"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+          <div class="hint">Avoid names, birthdays, and words tied to your business.</div>
+        </div>
+        <div class="field"><label>Confirm new password</label><input type="password" value="••••••••••••••"></div>
+        <div class="btn primary">Set password &amp; sign in</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 6. MFA — ENTER CODE ============ -->
+  <div class="frame-wrap">
+    <div class="frame-label">6 · MFA — enter code</div>
+    <div class="frame-note">allauth <code>mfa/authenticate.html</code> — shown after password when the provider has an authenticator; recovery-code escape hatch for lost phones</div>
+    <div class="screen">
+      <div class="brand">
+        <div class="logo"><span class="mark">₱</span>Dealwright</div>
+      </div>
+      <div class="body">
+        <h2>Two-factor check</h2>
+        <div class="sub">Enter the 6-digit code from your authenticator app</div>
+        <div class="otp">
+          <div class="filled">4</div><div class="filled">8</div><div class="filled">1</div>
+          <div class="next">•</div><div>•</div><div>•</div>
+        </div>
+        <div class="fineprint" style="margin-bottom:12px">Codes refresh every 30 seconds</div>
+        <div class="btn primary">Verify</div>
+        <div class="or">or</div>
+        <div class="btn google" style="justify-content:center">Use a recovery code</div>
+        <div class="swap"><a href="#">Lost your device? Contact support</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 7. MFA — SETUP + RECOVERY CODES ============ -->
+  <div class="frame-wrap">
+    <div class="frame-label">7 · MFA — setup &amp; recovery codes</div>
+    <div class="frame-note">allauth <code>mfa/setup.html</code> + <code>mfa/recovery_codes.html</code> — two-step setup; recovery codes shown ONCE with copy/download; offered after first proposal send, required for Agency tier</div>
+    <div class="screen">
+      <div class="brand">
+        <div class="logo"><span class="mark">₱</span>Dealwright</div>
+      </div>
+      <div class="body">
+        <h2>Protect your deals</h2>
+        <div class="sub">You handle client data and prices — add two-factor in a minute</div>
+        <div class="steps"><i class="on"></i><i class="on"></i><i></i></div>
+        <div class="banner info">② &nbsp;Scan with Google Authenticator, Authy, or 1Password, then confirm one code.</div>
+        <div class="qr"></div>
+        <div class="code-box">JBSW Y3DP EHPK 3PXP</div>
+        <div class="field"><label>Enter the 6-digit code to confirm</label><input placeholder="······" style="text-align:center; letter-spacing:8px; font-weight:700"></div>
+        <div class="btn primary">Confirm &amp; show recovery codes</div>
+        <div class="recovery">
+          <div>7XK2-…-9QWA &nbsp;&nbsp; PLM4-…-TR8E</div>
+          <div>ZZ01-…-KK7L &nbsp;&nbsp; 84HN-…-2VVD</div>
+        </div>
+        <div class="fineprint">Shown once — download or copy now. Each code signs you in once if your phone is lost.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
