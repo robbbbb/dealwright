@@ -31,7 +31,7 @@ Registry of deferred work and open items. Status lines updated as items move. De
   - Privacy/Terms footer links are `#` placeholders — real pages are pre-launch items, not in any card. Status: open.
   - "See a real proposal →" hero CTA points to signup until a public sample proposal surface exists. Status: open.
   - Pricing tiers displayed are the Q10 hypotheses (₱399/₱899/₱1,990 + Founding-20 banner); checkout/billing stays deferred per the pre-launch checklist line above. Status: note.
-  - Built outside the card registry (user-directed between Card 0 review and Card 1) — smoke tests only, per the templates/UI tier; not covered by a reviewer pass. Status: recorded.
+  - Built outside the card registry (user-directed between Card 0 review and Card 1) — smoke tests only, per the templates/UI tier. Review loop applied 2026-09-29 via `docs/reviews/landing-dispatch.md`: pass 1 CHANGES REQUIRED (generated CSS not reproducible from committed sources) → fixed in `86cac97` → pass 2 APPROVED (two fresh GLM-5.3 reviewer subagent passes). Status: approved & recorded.
 
 ## Concurrency incident (2026-09-28, note for review)
 

@@ -79,6 +79,15 @@ All 8 checklist items passed; all 6 deviations adjudicated acceptable; gates 1�
 - Minor: staticfiles UserWarning → **accepted**, pre-existing since Card 0 (no `collectstatic` in dev/test trees). No action.
 - Fresh reviewer pass 2 on `86cac97` follows below.
 
-### Pass 2 (scope: `86cac97`, fix verification)
+### Pass 2 (scope: `86cac97`, fix verification) — APPROVED
 
-_Pending — fresh reviewer pass in flight._
+```
+Verdict: APPROVED
+Blocking findings: none
+Minor findings: none new — pass-1 minors carry recorded dispositions (two accepted/no-action, one actioned in docs/backlog.md pre-launch checklist); staticfiles UserWarning remains as accepted pre-existing noise
+Rationale: Gate 4 now passes byte-exactly (rebuild of scripts/build_css.sh against HEAD is zero-diff), the fix commit 86cac97 contains only the CSS artifact rebuild with a byte-identical utilities layer, and all other gates (pytest 4/4, ruff, manage.py check, amber utilities + footer disclaimer in committed artifacts) hold on HEAD with dispositions consistent between card and backlog.
+```
+
+Reviewer independently verified: fix commit touches only the CSS artifact; utilities layer byte-identical (13,266 B both blobs); rebuild against HEAD zero-diff; pytest 4/4 with expected test IDs; ruff and `manage.py check` clean; amber token values and footer estimate disclaimer present in committed artifacts; card↔backlog dispositions consistent.
+
+**Final disposition: APPROVED — merge gate satisfied. Review loop closed 2026-09-29.**
