@@ -19,7 +19,8 @@ Registry of deferred work and open items. Status lines updated as items move. De
 - **Postgres-backed pytest verification pending** — no Docker daemon in the Card 0 build environment; tests used the sqlite fallback (`DATABASE_URL` honored when set). Run `docker compose up -d db` + `pytest` locally to close. Status: open.
 - **Production `Site` row** — set the real domain (Sites framework) when the Railway URL exists (Card 11). Status: open.
 
-- **Remote push pending** — `origin` set to `github.com/robbbbb/dealwright` but push failed: git credential helper references `/usr/bin/gh` (not installed) and repo returns "not found". Fix `gh` install/auth or create repo, then `git push -u origin main`. Status: open.
+- **Remote push pending** — `origin` set to `github.com/robbbbb/dealwright` but push failed: git credential helper references `/usr/bin/gh` (not installed) and repo returns "not found". Fix `gh` install/auth or create repo, then `git push -u origin main`. **Before first push:** reword the transposed commit subjects `5be13dc`↔`66affc8` (found in Card 0 review — each commit's message describes the other's content; content intact, repo unpushed so a rebase reword is safe while no other session is live). Status: open.
+- **`production.py` env-source hygiene** (Card 0 review, minor) — ALLOWED_HOSTS/CSRF read via base `env` (.env-reading) alongside the strict `_prod_env`; functionally safe on Railway (`.dockerignore` excludes `.env`) but worth harmonizing to strict-only reads opportunistically. Status: open (hygiene).
 
 - **Tailwind CLI pinned v4.1.13** (scripts/build_css.sh + Dockerfile ADD) — bump deliberately, verify visual smoke after bumps. Status: open (hygiene).
 - **Committed generated `static/css/app.css`** — chosen so clone-and-run works with zero tooling; Docker rebuilds fresh at image build. Revisit if it causes noisy diffs. Status: note.

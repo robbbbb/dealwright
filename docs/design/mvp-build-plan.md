@@ -19,6 +19,7 @@ Done when: `pytest` green locally, login works, Postgres connected, registry fil
 Deps: name decision (above).
 
 > **Status (2026-09-28, builder session):** implemented — pytest 3/3 green, ruff clean, `manage.py check` clean, migrations applied, live smoke: `/`→302→`/accounts/login/` 200. Postgres config committed (compose + Railway plugin) but **not connected in this environment** (no Docker daemon; sqlite fallback used — see backlog). Review: dispatch card committed at `docs/reviews/card-0-dispatch.md`; no reviewer subagent available in-session → awaiting Robb-run review. Do not start Card 1 before the verdict is recorded here.
+> **Review verdict (2026-09-29, fresh GLM-5.3 reviewer subagent): APPROVED** — all gates green at HEAD under documented supersessions (landing page addition reviewed separately, `docs/reviews/landing-dispatch.md`); minors dispositioned in the dispatch card (transposed commit subjects ride the pre-push item; env-mix hygiene + uvicorn qualifier actioned in docs/backlog.md + system-design.md). **Card 1 unblocked.** Postgres-backed pytest + `docker compose up --build` remain open on Robb's machine per backlog.
 
 ## Card 1 — Core domain models
 **Goal:** the discovery side of the data model.

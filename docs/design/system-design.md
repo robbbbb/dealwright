@@ -72,7 +72,7 @@ MVP choice: extraction runs **synchronously** in-request with HTMX spinner (3 wo
 
 **Async option (2026-09-28, Django 5.x):** Django runs async views natively under ASGI, and sync views auto-adapt in a threadpool — so the app can stay 95% sync with only the two LLM endpoints as `async def` + `httpx.AsyncClient`. During `await` the event loop frees: one process holds dozens of concurrent LLM waits at near-zero cost, eliminating worker starvation. Footgun: any blocking call (sync ORM) inside an async view stalls all concurrent requests — async views stay I/O-only. httpx's identical sync/async API keeps the `llm/` module transport-agnostic.
 
-**Deployment + upgrade ladder:** Card 0 deploys `gunicorn -k uvicorn.workers.UvicornWorker` (ASGI-capable from day one, one dependency). Rung 1: sync views (MVP). Rung 2: flip the two LLM endpoints to async views (cheap, no new infra) when concurrent waits appear. Rung 3: background worker service (huey/redis) when retry persistence / deploy-survivability matter, not just concurrency.
+**Deployment + upgrade ladder:** Card 0 deploys `gunicorn -k uvicorn.workers.UvicornWorker` (ASGI-capable from day one, one dependency) — planned, not yet in Dockerfile (Dockerfile/railway.toml currently run the plain sync WSGI worker; flip at Card 11 per backlog). Rung 1: sync views (MVP). Rung 2: flip the two LLM endpoints to async views (cheap, no new infra) when concurrent waits appear. Rung 3: background worker service (huey/redis) when retry persistence / deploy-survivability matter, not just concurrency.
 
 ## 6b. Latency budget (2026-09-28)
 
