@@ -4,16 +4,18 @@
     Dealwright horizontal lockup, light variant: white wordmark for dark green-900
     surfaces (app sidebar, landing hero).
     PRODUCTION NOTE: both <text> elements render with the system font stack; metrics
-    vary by platform and PDF exporters may substitute fonts. Convert the peso glyph
+    vary by platform and PDF exporters may substitute fonts. Convert the DW monogram
     and the wordmark to outlined <path> elements before production use, then trim
     the viewBox width to the measured content.
   -->
-  <!-- Mark (identical geometry to logo-mark.svg) -->
+  <!-- Mark (identical geometry to logo-mark.svg): DW monogram + peso bars -->
   <rect x="4" y="7" width="56" height="56" rx="16" fill="#9C7B1C"/>
   <rect x="4" y="4" width="56" height="56" rx="16" fill="#B79121"/>
   <text x="32" y="32" text-anchor="middle" dominant-baseline="central"
         font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif"
-        font-weight="800" font-size="36" fill="#FFFFFF">&#8369;</text>
+        font-weight="800" font-size="30" letter-spacing="-1" fill="#FFFFFF">DW</text>
+  <rect x="14" y="24" width="36" height="4" rx="1" fill="#9C7B1C"/>
+  <rect x="14" y="34" width="36" height="4" rx="1" fill="#9C7B1C"/>
   <!-- Wordmark: white, weight 800, tracking -0.01em, ~14px gap from the mark -->
   <text x="78" y="33" dominant-baseline="central"
         font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif"
