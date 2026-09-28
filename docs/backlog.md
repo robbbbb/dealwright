@@ -24,6 +24,11 @@ Registry of deferred work and open items. Status lines updated as items move. De
 - **Committed generated `static/css/app.css`** — chosen so clone-and-run works with zero tooling; Docker rebuilds fresh at image build. Revisit if it causes noisy diffs. Status: note.
 - **`docker compose up --build` not yet exercised end-to-end** — no Docker daemon in build environment; web service + Tailwind stage verified by construction only. Run locally to close (same as Postgres item above). Status: open.
 
+## Concurrency incident (2026-09-28, note for review)
+
+- A parallel session committed `aa67d42` while the builder session had uncommitted Tailwind work; that commit mixed the builder's files (Dockerfile css stage, compose web, templates, scripts, generated css) under a `docs(system-design)` message. Content is intact; history not rewritten (nothing pushed, other session may be live). **Rule reminder: one card per fresh session — one writer session per repo at a time; never `git add -A` in a shared tree.** Status: recorded.
+- **Docs/code mismatch from `aa67d42`:** system-design.md now says Card 0 deploys `gunicorn -k uvicorn.workers.UvicornWorker`, but Dockerfile/railway.toml still run the plain sync WSGI worker and `uvicorn` is not a dependency. Decide at Card 11: either add uvicorn + flip the worker, or revert the doc line. Status: open.
+
 ## Post-pilot / deferred product work
 
 - Quality-mode toggle (Fast = Flash-writes ₱0.10 vs Premium = GLM-5.3 ₱0.52) — decide from pilot usage data. Status: deferred.
