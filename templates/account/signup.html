@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Create account · Dealwright{% endblock %}
 {% block content %}
-  <section class="card narrow">
-    <h1>Create your account</h1>
-    <p class="muted">Sign up with your email — no username needed.</p>
+  <section class="card mx-auto mt-12 max-w-[420px]">
+    <h1 class="text-xl font-bold text-dw-ink">Create your account</h1>
+    <p class="mb-4 text-dw-muted">Sign up with your email — no username needed.</p>
     <form method="post" action="{% url 'account_signup' %}">
       {% csrf_token %}
       {{ form.as_p }}
-      <button type="submit" class="btn primary wide">Create account</button>
+      <button type="submit" class="btn-primary">Create account</button>
     </form>
-    <p class="alt">Already registered? <a href="{% url 'account_login' %}">Sign in</a></p>
+    <p class="alt-link">Already registered? <a href="{% url 'account_login' %}">Sign in</a></p>
   </section>
 {% endblock %}

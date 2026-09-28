@@ -1,4 +1,4 @@
-# Local dev Postgres only (Card 0: local Postgres in dev; Railway plugin in prod).
+# Local dev only (Card 0: local Postgres + Django dev server; Railway plugin in prod).
 # Credentials are local-only placeholders — production values live in Railway config.
 services:
   db:
@@ -17,5 +17,21 @@ services:
       timeout: 3s
       retries: 10
 
+  web:
+    build: .
+    command: sh -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.development
+      DATABASE_URL: postgres://dealwright:dealwright@db:5432/dealwright
+    volumes:
+      - .:/app
+      - venv:/app/.venv   # keep the image's prod deps; don't shadow with host .venv
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   pgdata:
+  venv:

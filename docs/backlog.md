@@ -20,6 +20,10 @@ Registry of deferred work and open items. Status lines updated as items move. De
 
 - **Remote push pending** — `origin` set to `github.com/robbbbb/dealwright` but push failed: git credential helper references `/usr/bin/gh` (not installed) and repo returns "not found". Fix `gh` install/auth or create repo, then `git push -u origin main`. Status: open.
 
+- **Tailwind CLI pinned v4.1.13** (scripts/build_css.sh + Dockerfile ADD) — bump deliberately, verify visual smoke after bumps. Status: open (hygiene).
+- **Committed generated `static/css/app.css`** — chosen so clone-and-run works with zero tooling; Docker rebuilds fresh at image build. Revisit if it causes noisy diffs. Status: note.
+- **`docker compose up --build` not yet exercised end-to-end** — no Docker daemon in build environment; web service + Tailwind stage verified by construction only. Run locally to close (same as Postgres item above). Status: open.
+
 ## Post-pilot / deferred product work
 
 - Quality-mode toggle (Fast = Flash-writes ₱0.10 vs Premium = GLM-5.3 ₱0.52) — decide from pilot usage data. Status: deferred.

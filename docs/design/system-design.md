@@ -54,7 +54,7 @@ One Gunicorn sync worker handles ~10–20 light requests/sec. A 3-worker Django 
 
 ```
 Railway project "dealwright"
-├── web        Django + Gunicorn (2–3 sync workers, 60 s timeout)
+├── web        Django + Gunicorn w/ UvicornWorker (ASGI-capable, 2–3 workers, 60 s timeout)
 │              + Whitenoise (static from image, no CDN needed)
 │              + Railway volume (/data: generated PDFs)  [volume ≈ $0.25/GB-mo, tiny]
 ├── postgres   Railway Postgres plugin (start small; single instance)
@@ -64,13 +64,15 @@ Railway project "dealwright"
 n8n stays where it lives now (local). It talks to web via token-auth webhooks only.
 ```
 
-Config rules: `restart` on crash automatic (Railway restart policy); **do NOT enable Serverless/app-sleeping on prod web** (cold start on a client-facing proposal link kills trust); fine on staging. `--max-requests 1000 --max-requests-jitter 100` on Gunicorn to curb slow leaks. `CONN_MAX_AGE=60`. Secrets only via Railway env vars.
+Config rules: `restart` on crash automatic (Railway restart policy); **do NOT enable Serverless/app-sleeping on prod web** (cold start on a client-facing proposal link kills trust); fine on staging. `--max-requests 1000 --max-requests-jitter 100` + `-k uvicorn.workers.UvicornWorker` (async-ready, sync views adapt automatically) to curb slow leaks. `CONN_MAX_AGE=60`. Secrets only via Railway env vars.
 
 ## 6. The one real bottleneck: LLM waits inside request workers
 
-MVP choice: extraction runs **synchronously** in-request with HTMX spinner (3 workers ≈ 3 concurrent extractions; at 1k users the odds of overlap are low). The code seam: extraction + PDF live behind a service-layer function (`run_extraction(session)`) so swapping to a background worker later is one small card, not a refactor.
+MVP choice: extraction runs **synchronously** in-request with HTMX spinner (3 workers ≈ 3 concurrent extractions; at 1k users the odds of overlap are low). The code seam: extraction + PDF live behind a service-layer function (`run_extraction(session)`) so swapping implementations later is one small card, not a refactor.
 
-Upgrade trigger: when concurrent extraction waits visibly queue other users (watch p95 on session pages) → add worker service (+$5–8/mo usage).
+**Async option (2026-09-28, Django 5.x):** Django runs async views natively under ASGI, and sync views auto-adapt in a threadpool — so the app can stay 95% sync with only the two LLM endpoints as `async def` + `httpx.AsyncClient`. During `await` the event loop frees: one process holds dozens of concurrent LLM waits at near-zero cost, eliminating worker starvation. Footgun: any blocking call (sync ORM) inside an async view stalls all concurrent requests — async views stay I/O-only. httpx's identical sync/async API keeps the `llm/` module transport-agnostic.
+
+**Deployment + upgrade ladder:** Card 0 deploys `gunicorn -k uvicorn.workers.UvicornWorker` (ASGI-capable from day one, one dependency). Rung 1: sync views (MVP). Rung 2: flip the two LLM endpoints to async views (cheap, no new infra) when concurrent waits appear. Rung 3: background worker service (huey/redis) when retry persistence / deploy-survivability matter, not just concurrency.
 
 ## 6b. Latency budget (2026-09-28)
 

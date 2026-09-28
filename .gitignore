@@ -23,3 +23,6 @@ htmlcov/
 .idea/
 .vscode/
 .DS_Store
+
+# Tailwind standalone CLI binary (download via scripts/build_css.sh)
+bin/

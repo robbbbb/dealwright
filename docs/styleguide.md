@@ -11,7 +11,10 @@ config/                # project package (not an app) — renamed from `dealwrig
   urls.py  wsgi.py  asgi.py
 core/                  # home + shared surfaces
 templates/             # project-level templates (base.html, account/, …)
-static/                # css, favicon, vendor (htmx when Card 7 lands)
+static/
+  css/src/input.css    # Tailwind v4 input — money-green tokens as @theme colors
+  css/app.css          # generated (committed so clone-and-run works without the CLI)
+scripts/build_css.sh   # Tailwind standalone CLI — NO npm/node (design-log lock)
 ```
 
 - Settings are split per environment; the active module is chosen explicitly (manage.py → development, pytest → testing, wsgi/asgi → production). Secrets come from env vars only — never committed, never pasted in chat.
@@ -45,6 +48,14 @@ static/                # css, favicon, vendor (htmx when Card 7 lands)
 - Catalog & profile management → **80–85%**
 - Templates & UI → **40–50% smoke** (view tests through public APIs, factory data, no live LLM)
 - Smallest test that proves one behavior; delete implementation-coupled tests; fast and order-independent.
+
+## Frontend posture
+
+- **Tailwind CSS v4 via standalone CLI** (no npm, no node_modules — respects the no-frontend-build-pipeline lock; CLI pinned in `scripts/build_css.sh` and the Dockerfile `css` stage).
+- Theme tokens (Q12 money green) live once, in `static/css/src/input.css` `@theme` — use utilities (`bg-dw-700`, `text-dw-muted`), never hardcoded hexes in templates.
+- `static/css/app.css` is generated but committed: prod rebuilds it in Docker; dev can run `scripts/build_css.sh --watch`.
+- Reusable small patterns go in `@layer components` (`.card`, `.btn-primary`, …); pages compose utilities. No page-specific CSS files.
+- HTMX (Card 7) returns partial templates — same Tailwind rules apply.
 
 ## Settings & config
 

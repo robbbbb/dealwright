@@ -1,4 +1,18 @@
-# Dealwright — Railway deploy image (uv-managed, no dev deps).
+# Dealwright — Railway deploy image (uv-managed, no dev deps, no node).
+# Tailwind builds via the standalone CLI in a dedicated stage (design-log: no npm pipeline).
+
+# --- Stage 1: build Tailwind CSS from templates/python sources ---
+FROM python:3.13-slim AS css
+ADD https://github.com/tailwindlabs/tailwindcss/releases/download/v4.1.13/tailwindcss-linux-x64 /bin/tailwindcss
+RUN chmod +x /bin/tailwindcss
+WORKDIR /src
+COPY static/css/src/input.css static/css/src/input.css
+COPY templates/ templates/
+COPY core/ core/
+COPY config/ config/
+RUN /bin/tailwindcss -i static/css/src/input.css -o static/css/app.css --minify
+
+# --- Stage 2: runtime ---
 FROM python:3.13-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -15,6 +29,8 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 
 COPY . .
+# Fresh CSS build wins over the committed artifact.
+COPY --from=css /src/static/css/app.css /app/static/css/app.css
 ENV PATH="/app/.venv/bin:$PATH"
 
 EXPOSE 8000

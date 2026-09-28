@@ -40,6 +40,9 @@
 
 5. Project package is `config/` (settings/urls/wsgi/asgi) — renamed from `dealwright/` at Robb's request to flatten the double-folder nesting; equally mainstream (cookiecutter-django style), deviation noted for the record.
 
+5. Project package is `config/` (settings/urls/wsgi/asgi) — renamed from `dealwright/` at Robb's request to flatten the double-folder nesting; equally mainstream (cookiecutter-django style), deviation noted for the record.
+6. Tailwind CSS v4 via standalone CLI (no npm), added at Robb's request: `static/css/src/input.css` with Q12 theme tokens, generated `app.css` committed, CSS build stage in Dockerfile, dev `web` service in compose.yaml.
+
 ## Verdict format
 
 ```

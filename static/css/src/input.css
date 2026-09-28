@@ -1,0 +1,60 @@
+/* Dealwright — Tailwind v4 input (standalone CLI, no npm — see docs/styleguide.md).
+   Build: scripts/build_css.sh  →  static/css/app.css */
+@import "tailwindcss";
+
+/* Explicit sources: Django templates + Python class strings. Exclude design docs. */
+@source "../../../templates/";
+@source "../../../core/";
+@source "../../../config/";
+@source not "../../../docs";
+
+/* Canonical money-green tokens (Q12, docs/mockups/theme.html) as Tailwind theme colors. */
+@theme {
+  --color-dw-50: #EFF8F3;
+  --color-dw-100: #D7F0E4;
+  --color-dw-500: #1DA06E;
+  --color-dw-600: #15825D;
+  --color-dw-700: #116E4F;
+  --color-dw-800: #0E5941;
+  --color-dw-900: #0B3D2E;
+  --color-dw-950: #04241B;
+  --color-dw-gold: #B79121;
+  --color-dw-gold-100: #FBF3D9;
+  --color-dw-ink: #16241D;
+  --color-dw-body: #374151;
+  --color-dw-muted: #6B7280;
+  --color-dw-line: #E6E8EE;
+  --color-dw-canvas: #F6F8F7;
+  --color-dw-red: #C0392B;
+  --color-dw-red-bg: #FBE9E9;
+}
+
+@layer base {
+  form p { margin-bottom: 10px; }
+  form label { display: block; font-size: 12.5px; font-weight: 600; color: var(--color-dw-ink); margin-bottom: 3px; }
+  form input { width: 100%; border: 1px solid var(--color-dw-line); border-radius: 9px; padding: 9px 11px; font-size: 14px; background: #fff; }
+  form input:focus { outline: 2px solid var(--color-dw-600); border-color: var(--color-dw-600); }
+  ul.errorlist { color: var(--color-dw-red); font-size: 12.5px; margin-bottom: 6px; list-style: none; }
+}
+
+@layer components {
+  .card { border-radius: 14px; border: 1px solid var(--color-dw-line); background: #fff; padding: 26px 28px; }
+  .btn-primary {
+    display: inline-block; width: 100%; margin-top: 6px; border: none; cursor: pointer;
+    border-radius: 10px; background: var(--color-dw-700); color: #fff;
+    padding: 9px 18px; font-size: 13px; font-weight: 700;
+  }
+  .btn-primary:hover { background: var(--color-dw-800); }
+  .btn-ghost {
+    display: inline-block; cursor: pointer; background: transparent;
+    border: 1.5px solid rgb(255 255 255 / 0.5); border-radius: 10px; color: #fff;
+    padding: 8px 16px; font-size: 13px; font-weight: 700;
+  }
+  .btn-ghost:hover { background: rgb(255 255 255 / 0.1); }
+  .alt-link { font-size: 13px; margin-top: 10px; }
+  .alt-link a { color: var(--color-dw-600); }
+  .msg {
+    background: var(--color-dw-50); border: 1px solid var(--color-dw-100);
+    color: var(--color-dw-800); border-radius: 10px; padding: 9px 14px; margin-bottom: 6px;
+  }
+}

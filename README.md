@@ -33,7 +33,9 @@ docker compose up -d db       # local Postgres (optional; sqlite fallback withou
 .venv/bin/python manage.py runserver
 ```
 
-Tests / lint: `.venv/bin/python -m pytest` · `.venv/bin/python -m ruff check .`
+Tests / lint / css: `.venv/bin/python -m pytest` · `.venv/bin/python -m ruff check .` · `scripts/build_css.sh` (Tailwind, no npm; `--watch` for dev)
+
+Full stack in Docker: `docker compose up --build` → Django on http://localhost:8000 with Postgres
 
 ## Building
 
