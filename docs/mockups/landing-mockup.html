@@ -43,6 +43,34 @@
   .hero .cta { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
   .hero .fine { font-size:12px; opacity:.7; margin-top:16px; }
 
+  /* Hero demo card (paste-the-call input) */
+  .hero-grid { display:flex; gap:44px; align-items:center; flex-wrap:wrap; }
+  .hero-left { flex:1; min-width:300px; text-align:left; }
+  .hero-left h1 { font-size:34px; margin:0 0 14px; }
+  .hero-left p { margin:0 0 24px; }
+  .hero-left .cta { justify-content:flex-start; }
+  .demo-card {
+    flex:1; min-width:300px; max-width:440px; margin-left:auto;
+    background:#fff; border-radius:16px; padding:20px 22px; color:var(--dw-body);
+    box-shadow:0 24px 60px rgba(0,0,0,.3);
+  }
+  .demo-card .dc-label { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.8px; color:var(--dw-green-700); margin-bottom:8px; }
+  .demo-card textarea {
+    width:100%; height:158px; border:1.5px solid var(--dw-line); border-radius:10px;
+    padding:11px 13px; font:inherit; font-size:12px; line-height:1.5; color:var(--dw-body);
+    resize:none; background:var(--dw-canvas);
+  }
+  .demo-card textarea:focus { border-color:var(--dw-green-600); outline:2px solid var(--dw-green-100); }
+  .demo-card .dc-btn {
+    display:block; text-align:center; background:var(--dw-green-700); color:#fff;
+    border-radius:10px; padding:11px; font-weight:700; font-size:13.5px; margin-top:10px;
+  }
+  .demo-card .dc-out { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; padding-top:12px; border-top:1px dashed var(--dw-line); }
+  .demo-card .dc-out span { font-size:10.5px; font-weight:700; background:var(--dw-green-100); color:var(--dw-green-800); border-radius:999px; padding:3px 10px; }
+  .demo-card .dc-out span.q { background:var(--dw-amber-bg); color:var(--dw-amber-text); }
+  .demo-card .dc-fine { font-size:10.5px; color:var(--dw-muted); margin-top:10px; text-align:center; }
+  .demo-card .dc-fine a { color:var(--dw-green-600); font-weight:700; }
+
   /* Stats strip */
   .stats { display:flex; gap:0; border:1px solid var(--dw-line); border-radius:14px; background:#fff; margin:-38px auto 0; max-width:860px; position:relative; box-shadow:0 6px 24px rgba(11,61,46,.08); flex-wrap:wrap; }
   .stat { flex:1; min-width:190px; text-align:center; padding:20px 14px; border-right:1px solid var(--dw-line); }
@@ -126,14 +154,38 @@
 
 <header class="hero">
   <div class="container">
-    <div class="badge">For automation freelancers · VAs · small agencies</div>
-    <h1>Turn discovery calls into <em>signed deals</em>.</h1>
-    <p>Paste what the client said. Dealwright extracts the facts, computes transparent ROI, recommends the right services, matches your assistant — and writes the client-ready proposal.</p>
-    <div class="cta">
-      <a href="#" class="btn primary" style="padding:13px 28px; font-size:14.5px;">Start 14-day free trial</a>
-      <a href="proposal-solo-va-mockup.html" class="btn light">See a real proposal →</a>
+    <div class="hero-grid">
+      <div class="hero-left">
+        <div class="badge">For freelancers · VAs · agencies</div>
+        <h1>Turn discovery calls into <em>signed deals</em>.</h1>
+        <p>Paste what the client said. Dealwright extracts the facts, computes transparent ROI, recommends the right services, matches your assistant — and writes the client-ready proposal.</p>
+        <div class="cta">
+          <a href="#" class="btn primary" style="padding:13px 28px; font-size:14.5px;">Start 14-day free trial</a>
+          <a href="proposal-solo-va-mockup.html" class="btn light">See a real proposal →</a>
+        </div>
+        <div class="fine">No card required · Every number traceable · Estimates labelled as estimates, always</div>
+      </div>
+      <div class="demo-card">
+        <div class="dc-label">📋 Paste what your client said</div>
+        <textarea>LF: FEMALE PERSONAL ASSISTANT 😂
+Role: be my human checklist + reminder app
+• Manage and organize my schedule
+• Keep track of appointments, deadlines
+• Send reminders and follow-ups
+• Do small errands or coordinate for me
+• Make calls, inquiries, bookings, reservations
+• Be my "one call away" person
+• Basically: help make my life less chaotic</textarea>
+        <a href="proposal-solo-va-mockup.html" class="dc-btn">Craft my proposal →</a>
+        <div class="dc-out">
+          <span>✓ 8 tasks extracted</span>
+          <span>✓ Delegation ROI mode</span>
+          <span class="q">7 follow-up questions</span>
+          <span>≈ ₱8,700/mo est</span>
+        </div>
+        <div class="dc-fine">Sample data — in the app this runs live in ~15 s. <a href="proposal-solo-va-mockup.html">See the full proposal it produces →</a></div>
+      </div>
     </div>
-    <div class="fine">No card required · Every number traceable · Estimates labelled as estimates, always</div>
   </div>
 </header>
 
