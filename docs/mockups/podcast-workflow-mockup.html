@@ -8,12 +8,12 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-    background: #f4f5f7;
-    color: #2d2e33;
+    background: #F6F8F7;
+    color: #16241D;
     line-height: 1.55;
   }
   .hero {
-    background: linear-gradient(135deg, #4a67c8, #6a4ac8);
+    background: linear-gradient(135deg, #0E5941, #0B3D2E);
     color: #fff;
     padding: 40px 24px 48px;
     text-align: center;
@@ -34,20 +34,20 @@
     margin-bottom: 28px;
   }
   h2 { font-size: 18px; margin-bottom: 6px; }
-  .sub { color: #77787f; font-size: 14px; margin-bottom: 20px; }
+  .sub { color: #6B7280; font-size: 14px; margin-bottom: 20px; }
 
   /* n8n-style canvas */
   .canvas {
-    background-color: #fbfbfd;
+    background-color: #FBFDFC;
     background-image: radial-gradient(#d8dae2 1px, transparent 1px);
     background-size: 18px 18px;
-    border: 1px solid #e6e8ee; border-radius: 12px;
+    border: 1px solid #E6E8EE; border-radius: 12px;
     padding: 34px 18px;
     overflow-x: auto;
   }
   .flow { display: flex; align-items: center; justify-content: center; min-width: 700px; }
   .node {
-    background: #fff; border: 1px solid #e3e5ec; border-radius: 10px;
+    background: #fff; border: 1px solid #E6E8EE; border-radius: 10px;
     width: 190px; box-shadow: 0 3px 8px rgba(30,35,60,.08);
     overflow: hidden; flex-shrink: 0;
   }
@@ -90,7 +90,7 @@
 
   /* email client mock */
   .mailwin {
-    border: 1px solid #e3e5ec; border-radius: 12px; overflow: hidden;
+    border: 1px solid #E6E8EE; border-radius: 12px; overflow: hidden;
     box-shadow: 0 3px 12px rgba(30,35,60,.08);
   }
   .mailbar {
@@ -101,19 +101,19 @@
   .mailhead { padding: 16px 20px 4px; }
   .mailhead .subject { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
   .mailhead .row { font-size: 13px; color: #55575f; margin-bottom: 3px; }
-  .mailhead .row b { color: #2d2e33; }
+  .mailhead .row b { color: #16241D; }
   .mailbody { padding: 6px 20px 24px; }
 
   /* flow steps */
   ol.steps { padding-left: 22px; }
   ol.steps li { margin-bottom: 10px; font-size: 14.5px; }
   ol.steps code {
-    background: #eef0f6; padding: 1px 6px; border-radius: 5px;
-    font-size: 12.5px; color: #4a4d8f;
+    background: #EFF8F3; padding: 1px 6px; border-radius: 5px;
+    font-size: 12.5px; color: #116E4F;
   }
   .note {
-    margin-top: 16px; background: #eef2fd; border: 1px solid #ccd8f5;
-    border-radius: 8px; padding: 12px 16px; font-size: 13.5px; color: #3b4a86;
+    margin-top: 16px; background: #E0F2F7; border: 1px solid #0E7490;
+    border-radius: 8px; padding: 12px 16px; font-size: 13.5px; color: #155E75;
   }
   pre.sample {
     background: #23262f; color: #c9d1e6; border-radius: 10px;
@@ -129,7 +129,7 @@
 
 <div class="hero">
   <div class="badge">Mockup · sample data</div>
-  <h1>🎙️ Podcast Episode Announcer</h1>
+  <h1><span style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:#B79121;color:#fff;font-weight:300;font-size:14px;letter-spacing:1.5px;vertical-align:-8px;margin-right:10px;">DW</span>🎙️ Podcast Episode Announcer</h1>
   <p>Upload your sermon audio to a Google Drive folder — your churchmates automatically get an email with a <b>Listen</b> button. Here's what it will look like.</p>
 </div>
 
@@ -219,7 +219,7 @@
       </div>
       <div class="mailbody">
         <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:14px auto 0;border:1px solid #e5e5e5;border-radius:12px;overflow:hidden;">
-          <div style="background:#4a67c8;color:#ffffff;padding:20px 24px;">
+          <div style="background:#116E4F;color:#ffffff;padding:20px 24px;">
             <div style="font-size:13px;opacity:.85;">🎙️ PODCAST</div>
             <h2 style="margin:6px 0 0;">New episode is out!</h2>
           </div>
@@ -227,7 +227,7 @@
             <p style="margin:0 0 12px;">Hi church family,</p>
             <p style="margin:0 0 16px;">A new episode just dropped: <strong>Faith Over Fear — Sunday Message</strong></p>
             <p style="margin:0 0 20px;">
-              <a href="#" onclick="return false" style="background:#4a67c8;color:#ffffff;text-decoration:none;padding:12px 26px;border-radius:8px;font-weight:bold;display:inline-block;">▶ Listen now</a>
+              <a href="#" onclick="return false" style="background:#116E4F;color:#ffffff;text-decoration:none;padding:12px 26px;border-radius:8px;font-weight:bold;display:inline-block;">▶ Listen now</a>
             </p>
             <p style="margin:0;color:#888888;font-size:13px;">If the button doesn't work, copy this link into your browser:<br>https://drive.google.com/file/d/1aB2…/view</p>
             <p style="margin:16px 0 0;color:#555555;">Blessings,<br>Pastor</p>
