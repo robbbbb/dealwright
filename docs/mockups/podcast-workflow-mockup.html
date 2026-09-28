@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Podcast Episode Announcer — Mockup</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #f4f5f7;
+    color: #2d2e33;
+    line-height: 1.55;
+  }
+  .hero {
+    background: linear-gradient(135deg, #4a67c8, #6a4ac8);
+    color: #fff;
+    padding: 40px 24px 48px;
+    text-align: center;
+  }
+  .hero h1 { font-size: 28px; margin-bottom: 8px; }
+  .hero p { opacity: .9; max-width: 640px; margin: 0 auto; font-size: 15px; }
+  .hero .badge {
+    display: inline-block; background: rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.4);
+    padding: 4px 14px; border-radius: 999px;
+    font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .wrap { max-width: 960px; margin: -24px auto 48px; padding: 0 20px; }
+  section.card {
+    background: #fff; border-radius: 14px; padding: 28px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    margin-bottom: 28px;
+  }
+  h2 { font-size: 18px; margin-bottom: 6px; }
+  .sub { color: #77787f; font-size: 14px; margin-bottom: 20px; }
+
+  /* n8n-style canvas */
+  .canvas {
+    background-color: #fbfbfd;
+    background-image: radial-gradient(#d8dae2 1px, transparent 1px);
+    background-size: 18px 18px;
+    border: 1px solid #e6e8ee; border-radius: 12px;
+    padding: 34px 18px;
+    overflow-x: auto;
+  }
+  .flow { display: flex; align-items: center; justify-content: center; min-width: 700px; }
+  .node {
+    background: #fff; border: 1px solid #e3e5ec; border-radius: 10px;
+    width: 190px; box-shadow: 0 3px 8px rgba(30,35,60,.08);
+    overflow: hidden; flex-shrink: 0;
+  }
+  .node .nhead {
+    padding: 10px 12px 8px; font-size: 11px; font-weight: 700;
+    letter-spacing: .4px; text-transform: uppercase; color: #fff;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .node.drive .nhead { background: #3f8f5f; }
+  .node.filter .nhead { background: #c8804a; }
+  .node.gmail .nhead { background: #d54c3f; }
+  .node .nbody { padding: 12px 14px 14px; }
+  .node .nicon { font-size: 22px; margin-bottom: 6px; }
+  .node .nname { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .node .ndesc { font-size: 11.5px; color: #8b8d97; }
+  .connector { width: 74px; height: 2px; background: #b9bdd0; position: relative; flex-shrink: 0; }
+  .connector::after {
+    content: ""; position: absolute; right: -1px; top: -4px;
+    border-left: 8px solid #b9bdd0;
+    border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+  }
+  .sticky {
+    margin-top: 22px; background: #fff8c4; border: 1px solid #e8df8a;
+    border-radius: 8px; padding: 14px 16px; font-size: 13px;
+    max-width: 760px; margin-left: auto; margin-right: auto;
+    box-shadow: 0 2px 6px rgba(0,0,0,.07);
+  }
+  .sticky b { color: #6b5d00; }
+
+  /* sample upload */
+  .upload {
+    display: flex; align-items: center; gap: 14px;
+    background: #f0f6f2; border: 1px solid #cfe4d6; border-radius: 10px;
+    padding: 14px 18px; margin-bottom: 10px;
+  }
+  .upload .fileicon { font-size: 26px; }
+  .upload .fname { font-weight: 700; font-size: 14px; }
+  .upload .fmeta { font-size: 12px; color: #74806f; }
+  .arrow-down { text-align: center; font-size: 20px; color: #9aa0b5; margin: 6px 0; }
+
+  /* email client mock */
+  .mailwin {
+    border: 1px solid #e3e5ec; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 3px 12px rgba(30,35,60,.08);
+  }
+  .mailbar {
+    background: #eceef4; padding: 10px 16px; font-size: 12px; color: #6a6d7a;
+    display: flex; gap: 8px; align-items: center;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .mailhead { padding: 16px 20px 4px; }
+  .mailhead .subject { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+  .mailhead .row { font-size: 13px; color: #55575f; margin-bottom: 3px; }
+  .mailhead .row b { color: #2d2e33; }
+  .mailbody { padding: 6px 20px 24px; }
+
+  /* flow steps */
+  ol.steps { padding-left: 22px; }
+  ol.steps li { margin-bottom: 10px; font-size: 14.5px; }
+  ol.steps code {
+    background: #eef0f6; padding: 1px 6px; border-radius: 5px;
+    font-size: 12.5px; color: #4a4d8f;
+  }
+  .note {
+    margin-top: 16px; background: #eef2fd; border: 1px solid #ccd8f5;
+    border-radius: 8px; padding: 12px 16px; font-size: 13.5px; color: #3b4a86;
+  }
+  pre.sample {
+    background: #23262f; color: #c9d1e6; border-radius: 10px;
+    padding: 16px 18px; font-size: 12px; overflow-x: auto;
+    font-family: "SF Mono", Consolas, monospace; margin-top: 14px;
+  }
+  pre.sample .k { color: #7fd0a0; }
+  pre.sample .s { color: #e8c07d; }
+  .footer { text-align: center; color: #9092a0; font-size: 12.5px; padding-bottom: 40px; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">Mockup · sample data</div>
+  <h1>🎙️ Podcast Episode Announcer</h1>
+  <p>Upload your sermon audio to a Google Drive folder — your churchmates automatically get an email with a <b>Listen</b> button. Here's what it will look like.</p>
+</div>
+
+<div class="wrap">
+
+  <!-- WORKFLOW CANVAS -->
+  <section class="card">
+    <h2>1 · The workflow (as it will appear in n8n)</h2>
+    <p class="sub">Runs on your own n8n instance. Checks your Drive folder every 15 minutes — you do nothing after you hit upload.</p>
+    <div class="canvas">
+      <div class="flow">
+        <div class="node drive">
+          <div class="nhead"><span>📁</span> Google Drive Trigger</div>
+          <div class="nbody">
+            <div class="nicon">📁</div>
+            <div class="nname">New File in Podcast Folder</div>
+            <div class="ndesc">Watches your "Church Podcast" folder · every 15 min</div>
+          </div>
+        </div>
+        <div class="connector"></div>
+        <div class="node filter">
+          <div class="nhead"><span>🔎</span> Filter</div>
+          <div class="nbody">
+            <div class="nicon">🔊</div>
+            <div class="nname">Is Audio File?</div>
+            <div class="ndesc">Only continues for .mp3 · .m4a · .wav · .aac · .ogg</div>
+          </div>
+        </div>
+        <div class="connector"></div>
+        <div class="node gmail">
+          <div class="nhead"><span>✉️</span> Gmail</div>
+          <div class="nbody">
+            <div class="nicon">✉️</div>
+            <div class="nname">Send Announcement Email</div>
+            <div class="ndesc">Sends the episode email to your member list</div>
+          </div>
+        </div>
+      </div>
+      <div class="sticky">
+        <b>💡 Later upgrade:</b> want members to subscribe in Spotify / Apple Podcasts? The same audio can go to free hosting (Spotify for Creators), and this workflow can share that link instead — so members get new episodes in their podcast app automatically.
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT YOU DO / WHAT HAPPENS -->
+  <section class="card">
+    <h2>2 · What happens when you upload</h2>
+    <p class="sub">Example episode: <i>Faith Over Fear — Sunday Message</i></p>
+    <div class="upload">
+      <span class="fileicon">🎵</span>
+      <div>
+        <div class="fname">Faith_Over_Fear_Sunday_Message.mp3</div>
+        <div class="fmeta">Uploaded to Google Drive → "Church Podcast" folder · 38.2 MB</div>
+      </div>
+    </div>
+    <div class="arrow-down">⬇ &nbsp;within 15 minutes, automatically&nbsp; ⬇</div>
+    <ol class="steps">
+      <li>The workflow detects the new file in the folder.</li>
+      <li>The filter checks it's an audio file (<code>.mp3</code>, <code>.m4a</code>, <code>.wav</code>…) — stray documents or images are ignored.</li>
+      <li>The filename becomes the episode title: <b>Faith Over Fear — Sunday Message</b> (extension removed).</li>
+      <li>An announcement email goes out to your churchmates — preview below ⬇</li>
+    </ol>
+    <div class="note">📣 Because the Drive folder is shared as <b>"Anyone with the link → Viewer"</b>, members just tap the button and listen — no Google account, no app install needed.</div>
+    <pre class="sample">{
+  <span class="k">"name"</span>: <span class="s">"Faith_Over_Fear_Sunday_Message.mp3"</span>,   <span style="color:#8892ab">// → becomes the title</span>
+  <span class="k">"webViewLink"</span>: <span class="s">"https://drive.google.com/file/d/1aB2…/view"</span>,  <span style="color:#8892ab">// → the Listen button</span>
+  <span class="k">"mimeType"</span>: <span class="s">"audio/mpeg"</span>
+}</pre>
+  </section>
+
+  <!-- EMAIL PREVIEW -->
+  <section class="card">
+    <h2>3 · The email your churchmates receive</h2>
+    <p class="sub">Rendered from the actual template built into the workflow, with the sample episode filled in.</p>
+    <div class="mailwin">
+      <div class="mailbar">
+        <span class="dot" style="background:#f26057"></span>
+        <span class="dot" style="background:#f5bd4f"></span>
+        <span class="dot" style="background:#61c554"></span>
+        &nbsp;Inbox — sample preview
+      </div>
+      <div class="mailhead">
+        <div class="subject">🎙️ New episode: Faith Over Fear — Sunday Message</div>
+        <div class="row"><b>From:</b> Pastor &lt;you@gmail.com&gt;</div>
+        <div class="row"><b>To:</b> church-podcast@googlegroups.com (your member list)</div>
+        <div class="row"><b>Date:</b> today, ~15 min after you uploaded</div>
+      </div>
+      <div class="mailbody">
+        <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:14px auto 0;border:1px solid #e5e5e5;border-radius:12px;overflow:hidden;">
+          <div style="background:#4a67c8;color:#ffffff;padding:20px 24px;">
+            <div style="font-size:13px;opacity:.85;">🎙️ PODCAST</div>
+            <h2 style="margin:6px 0 0;">New episode is out!</h2>
+          </div>
+          <div style="padding:24px;">
+            <p style="margin:0 0 12px;">Hi church family,</p>
+            <p style="margin:0 0 16px;">A new episode just dropped: <strong>Faith Over Fear — Sunday Message</strong></p>
+            <p style="margin:0 0 20px;">
+              <a href="#" onclick="return false" style="background:#4a67c8;color:#ffffff;text-decoration:none;padding:12px 26px;border-radius:8px;font-weight:bold;display:inline-block;">▶ Listen now</a>
+            </p>
+            <p style="margin:0;color:#888888;font-size:13px;">If the button doesn't work, copy this link into your browser:<br>https://drive.google.com/file/d/1aB2…/view</p>
+            <p style="margin:16px 0 0;color:#555555;">Blessings,<br>Pastor</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SETUP -->
+  <section class="card">
+    <h2>4 · When you're ready to make it real (~10 min, one time)</h2>
+    <ol class="steps">
+      <li>Create the <b>"Church Podcast"</b> folder in Google Drive and share it <b>Anyone with the link → Viewer</b>.</li>
+      <li>In n8n: <b>Workflows → Import from File</b> → pick <code>podcast-episode-announcer.n8n.json</code>.</li>
+      <li>Open the Drive trigger node → connect your Google account → select the folder.</li>
+      <li>Open the Gmail node → connect your Gmail → put your members' emails in <b>To</b> (or one free Google Group address so you manage the list in one place).</li>
+      <li>Toggle the workflow <b>Active</b>. Done — just upload and it sends.</li>
+    </ol>
+    <div class="note">The importable workflow file is already prepared and sitting next to this mockup: <code>podcast-episode-announcer.n8n.json</code>. Nothing is live until you import, connect credentials, and activate.</div>
+  </section>
+
+</div>
+
+<div class="footer">Mockup with sample data · no emails sent, nothing connected · built for your self-hosted n8n</div>
+
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proposal for You — Your Personal Support System</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #eef0f4; color: #2d2e33; line-height: 1.6; font-size: 14.5px;
+  }
+  .page {
+    max-width: 780px; margin: 24px auto; background: #fff;
+    border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(20,30,60,.10);
+  }
+  .cover {
+    background: linear-gradient(135deg, #4a67c8, #6a4ac8); color: #fff; padding: 44px 48px;
+  }
+  .cover .eyebrow {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase; opacity: .85; margin-bottom: 14px;
+  }
+  .cover h1 { font-size: 30px; line-height: 1.2; margin-bottom: 10px; }
+  .cover p { opacity: .92; font-size: 14.5px; max-width: 520px; }
+  .cover .meta-row { display: flex; gap: 28px; margin-top: 26px; font-size: 12.5px; flex-wrap: wrap; }
+  .cover .meta-row div span { display: block; opacity: .7; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+  section { padding: 34px 48px; border-bottom: 1px solid #f0f1f5; }
+  section:last-of-type { border-bottom: none; }
+  h2 { font-size: 19px; margin-bottom: 6px; }
+  h2 .num {
+    display: inline-block; background: #eef1fb; color: #4a67c8; border-radius: 8px;
+    width: 28px; height: 28px; text-align: center; line-height: 28px; font-size: 13px; margin-right: 10px;
+  }
+  .lead { color: #6b7280; font-size: 13.5px; margin-bottom: 18px; }
+  .quotebox {
+    background: #f8f9fb; border-left: 4px solid #4a67c8; border-radius: 0 10px 10px 0;
+    padding: 14px 18px; font-style: italic; color: #445; margin-bottom: 16px; font-size: 14px;
+  }
+  ul.tasks { list-style: none; margin-bottom: 6px; }
+  ul.tasks li { padding: 5px 0 5px 26px; position: relative; color: #3a3d45; }
+  ul.tasks li::before {
+    content: "✓"; position: absolute; left: 2px; color: #22713f; font-weight: 800;
+  }
+  .flowstrip {
+    display: flex; align-items: stretch; gap: 8px; flex-wrap: wrap; margin: 14px 0;
+  }
+  .fnode {
+    flex: 1; min-width: 130px; background: #f8f9fb; border: 1px solid #e6e8ee;
+    border-radius: 10px; padding: 10px 12px; font-size: 12px; text-align: center; color: #444;
+    position: relative;
+  }
+  .fnode b { display: block; font-size: 12.5px; color: #2d2e33; margin-bottom: 2px; }
+  .fnode .emoji { font-size: 18px; display: block; margin-bottom: 4px; }
+  .farrow { align-self: center; color: #b6bcc8; font-size: 16px; font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0 4px; }
+  th {
+    text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: .5px;
+    color: #8a8f9a; padding: 7px 10px; border-bottom: 2px solid #eceef2;
+  }
+  td { padding: 8px 10px; border-bottom: 1px solid #f2f3f6; }
+  .money { font-weight: 700; color: #22713f; }
+  .est {
+    display: inline-block; font-size: 9.5px; text-transform: uppercase; letter-spacing: .5px;
+    background: #fdf3e2; color: #9a6b13; border-radius: 4px; padding: 1px 6px; vertical-align: 2px; margin-left: 6px;
+  }
+  .assump {
+    background: #f8f9fb; border: 1px dashed #d6dae4; border-radius: 10px;
+    padding: 12px 16px; font-size: 12.5px; color: #555; margin-top: 12px;
+  }
+  .assump b { color: #2d2e33; }
+  .va-card {
+    border: 1px solid #e6e8ee; border-radius: 12px; padding: 18px 20px; background: #fdfdfe;
+  }
+  .va-top { display: flex; gap: 16px; align-items: center; margin-bottom: 12px; }
+  .avatar {
+    width: 54px; height: 54px; border-radius: 50%; background: #4a67c8; color: #fff;
+    font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  }
+  .skill { display: inline-block; border-radius: 999px; padding: 3px 11px; font-size: 11.5px; margin: 2px 3px 2px 0; }
+  .skill.v { background: #e8f6ee; color: #22713f; }
+  .skill.p { background: #eef1fb; color: #3d5ac8; }
+  .skill.c { background: #f2f3f7; color: #6b7280; }
+  .gapnote {
+    background: #fdf8e7; border-left: 3px solid #d9a514; border-radius: 0 8px 8px 0;
+    padding: 8px 12px; font-size: 12.5px; color: #7a5a10; margin-top: 10px;
+  }
+  .pkg-grid { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 14px; }
+  .pkg { flex: 1; min-width: 190px; border: 1px solid #e6e8ee; border-radius: 12px; padding: 18px; }
+  .pkg.rec { border: 2px solid #4a67c8; box-shadow: 0 4px 14px rgba(74,103,200,.15); }
+  .pkg .pname { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #4a67c8; font-weight: 800; }
+  .pkg .price { font-size: 24px; font-weight: 800; margin: 6px 0 0; }
+  .pkg .per { font-size: 11.5px; color: #8a8f9a; margin-bottom: 10px; }
+  .pkg ul { list-style: none; font-size: 12.5px; }
+  .pkg li { padding: 3px 0 3px 20px; position: relative; color: #3a3d45; }
+  .pkg li::before { content: "✓"; position: absolute; left: 0; color: #22713f; font-weight: 800; }
+  .timeline { list-style: none; }
+  .timeline li { display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px dashed #eceef2; font-size: 13.5px; }
+  .timeline li:last-child { border-bottom: none; }
+  .tbadge {
+    flex-shrink: 0; background: #eef1fb; color: #4a67c8; font-weight: 700; font-size: 11.5px;
+    border-radius: 8px; padding: 3px 10px; height: fit-content; white-space: nowrap;
+  }
+  .nextbox {
+    background: #eef1fb; border-radius: 12px; padding: 20px 22px; text-align: center;
+  }
+  .nextbox .btn {
+    display: inline-block; background: #4a67c8; color: #fff; text-decoration: none;
+    padding: 12px 34px; border-radius: 10px; font-weight: 700; margin: 12px 6px 0; font-size: 14px;
+  }
+  .nextbox .btn.ghost { background: #fff; color: #4a67c8; border: 1.5px solid #4a67c8; }
+  .disclaimer { padding: 22px 48px 34px; background: #f8f9fb; font-size: 11.5px; color: #8a8f9a; }
+  .sig { display: flex; gap: 40px; margin-top: 18px; }
+  .sig div { flex: 1; border-top: 1.5px solid #b6bcc8; padding-top: 6px; font-size: 12px; color: #6b7280; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ============ COVER ============ -->
+  <div class="cover">
+    <div class="eyebrow">Proposal · Prepared for you</div>
+    <h1>Your Personal Support System</h1>
+    <p>One reliable person one call away — with quiet automation working behind them, so your schedule keeps itself, reminders fire themselves, and your life gets a little less chaotic.</p>
+    <div class="meta-row">
+      <div><span>Prepared by</span>[Your Agency Name]</div>
+      <div><span>Date</span>September 28, 2026</div>
+      <div><span>Valid until</span>October 12, 2026</div>
+      <div><span>Reference</span>PROP-2026-014</div>
+    </div>
+  </div>
+
+  <!-- ============ 1. WHAT YOU TOLD US ============ -->
+  <section>
+    <h2><span class="num">1</span>What you told us</h2>
+    <div class="lead">Everything below came from your own words in our conversation.</div>
+    <div class="quotebox">"Basically: help make my life less chaotic 😂"</div>
+    <ul class="tasks">
+      <li>Manage and organize your schedule</li>
+      <li>Keep track of appointments, deadlines, and important dates</li>
+      <li>Reminders and follow-ups when needed</li>
+      <li>Maintain a personal checklist / to-do list</li>
+      <li>Small errands — done or coordinated for you</li>
+      <li>Calls, inquiries, bookings, and reservations</li>
+      <li>Organize documents, information, and occasional personal tasks</li>
+      <li>One person to call when something needs handling</li>
+    </ul>
+  </section>
+
+  <!-- ============ 2. WHAT WE RECOMMEND ============ -->
+  <section>
+    <h2><span class="num">2</span>What we recommend</h2>
+    <div class="lead">A dedicated personal assistant, plus three small automations working quietly in the background. The automation handles the repetitive stuff, so your assistant's hours go to things that actually need a human.</div>
+
+    <div class="flowstrip">
+      <div class="fnode"><span class="emoji">📅</span><b>Your calendar</b>New appointment or deadline</div>
+      <div class="farrow">→</div>
+      <div class="fnode"><span class="emoji">⚡</span><b>Automation</b>Reminder &amp; confirmation fire automatically</div>
+      <div class="farrow">→</div>
+      <div class="fnode"><span class="emoji">👩‍💼</span><b>Your assistant</b>Handles exceptions, calls, errands</div>
+      <div class="farrow">→</div>
+      <div class="fnode"><span class="emoji">😌</span><b>You</b>One clear update — not ten reminders</div>
+    </div>
+
+    <table>
+      <tr><th style="width:34%">Included</th><th>What it does for you</th></tr>
+      <tr><td><b>Dedicated personal assistant</b></td><td>Your one-call-away person: schedule, calls, bookings, errand coordination, documents</td></tr>
+      <tr><td><b>Calendar &amp; reminder automation</b></td><td>Deadlines, appointments and confirmations fire automatically — never relies on memory</td></tr>
+      <tr><td><b>Task &amp; document hub</b></td><td>Your to-do list and files in one organized place you can open anywhere</td></tr>
+      <tr><td><b>Self-service booking link</b></td><td>Others book time with you without the back-and-forth messages</td></tr>
+    </table>
+  </section>
+
+  <!-- ============ 3. TIME & MONEY ============ -->
+  <section>
+    <h2><span class="num">3</span>What you get back <span class="est">estimates</span></h2>
+    <div class="lead">These are estimates based on the assumptions below — we'll confirm them together before we start. We never promise guaranteed savings.</div>
+
+    <table>
+      <tr><th></th><th>Conservative</th><th>Expected</th><th>Optimistic</th></tr>
+      <tr><td>Your hours freed each month</td><td>26</td><td><b>31</b></td><td>35</td></tr>
+      <tr><td>Value of that time</td><td>PHP 10,400</td><td>PHP 12,480</td><td>PHP 13,860</td></tr>
+      <tr><td>Estimated service cost</td><td>PHP 3,120</td><td>PHP 3,744</td><td>PHP 4,160</td></tr>
+      <tr><td><b>Estimated net benefit / month</b></td><td class="money">PHP 7,280</td><td class="money">PHP 8,736</td><td class="money">PHP 9,688</td></tr>
+    </table>
+
+    <div class="assump">
+      <b>Assumptions (editable):</b> you currently spend ~8 hrs/week on these tasks · your time valued at PHP 400/hr · assistant handles 75–100% of them · assistant rate PHP 120/hr.<br><br>
+      <b>Beyond the numbers:</b> no missed deadlines, one point of contact instead of chaos, and your evenings back. For most clients this is the real reason — the math above is just the bonus.
+    </div>
+  </section>
+
+  <!-- ============ 4. YOUR ASSISTANT ============ -->
+  <section>
+    <h2><span class="num">4</span>Your assistant</h2>
+    <div class="lead">Matched to your exact task list. Skills below are checked and evidenced — not just claimed.</div>
+    <div class="va-card">
+      <div class="va-top">
+        <div class="avatar">M</div>
+        <div>
+          <b style="font-size:16px">Maria C.</b> — Personal Assistant<br>
+          <span style="font-size:12.5px;color:#6b7280">Your timezone (GMT+8) · PHP 110–130/hr · starts within 1 week</span>
+        </div>
+      </div>
+      <span class="skill v">✓ Calendar &amp; schedule management — verified by past client projects</span>
+      <span class="skill v">✓ Calls, bookings &amp; inquiries — passed skills assessment</span>
+      <span class="skill p">Task &amp; to-do systems — portfolio reviewed</span>
+      <span class="skill p">Document organization — portfolio reviewed</span>
+      <span class="skill c">Errand coordination — trained, first project with you</span>
+      <div class="gapnote"><b>Being upfront:</b> Maria works remotely — she <i>coordinates</i> errands (finds, books, schedules runners) but doesn't physically run them. Her standard hours are 9am–6pm; urgent after-hours handling is included in the Growth plan below.</div>
+    </div>
+  </section>
+
+  <!-- ============ 5. PACKAGES ============ -->
+  <section>
+    <h2><span class="num">5</span>Choose your plan</h2>
+    <div class="lead">All plans include the automation setup below. Upgrade or downgrade anytime after month one.</div>
+    <div class="pkg-grid">
+      <div class="pkg">
+        <div class="pname">Starter</div>
+        <div class="price">₱3,600<span style="font-size:12px">/mo</span></div>
+        <div class="per">+ ₱9,000 one-time setup · 20 assistant hrs/mo</div>
+        <ul>
+          <li>Calendar &amp; deadline tracking</li>
+          <li>Automated reminders</li>
+          <li>Weekly to-do review</li>
+          <li>Booking link</li>
+        </ul>
+      </div>
+      <div class="pkg rec">
+        <div class="pname">Growth ⭐ Most chosen</div>
+        <div class="price">₱7,200<span style="font-size:12px">/mo</span></div>
+        <div class="per">+ ₱15,000 one-time setup · 40 assistant hrs/mo</div>
+        <ul>
+          <li>Everything in Starter</li>
+          <li>Calls, inquiries, bookings &amp; reservations</li>
+          <li>Errand coordination</li>
+          <li>Document &amp; info hub</li>
+          <li>Priority "one call away" hours</li>
+        </ul>
+      </div>
+      <div class="pkg">
+        <div class="pname">Custom</div>
+        <div class="price">Let's talk</div>
+        <div class="per">quoted after a short call</div>
+        <ul>
+          <li>Physical errands via runner service</li>
+          <li>Extended / after-hours coverage</li>
+          <li>Family or business accounts</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6. HOW WE START ============ -->
+  <section>
+    <h2><span class="num">6</span>How we start</h2>
+    <ul class="timeline">
+      <li><span class="tbadge">On approval</span>You confirm the plan and preferred start date</li>
+      <li><span class="tbadge">Week 1</span>Calendar, reminder and booking automations set up; Maria onboarded to your tools and preferences</li>
+      <li><span class="tbadge">Week 2</span>Fully live. First weekly review: what's working, what to tune</li>
+      <li><span class="tbadge">Monthly</span>One-page report: hours saved, tasks handled, what's next</li>
+    </ul>
+  </section>
+
+  <!-- ============ 7. NEXT STEPS ============ -->
+  <section>
+    <h2><span class="num">7</span>Next steps</h2>
+    <div class="nextbox">
+      <b style="font-size:15px">Ready to make life less chaotic?</b><br>
+      <span style="font-size:13px;color:#6b7280">Approve below, or reply with questions — we'll adjust anything before starting.</span><br>
+      <span class="btn">✓ Approve Growth plan</span>
+      <span class="btn ghost">Book a quick call</span>
+      <div class="sig">
+        <div>Client signature &amp; date</div>
+        <div>For [Your Agency Name]</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="disclaimer">
+    <b>Assumptions &amp; disclaimers.</b> All time and money figures on this page are estimates derived from the assumptions listed in section 3, which we will confirm together before starting. They are not guarantees of savings, outcomes, or results. Assistant hours are monthly allotments; unused hours do not roll over unless agreed in writing. Messaging is sent only with your consent and through official channels. Proposal reference PROP-2026-014, valid until October 12, 2026.
+  </div>
+
+</div>
+
+</body>
+</html>

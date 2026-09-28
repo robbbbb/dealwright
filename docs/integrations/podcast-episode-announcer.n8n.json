@@ -1,0 +1,134 @@
+{
+  "name": "Podcast Episode Announcer",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 🎙️ Setup (one time, ~10 minutes)\n\n1. In Google Drive, create a folder (e.g. **Church Podcast**) and upload your episode files (.mp3 / .m4a / .wav) there.\n2. Share the folder → **Anyone with the link → Viewer**, so members can listen without a Google account.\n3. In n8n, open **New File in Podcast Folder** → connect your Google Drive credential → select the folder.\n4. Open **Send Announcement Email** → connect your Gmail credential → replace the To list with your churchmates' emails (comma-separated).\n5. Toggle the workflow **Active** (top-right).\n\nDone — every new audio file in that folder now sends the announcement automatically.",
+        "height": 560,
+        "width": 420,
+        "color": 4
+      },
+      "id": "9f2c4a10-1111-4a01-9a2b-0c9d1e2f3a4b",
+      "name": "Sticky Note - Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-580, -260]
+    },
+    {
+      "parameters": {
+        "content": "## 💡 Tips & later upgrade\n\n**Member list:** create a free Google Group (e.g. `church-podcast@googlegroups.com`), put that single address in the To field, and add/remove members in one place.\n\n**Podcast apps:** want members to subscribe in Spotify / Apple Podcasts? Upload the same audio free to **Spotify for Creators** — it gives you an RSS feed, and this workflow can watch the feed instead and share the Spotify link.",
+        "height": 360,
+        "width": 420,
+        "color": 5
+      },
+      "id": "2b7d8e50-2222-4b02-8a3c-1d0e2f3a4b5c",
+      "name": "Sticky Note - Tips",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-580, 340]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyXMinutes",
+              "unit": 15
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "event": "fileCreated",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "id": "6a1b3c20-3333-4c03-9b4d-2e1f3a4b5c6d",
+      "name": "New File in Podcast Folder",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-audio-1",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "\\.(mp3|m4a|wav|aac|ogg)$",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8c4e5f30-4444-4d04-9c5e-3f2a4b5c6d7e",
+      "name": "Is Audio File?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "pastor@example.com, member1@example.com, member2@example.com",
+        "subject": "=🎙️ New episode: {{ $json.name.replace(/\\.[^.]+$/, '') }}",
+        "emailType": "html",
+        "message": "=<div style=\"font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;border:1px solid #e5e5e5;border-radius:12px;overflow:hidden;\">\n  <div style=\"background:#4a67c8;color:#ffffff;padding:20px 24px;\">\n    <div style=\"font-size:13px;opacity:.85;\">🎙️ PODCAST</div>\n    <h2 style=\"margin:6px 0 0;\">New episode is out!</h2>\n  </div>\n  <div style=\"padding:24px;\">\n    <p style=\"margin:0 0 12px;\">Hi church family,</p>\n    <p style=\"margin:0 0 16px;\">A new episode just dropped: <strong>{{ $json.name.replace(/\\.[^.]+$/, '') }}</strong></p>\n    <p style=\"margin:0 0 20px;\">\n      <a href=\"{{ $json.webViewLink }}\" style=\"background:#4a67c8;color:#ffffff;text-decoration:none;padding:12px 26px;border-radius:8px;font-weight:bold;display:inline-block;\">▶ Listen now</a>\n    </p>\n    <p style=\"margin:0;color:#888888;font-size:13px;\">If the button doesn't work, copy this link into your browser:<br>{{ $json.webViewLink }}</p>\n    <p style=\"margin:16px 0 0;color:#555555;\">Blessings,<br>Pastor</p>\n  </div>\n</div>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "5d9f6a40-5555-4e05-9d6f-4a3b5c6d7e8f",
+      "name": "Send Announcement Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.5,
+      "position": [440, 0],
+      "webhookId": "7e0a7b50-6666-4f06-9e7a-5b4c6d7e8f9a"
+    }
+  ],
+  "connections": {
+    "New File in Podcast Folder": {
+      "main": [
+        [
+          {
+            "node": "Is Audio File?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Audio File?": {
+      "main": [
+        [
+          {
+            "node": "Send Announcement Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}
