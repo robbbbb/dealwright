@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dealwright — Turn discovery calls into signed deals</title>
+<style>
+  :root {
+    --dw-green-950:#04241B; --dw-green-900:#0B3D2E; --dw-green-800:#0E5941; --dw-green-700:#116E4F;
+    --dw-green-600:#15825D; --dw-green-500:#1DA06E; --dw-green-100:#D7F0E4; --dw-green-50:#EFF8F3;
+    --dw-gold-600:#B79121; --dw-gold-100:#FBF3D9;
+    --dw-amber-text:#9A6B13; --dw-amber-bg:#FDF3E2;
+    --dw-teal-600:#0E7490; --dw-teal-bg:#E0F2F7;
+    --dw-ink:#16241D; --dw-body:#374151; --dw-muted:#6B7280; --dw-line:#E6E8EE; --dw-canvas:#F6F8F7;
+    --dw-grad: linear-gradient(135deg, var(--dw-green-800), var(--dw-green-900));
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:#fff; color:var(--dw-body); font-size:15px; line-height:1.6;
+  }
+  a { text-decoration:none; }
+  .container { max-width:1080px; margin:0 auto; padding:0 24px; }
+
+  /* Nav */
+  nav { position:sticky; top:0; background:rgba(255,255,255,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--dw-line); z-index:10; }
+  .nav-in { display:flex; align-items:center; gap:26px; padding:14px 0; }
+  .logo { display:inline-flex; align-items:center; gap:9px; font-weight:800; font-size:18px; color:var(--dw-ink); }
+  .logo .mark { width:30px; height:30px; border-radius:8px; background:var(--dw-gold-600); color:#fff; display:flex; align-items:center; justify-content:center; font-size:15px; }
+  .nav-links { display:flex; gap:22px; margin-left:auto; font-size:13.5px; color:var(--dw-body); font-weight:600; }
+  .nav-links a:hover { color:var(--dw-green-600); }
+  .btn { display:inline-block; border-radius:10px; padding:10px 20px; font-weight:700; font-size:13.5px; border:1.5px solid transparent; }
+  .btn.primary { background:var(--dw-green-700); color:#fff; }
+  .btn.ghost { background:#fff; color:var(--dw-green-700); border-color:var(--dw-green-700); }
+  .btn.light { background:rgba(255,255,255,.14); color:#fff; border-color:rgba(255,255,255,.5); }
+
+  /* Hero */
+  .hero { background:var(--dw-grad); color:#fff; padding:72px 0 84px; text-align:center; position:relative; overflow:hidden; }
+  .hero .badge { display:inline-block; border:1px solid rgba(255,255,255,.35); background:rgba(255,255,255,.1); border-radius:999px; font-size:11.5px; letter-spacing:1px; text-transform:uppercase; padding:5px 16px; margin-bottom:18px; }
+  .hero h1 { font-size:40px; line-height:1.15; letter-spacing:-.02em; max-width:720px; margin:0 auto 14px; }
+  .hero h1 em { font-style:normal; color:#7FD8AC; }
+  .hero p { max-width:600px; margin:0 auto 26px; opacity:.9; font-size:16px; }
+  .hero .cta { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .hero .fine { font-size:12px; opacity:.7; margin-top:16px; }
+
+  /* Stats strip */
+  .stats { display:flex; gap:0; border:1px solid var(--dw-line); border-radius:14px; background:#fff; margin:-38px auto 0; max-width:860px; position:relative; box-shadow:0 6px 24px rgba(11,61,46,.08); flex-wrap:wrap; }
+  .stat { flex:1; min-width:190px; text-align:center; padding:20px 14px; border-right:1px solid var(--dw-line); }
+  .stat:last-child { border-right:none; }
+  .stat .n { font-size:22px; font-weight:800; color:var(--dw-green-700); }
+  .stat .l { font-size:12px; color:var(--dw-muted); }
+
+  section { padding:64px 0; }
+  section.alt { background:var(--dw-canvas); }
+  h2 { color:var(--dw-ink); font-size:26px; text-align:center; letter-spacing:-.01em; margin-bottom:8px; }
+  .sub { text-align:center; color:var(--dw-muted); max-width:560px; margin:0 auto 36px; font-size:14.5px; }
+
+  /* Old vs new */
+  .vs { display:flex; gap:20px; flex-wrap:wrap; }
+  .vs .col { flex:1; min-width:280px; border-radius:14px; padding:24px; border:1px solid var(--dw-line); background:#fff; }
+  .vs .old { background:#FAFAFA; }
+  .vs .new { border:2px solid var(--dw-green-600); background:var(--dw-green-50); }
+  .vs h3 { font-size:15px; color:var(--dw-ink); margin-bottom:10px; }
+  .vs ul { list-style:none; font-size:13.5px; }
+  .vs li { padding:5px 0 5px 26px; position:relative; }
+  .vs .old li::before { content:"✗"; position:absolute; left:2px; color:var(--dw-muted); font-weight:800; }
+  .vs .new li::before { content:"✓"; position:absolute; left:2px; color:var(--dw-green-600); font-weight:800; }
+
+  /* Steps */
+  .steps { display:flex; gap:18px; flex-wrap:wrap; }
+  .step { flex:1; min-width:220px; background:#fff; border:1px solid var(--dw-line); border-radius:14px; padding:22px; }
+  .step .num { width:30px; height:30px; border-radius:9px; background:var(--dw-green-700); color:#fff; font-weight:800; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
+  .step b { display:block; color:var(--dw-ink); margin-bottom:4px; font-size:14.5px; }
+  .step span { font-size:13px; color:var(--dw-muted); }
+
+  /* Features */
+  .feats { display:flex; flex-wrap:wrap; gap:16px; }
+  .feat { flex:1; min-width:260px; background:#fff; border:1px solid var(--dw-line); border-radius:14px; padding:20px; }
+  .feat .ic { font-size:22px; margin-bottom:8px; }
+  .feat b { display:block; color:var(--dw-ink); margin-bottom:4px; font-size:14.5px; }
+  .feat span { font-size:13px; color:var(--dw-muted); }
+  .feat .chip { display:inline-block; margin-top:10px; background:var(--dw-amber-bg); color:var(--dw-amber-text); font-size:10.5px; font-weight:700; border-radius:5px; padding:2px 7px; letter-spacing:.5px; }
+
+  /* Pricing */
+  .plans { display:flex; gap:16px; flex-wrap:wrap; align-items:stretch; }
+  .plan { flex:1; min-width:240px; background:#fff; border:1px solid var(--dw-line); border-radius:16px; padding:26px; display:flex; flex-direction:column; }
+  .plan.rec { border:2px solid var(--dw-green-600); box-shadow:0 8px 28px rgba(17,110,79,.14); position:relative; }
+  .plan.rec .flag { position:absolute; top:-13px; left:50%; transform:translateX(-50%); background:var(--dw-green-700); color:#fff; font-size:11px; font-weight:800; letter-spacing:.5px; border-radius:999px; padding:4px 14px; }
+  .plan .pname { font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--dw-green-700); font-weight:800; }
+  .plan .price { font-size:30px; font-weight:800; color:var(--dw-ink); margin:8px 0 0; }
+  .plan .per { font-size:12px; color:var(--dw-muted); margin-bottom:16px; }
+  .plan ul { list-style:none; font-size:13px; margin-bottom:18px; flex:1; }
+  .plan li { padding:4px 0 4px 22px; position:relative; }
+  .plan li::before { content:"✓"; position:absolute; left:0; color:var(--dw-green-600); font-weight:800; }
+  .launch { text-align:center; background:var(--dw-gold-100); border:1px solid #EBDCA8; color:#7A5A10; border-radius:12px; padding:12px 18px; font-size:13px; margin-top:22px; }
+
+  /* FAQ */
+  .faq { max-width:720px; margin:0 auto; }
+  .faq .q { border:1px solid var(--dw-line); border-radius:12px; background:#fff; padding:16px 18px; margin-bottom:10px; }
+  .faq b { color:var(--dw-ink); font-size:14px; display:block; margin-bottom:4px; }
+  .faq span { font-size:13.5px; color:var(--dw-body); }
+
+  footer { background:var(--dw-green-950); color:#9DBBAF; padding:36px 0; font-size:12.5px; }
+  .foot-in { display:flex; gap:30px; align-items:center; flex-wrap:wrap; }
+  footer .logo { color:#fff; font-size:15px; }
+  footer a { color:#9DBBAF; margin-right:18px; }
+  footer a:hover { color:#fff; }
+  footer .est { margin-top:14px; font-size:11px; opacity:.7; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container nav-in">
+    <a href="#" class="logo"><span class="mark">₱</span>Dealwright</a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a href="#" class="btn ghost">Log in</a>
+    <a href="#" class="btn primary">Start free</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <div class="badge">For automation freelancers · VAs · small agencies</div>
+    <h1>Turn discovery calls into <em>signed deals</em>.</h1>
+    <p>Paste what the client said. Dealwright extracts the facts, computes transparent ROI, recommends the right services, matches your assistant — and writes the client-ready proposal.</p>
+    <div class="cta">
+      <a href="#" class="btn primary" style="padding:13px 28px; font-size:14.5px;">Start 14-day free trial</a>
+      <a href="proposal-solo-va-mockup.html" class="btn light">See a real proposal →</a>
+    </div>
+    <div class="fine">No card required · Every number traceable · Estimates labelled as estimates, always</div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="stats">
+    <div class="stat"><div class="n">₱0.52</div><div class="l">AI cost per proposal generated</div></div>
+    <div class="stat"><div class="n">~15 min</div><div class="l">From call notes to sendable proposal</div></div>
+    <div class="stat"><div class="n">1 client</div><div class="l">Won deal pays for the year</div></div>
+  </div>
+</div>
+
+<section>
+  <div class="container">
+    <h2>The old way costs you deals</h2>
+    <p class="sub">Proposal tools format what you already wrote. Dealwright decides what to write — and proves every number.</p>
+    <div class="vs">
+      <div class="col old">
+        <h3>ChatGPT + spreadsheet + template</h3>
+        <ul>
+          <li>Numbers you retype and can't defend</li>
+          <li>Savings claims the client correctly doubts</li>
+          <li>Forget which VA has which verified skill</li>
+          <li>Hours per proposal — so you send fewer</li>
+        </ul>
+      </div>
+      <div class="col new">
+        <h3>Dealwright</h3>
+        <ul>
+          <li>Facts extracted from the call, each traceable to a quote</li>
+          <li>ROI computed in code, assumptions shown to the client</li>
+          <li>Rule-based match from your bench, verified ≠ claimed</li>
+          <li>Minutes per proposal — so you pitch everyone</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="how">
+  <div class="container">
+    <h2>How it works</h2>
+    <p class="sub">One messy paragraph from a client in. A polished, honest proposal out.</p>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><b>Paste the call</b><span>Raw notes, a Facebook want-list, a transcript — Dealwright reads it like an analyst.</span></div>
+      <div class="step"><div class="num">2</div><b>Confirm facts &amp; assumptions</b><span>Every extracted fact shows its source. Missing info becomes follow-up questions, never guesses.</span></div>
+      <div class="step"><div class="num">3</div><b>Get the numbers &amp; the match</b><span>Deterministic ROI with editable assumptions. Services priced from your catalog. Your best-matched assistant with reasons.</span></div>
+      <div class="step"><div class="num">4</div><b>Send the proposal</b><span>AI writes the story — never the figures. You review, tweak, export the PDF. Then track the outcome.</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="container">
+    <h2>Built so you can defend every peso</h2>
+    <p class="sub">The AI writes words. The math is Python. The prices come from your catalog. That's the whole discipline.</p>
+    <div class="feats">
+      <div class="feat"><div class="ic">📐</div><b>Deterministic ROI engine</b><span>Automation and delegation modes, three scenarios, payback math — computed in code, not hallucinated.</span><span class="chip">ESTIMATES ONLY</span></div>
+      <div class="feat"><div class="ic">🛡</div><b>Generation guardrails</b><span>The AI can't invent prices, savings, or skills. Banned-phrase filter kills "guaranteed" before your client sees it.</span></div>
+      <div class="feat"><div class="ic">✅</div><b>Verified skill bench</b><span>Every VA skill carries evidence: assessments, completed projects, portfolios. Claimed is never shown as proven.</span></div>
+      <div class="feat"><div class="ic">🧩</div><b>Your catalog, your prices</b><span>Ships with 26 seed services across 8 categories — edit to your own offers. Prices never come from the AI.</span></div>
+      <div class="feat"><div class="ic">👤</div><b>Solo or team, same app</b><span>Solo VA? Proposals present you. Agency? They present the matched bench. The app knows the difference.</span></div>
+      <div class="feat"><div class="ic">📄</div><b>Proposal + PDF + tracking</b><span>Editable web proposal, clean PDF export, status tracking from sent to signed — feeding better assumptions over time.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="pricing">
+  <div class="container">
+    <h2>Win one client and it's paid for the year</h2>
+    <p class="sub">Priced for Filipino freelancers and agencies. Annual billing saves 2 months.</p>
+    <div class="plans">
+      <div class="plan">
+        <div class="pname">Starter</div>
+        <div class="price">₱399<span style="font-size:13px">/mo</span></div>
+        <div class="per">for the solo VA starting out</div>
+        <ul>
+          <li>10 proposals / month</li>
+          <li>1 seat · 5 bench profiles</li>
+          <li>ROI engine + full catalog</li>
+          <li>PDF export</li>
+        </ul>
+        <a href="#" class="btn ghost" style="text-align:center">Start free trial</a>
+      </div>
+      <div class="plan rec">
+        <div class="flag">MOST CHOSEN</div>
+        <div class="pname">Professional</div>
+        <div class="price">₱899<span style="font-size:13px">/mo</span></div>
+        <div class="per">for the serious freelancer</div>
+        <ul>
+          <li>40 proposals / month</li>
+          <li>Your branding, your logo</li>
+          <li>Custom service catalog</li>
+          <li>n8n &amp; email integrations</li>
+          <li>Proposal tracking</li>
+        </ul>
+        <a href="#" class="btn primary" style="text-align:center">Start free trial</a>
+      </div>
+      <div class="plan">
+        <div class="pname">Agency</div>
+        <div class="price">₱1,990<span style="font-size:13px">/mo</span></div>
+        <div class="per">for teams with a bench</div>
+        <ul>
+          <li>Unlimited proposals (fair use)</li>
+          <li>5 seats · unlimited bench</li>
+          <li>Full white-label</li>
+          <li>Client workspaces</li>
+          <li>Priority support</li>
+        </ul>
+        <a href="#" class="btn ghost" style="text-align:center">Talk to us</a>
+      </div>
+    </div>
+    <div class="launch">🎁 <b>Founding 20:</b> first twenty members lock ₱299/mo for 12 months — in exchange for sharing your proposal outcomes (anonymized) so the assumptions engine gets smarter for everyone.</div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="container">
+    <h2>Fair questions</h2>
+    <p class="sub">Straight answers, the same way we write proposals.</p>
+    <div class="faq">
+      <div class="q"><b>Does the AI make up the savings numbers?</b><span>No — and that's the point. All money math runs in Python from assumptions you and the client can see and edit. The AI only restates the client's goals and explains the results in plain language. Every figure in its writing traces back to a stored field.</span></div>
+      <div class="q"><b>Do you guarantee savings or results?</b><span>Never. Every figure is labelled an estimate with its assumptions shown. If a value can't be honestly quantified — like "consistent posting" — it's presented as a benefit, not a number.</span></div>
+      <div class="q"><b>I'm a solo VA, not an agency. Does this still fit?</b><span>It's built for you first. In solo mode, proposals present your own verified skills and rates, and the matching engine checks whether <i>you</i> should take a deal — with honest gaps and what to do about them.</span></div>
+      <div class="q"><b>Who owns my client data?</b><span>You do. Your clients, notes, and proposals are yours, exportable. We keep daily backups, and we never train on your data.</span></div>
+      <div class="q"><b>Can I cancel anytime?</b><span>Yes. Monthly plans cancel in a click; your data stays exportable for 90 days.</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="foot-in">
+      <a href="#" class="logo"><span class="mark" style="width:24px;height:24px;font-size:12px;">₱</span>Dealwright</a>
+      <div style="margin-left:auto;">
+        <a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Sign in</a>
+      </div>
+    </div>
+    <div class="est">All savings and revenue figures produced by Dealwright are estimates derived from stated assumptions — not guarantees of outcomes. © 2026 Dealwright.</div>
+  </div>
+</footer>
+
+</body>
+</html>

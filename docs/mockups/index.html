@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dealwright — Mockups index</title>
+<style>
+  :root {
+    --dw-green-950:#04241B; --dw-green-900:#0B3D2E; --dw-green-800:#0E5941; --dw-green-700:#116E4F;
+    --dw-green-600:#15825D; --dw-green-100:#D7F0E4; --dw-green-50:#EFF8F3;
+    --dw-gold-600:#B79121;
+    --dw-ink:#16241D; --dw-body:#374151; --dw-muted:#6B7280; --dw-line:#E6E8EE; --dw-canvas:#F6F8F7;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--dw-canvas); color:var(--dw-body); line-height:1.55; padding:40px 24px 64px;
+  }
+  .wrap { max-width:960px; margin:0 auto; }
+  .hero { background:linear-gradient(135deg,var(--dw-green-800),var(--dw-green-900)); border-radius:16px; color:#fff; padding:32px 36px; margin-bottom:8px; }
+  .hero .logo { display:inline-flex; align-items:center; gap:10px; font-weight:800; font-size:22px; }
+  .hero .logo .mark { width:32px; height:32px; border-radius:9px; background:var(--dw-gold-600); display:flex; align-items:center; justify-content:center; font-size:16px; }
+  .hero p { opacity:.85; font-size:13.5px; margin-top:8px; }
+  .legend { font-size:12px; color:var(--dw-muted); margin:14px 2px 18px; }
+  .tag { display:inline-block; border-radius:5px; font-size:10px; font-weight:800; letter-spacing:.5px; padding:2px 8px; margin-right:6px; vertical-align:1px; }
+  .tag.marketing { background:var(--dw-gold-600); color:#fff; }
+  .tag.app { background:var(--dw-green-700); color:#fff; }
+  .tag.client { background:var(--dw-green-100); color:var(--dw-green-800); }
+  .tag.concept { background:#ECEEF2; color:var(--dw-muted); }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+  a.card { display:block; background:#fff; border:1px solid var(--dw-line); border-radius:14px; padding:20px 22px; text-decoration:none; transition:box-shadow .15s; }
+  a.card:hover { box-shadow:0 6px 20px rgba(11,61,46,.12); border-color:var(--dw-green-600); }
+  .card b { display:block; color:var(--dw-ink); font-size:15px; margin:6px 0 4px; }
+  .card span { font-size:12.5px; color:var(--dw-muted); }
+  .card .open { color:var(--dw-green-600); font-weight:700; font-size:12.5px; margin-top:10px; display:block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="logo"><span class="mark">₱</span>Dealwright · Mockups</div>
+    <p>Every design artifact, one page. Money-green theme throughout. <b style="color:#7FD8AC">theme.html is canonical</b> — colors and components come from there.</p>
+  </div>
+
+  <div class="legend">
+    <span class="tag marketing">MARKETING</span> public site &nbsp;&nbsp;
+    <span class="tag app">APP</span> provider-facing screens &nbsp;&nbsp;
+    <span class="tag client">CLIENT-FACING</span> what clients receive &nbsp;&nbsp;
+    <span class="tag concept">CONCEPT</span> early demos (pre-theme)
+  </div>
+
+  <div class="grid">
+
+    <a class="card" href="theme.html">
+      <span class="tag app">APP</span>
+      <b>🎨 Theme &amp; design tokens</b>
+      <span>The canonical money-green palette, buttons, chips, forms, typography — with usage rules. Source of truth for all styling.</span>
+      <span class="open">Open →</span>
+    </a>
+
+    <a class="card" href="landing-mockup.html">
+      <span class="tag marketing">MARKETING</span>
+      <b>🌐 Landing page (index)</b>
+      <span>dealwright.io homepage: hero, old-vs-new story, how it works, features, the ₱399/₱899/₱1,990 pricing tiers, founding-20 banner, FAQ, compliance footer.</span>
+      <span class="open">Open →</span>
+    </a>
+
+    <a class="card" href="dashboard-mockup.html">
+      <span class="tag app">APP</span>
+      <b>▦ Dashboard</b>
+      <span>First app screen: sidebar nav, stat cards, discovery sessions &amp; proposals panels, solo-mode deal qualification card.</span>
+      <span class="open">Open →</span>
+    </a>
+
+    <a class="card" href="auth-mockup.html">
+      <span class="tag app">APP</span>
+      <b>🔐 Auth screens</b>
+      <span>7 allauth frames: login, signup, email verification gate, forgot/reset password, MFA code entry, MFA setup + one-time recovery codes. Google social login.</span>
+      <span class="open">Open →</span>
+    </a>
+
+    <a class="card" href="proposal-solo-va-mockup.html">
+      <span class="tag client">CLIENT-FACING</span>
+      <b>📄 Proposal — solo VA edition</b>
+      <span>The core output demo: LF personal-assistant want → "About me" edition. Guardrail-driven: no team language, solo pricing, honest gaps. <i>(pre-theme colors)</i></span>
+      <span class="open">Open →</span>
+    </a>
+
+    <a class="card" href="proposal-output-mockup.html">
+      <span class="tag client">CLIENT-FACING</span>
+      <b>📄 Proposal — agency edition</b>
+      <span>Same client want, team provider: matched-VA card (Maria C.), agency pricing. Shows output adaptation by provider type. <i>(pre-theme colors)</i></span>
+      <span class="open">Open →</span>
+    </a>
+
+    <a class="card" href="personal-assistant-result-mockup.html">
+      <span class="tag app">APP</span>
+      <b>⚙ Internal pipeline screens</b>
+      <span>What the provider sees while working a request: extraction review with source snippets, compliance flags, ROI scenarios, service picks, bench shortlist. <i>(pre-theme colors)</i></span>
+      <span class="open">Open →</span>
+    </a>
+
+    <a class="card" href="podcast-workflow-mockup.html">
+      <span class="tag concept">CONCEPT</span>
+      <b>🎙 Pastor podcast workflow</b>
+      <span>Visual mockup of the n8n demo workflow (Drive → filter → Gmail announce) — the pilot use case.</span>
+      <span class="open">Open →</span>
+    </a>
+
+    <a class="card" href="../integrations/podcast-episode-announcer.n8n.json">
+      <span class="tag concept">CONCEPT</span>
+      <b>⚙ n8n workflow JSON</b>
+      <span>Importable n8n workflow for the podcast announcer — the simplified v0 that the full pilot workflow grows from.</span>
+      <span class="open">Open →</span>
+    </a>
+
+  </div>
+</div>
+</body>
+</html>
