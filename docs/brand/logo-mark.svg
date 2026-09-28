@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Dealwright monogram — DW crossed by peso bars">
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Dealwright monogram — DW">
   <!--
-    Dealwright logo mark: "DW" monogram struck through by the peso sign's
-    double bars — the name and the money story fused into one glyph.
+    Dealwright logo mark: elegant "DW" monogram — thin weight, wide tracking,
+    flat gold field. No bars, no depth edge, no ornaments.
     PRODUCTION NOTE: the DW is a live <text> element on the system font stack.
-    Metrics vary across OS/font combinations and PDF/export pipelines may
-    substitute or drop the glyphs. Before production use, replace the <text>
-    with an outlined <path> version (DW centered at (32, 32), cap height ~22
-    units), then re-check bar alignment against the drawn letterforms.
+    Rendering varies by OS (thin weights fall back to regular on some Linux
+    stacks) and PDF exporters may substitute fonts. Before production use,
+    replace the <text> with an outlined <path> version, optically centered at
+    (32, 32), then re-verify the tracking against the drawn letterforms.
   -->
-  <!-- Depth edge: 3px darker-gold sliver along the bottom (minimal, optional) -->
-  <rect x="4" y="7" width="56" height="56" rx="16" fill="#9C7B1C"/>
-  <!-- Gold face (gold-600) -->
   <rect x="4" y="4" width="56" height="56" rx="16" fill="#B79121"/>
-  <!-- DW monogram: optically centered on the gold face; convert to path for production -->
-  <text x="32" y="32" text-anchor="middle" dominant-baseline="central"
+  <!-- x is shifted +1.5 (half the letter-spacing) so the monogram stays optically centered -->
+  <text x="33.5" y="32" text-anchor="middle" dominant-baseline="central"
         font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif"
-        font-weight="800" font-size="30" letter-spacing="-1" fill="#FFFFFF">DW</text>
-  <!-- Peso double bars striking through the monogram (darker gold, reads as cut-outs) -->
-  <rect x="14" y="24" width="36" height="4" rx="1" fill="#9C7B1C"/>
-  <rect x="14" y="34" width="36" height="4" rx="1" fill="#9C7B1C"/>
+        font-weight="300" font-size="28" letter-spacing="3" fill="#FFFFFF">DW</text>
 </svg>
