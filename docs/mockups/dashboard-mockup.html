@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dealwright — Dashboard</title>
+<style>
+  :root {
+    --dw-green-950:#04241B; --dw-green-900:#0B3D2E; --dw-green-800:#0E5941; --dw-green-700:#116E4F;
+    --dw-green-600:#15825D; --dw-green-500:#1DA06E; --dw-green-100:#D7F0E4; --dw-green-50:#EFF8F3;
+    --dw-gold-600:#B79121; --dw-gold-100:#FBF3D9;
+    --dw-amber-text:#9A6B13; --dw-amber-bg:#FDF3E2;
+    --dw-red-600:#C0392B; --dw-red-bg:#FBE9E9;
+    --dw-teal-600:#0E7490; --dw-teal-bg:#E0F2F7;
+    --dw-ink:#16241D; --dw-body:#374151; --dw-muted:#6B7280; --dw-line:#E6E8EE; --dw-canvas:#F6F8F7;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--dw-canvas); color:var(--dw-body); font-size:14px; line-height:1.55;
+  }
+  .shell { display:flex; min-height:100vh; }
+
+  /* ===== Sidebar ===== */
+  .side { width:228px; background:var(--dw-green-900); color:#fff; flex-shrink:0; display:flex; flex-direction:column; }
+  .side .logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:18px; padding:20px 18px 16px; letter-spacing:-.01em; }
+  .side .logo .mark { width:30px; height:30px; border-radius:8px; background:var(--dw-gold-600); display:flex; align-items:center; justify-content:center; font-size:15px; color:#fff; }
+  .nav { padding:6px 10px; flex:1; }
+  .nav .sect { font-size:10px; letter-spacing:1.2px; text-transform:uppercase; opacity:.55; padding:14px 10px 5px; }
+  .nav a { display:flex; align-items:center; gap:10px; color:#DDE7E2; text-decoration:none; font-size:13.5px; padding:8px 10px; border-radius:9px; margin-bottom:2px; }
+  .nav a .ico { width:18px; text-align:center; opacity:.8; }
+  .nav a:hover { background:var(--dw-green-800); }
+  .nav a.active { background:var(--dw-green-700); color:#fff; font-weight:700; }
+  .nav a .cnt { margin-left:auto; font-size:10.5px; background:rgba(255,255,255,.14); border-radius:999px; padding:1px 8px; }
+  .side .who { padding:14px 16px; border-top:1px solid rgba(255,255,255,.1); font-size:12px; opacity:.85; }
+  .side .who b { display:block; font-size:13px; color:#fff; }
+
+  /* ===== Main ===== */
+  .main { flex:1; padding:26px 32px; max-width:1200px; }
+  .top { display:flex; align-items:center; gap:14px; margin-bottom:22px; }
+  .top h1 { font-size:21px; color:var(--dw-ink); margin-right:auto; }
+  .top h1 small { display:block; font-size:12.5px; color:var(--dw-muted); font-weight:400; }
+  .btn { display:inline-block; border-radius:10px; padding:9px 18px; font-weight:700; font-size:13px; border:1.5px solid transparent; text-decoration:none; }
+  .btn.primary { background:var(--dw-green-700); color:#fff; }
+  .btn.ghost { background:#fff; color:var(--dw-green-700); border-color:var(--dw-green-700); }
+  .avatar { width:36px; height:36px; border-radius:50%; background:var(--dw-green-600); color:#fff; font-weight:800; font-size:14px; display:flex; align-items:center; justify-content:center; }
+
+  /* Stats */
+  .stats { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:22px; }
+  .stat { flex:1; min-width:160px; background:#fff; border:1px solid var(--dw-line); border-radius:12px; padding:14px 16px; }
+  .stat .num { font-size:23px; font-weight:800; color:var(--dw-ink); }
+  .stat .num em { font-style:normal; color:var(--dw-green-600); }
+  .stat .lbl { font-size:10.5px; color:var(--dw-muted); text-transform:uppercase; letter-spacing:.6px; margin-top:2px; }
+
+  .cols { display:flex; gap:16px; align-items:flex-start; }
+  .col { flex:1; min-width:0; }
+
+  /* Panels */
+  .panel { background:#fff; border:1px solid var(--dw-line); border-radius:12px; overflow:hidden; margin-bottom:16px; }
+  .panel .head { display:flex; align-items:center; padding:13px 16px; border-bottom:1px solid var(--dw-line); background:var(--dw-green-50); }
+  .panel .head b { color:var(--dw-ink); font-size:14px; margin-right:auto; }
+  .panel .head a { color:var(--dw-green-600); font-size:12.5px; text-decoration:none; font-weight:600; }
+  .item { display:flex; align-items:center; gap:12px; padding:11px 16px; border-bottom:1px solid var(--dw-line); }
+  .item:last-child { border-bottom:none; }
+  .item .ttl { font-weight:600; color:var(--dw-ink); font-size:13.5px; }
+  .item .sub { font-size:11.5px; color:var(--dw-muted); }
+  .item .grow { flex:1; min-width:0; }
+  .chip { display:inline-block; border-radius:999px; padding:2px 10px; font-size:11px; font-weight:600; white-space:nowrap; }
+  .chip.draft { background:#F2F3F7; color:var(--dw-muted); }
+  .chip.await { background:var(--dw-amber-bg); color:var(--dw-amber-text); }
+  .chip.ready { background:var(--dw-teal-bg); color:var(--dw-teal-600); }
+  .chip.sent { background:var(--dw-teal-bg); color:var(--dw-teal-600); }
+  .chip.viewed { background:var(--dw-gold-100); color:var(--dw-gold-600); }
+  .chip.accepted { background:var(--dw-green-100); color:var(--dw-green-800); }
+  .chip.estimate { background:var(--dw-amber-bg); color:var(--dw-amber-text); font-size:9.5px; vertical-align:2px; }
+  .money { color:var(--dw-green-600); font-weight:700; white-space:nowrap; font-size:13px; }
+
+  /* Bench / solo card */
+  .me { display:flex; gap:14px; align-items:center; padding:16px; }
+  .me .avatar { width:44px; height:44px; font-size:16px; }
+  .skill { display:inline-block; border-radius:999px; padding:2px 10px; font-size:11px; font-weight:600; margin:2px 2px 2px 0; }
+  .skill.v { background:var(--dw-green-100); color:var(--dw-green-800); }
+  .skill.p { background:var(--dw-green-50); color:var(--dw-green-600); border:1px solid var(--dw-green-100); }
+  .footer-note { font-size:11.5px; color:var(--dw-muted); margin-top:18px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <aside class="side">
+    <div class="logo"><span class="mark">₱</span>Dealwright</div>
+    <nav class="nav">
+      <div class="sect">Work</div>
+      <a href="#" class="active"><span class="ico">▦</span>Dashboard</a>
+      <a href="#"><span class="ico">👥</span>Clients <span class="cnt">12</span></a>
+      <a href="#"><span class="ico">🎙</span>Discovery sessions <span class="cnt">5</span></a>
+      <a href="#"><span class="ico">📐</span>ROI estimates</a>
+      <a href="#"><span class="ico">📄</span>Proposals <span class="cnt">8</span></a>
+      <div class="sect">Setup</div>
+      <a href="#"><span class="ico">🧩</span>Service catalog</a>
+      <a href="#"><span class="ico">✅</span>My skills &amp; bench</a>
+      <a href="#"><span class="ico">🔗</span>Integrations</a>
+      <a href="#"><span class="ico">⚙</span>Settings</a>
+    </nav>
+    <div class="who"><b>[Your Name]</b>Solo VA · Automation &amp; Social Media</div>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <h1>Good evening, Robb <small>Tuesday, September 28 · 1 session awaiting client info</small></h1>
+      <a href="#" class="btn ghost">New client</a>
+      <a href="#" class="btn primary">＋ New discovery session</a>
+      <div class="avatar">R</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="num">12</div><div class="lbl">Clients</div></div>
+      <div class="stat"><div class="num">5</div><div class="lbl">Sessions · this month</div></div>
+      <div class="stat"><div class="num">8</div><div class="lbl">Proposals sent</div></div>
+      <div class="stat"><div class="num"><em>62%</em></div><div class="lbl">Win rate</div></div>
+      <div class="stat"><div class="num"><em>₱41k</em> <span class="chip estimate">est</span></div><div class="lbl">Client benefit · won deals</div></div>
+    </div>
+
+    <div class="cols">
+      <div class="col">
+
+        <div class="panel">
+          <div class="head"><b>Recent discovery sessions</b><a href="#">View all →</a></div>
+          <div class="item">
+            <div class="grow"><div class="ttl">LF — Personal assistant &amp; life admin</div><div class="sub">Pasted want-list · 7 follow-up questions · 2 of 7 answered</div></div>
+            <span class="chip await">Awaiting info</span>
+          </div>
+          <div class="item">
+            <div class="grow"><div class="ttl">Grace Community Church — Podcast distribution</div><div class="sub">4 episodes/mo · 3 hrs/episode · pastor case</div></div>
+            <span class="chip accepted">Proposed · accepted</span>
+          </div>
+          <div class="item">
+            <div class="grow"><div class="ttl">Mika's Café — Follow-up sequences</div><div class="sub">Extraction confirmed · estimate ready</div></div>
+            <span class="chip ready">Ready to propose</span>
+          </div>
+          <div class="item">
+            <div class="grow"><div class="ttl">Dr. Reyes Clinic — Appointment reminders</div><div class="sub">Delegation mode · no-show recovery math</div></div>
+            <span class="chip draft">Draft</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="head"><b>Proposals</b><a href="#">View all →</a></div>
+          <div class="item">
+            <div class="grow"><div class="ttl">Your Personal Support System — LF</div><div class="sub">Growth ₱7,200/mo · PROP-2026-015</div></div>
+            <span class="money">₱8,736<span style="color:var(--dw-muted);font-weight:400">/mo est</span></span>
+            <span class="chip viewed">Viewed</span>
+          </div>
+          <div class="item">
+            <div class="grow"><div class="ttl">Podcast Distribution Pipeline — Grace Church</div><div class="sub">Setup ₱15,000 · ₱4,500/mo · PROP-2026-009</div></div>
+            <span class="money">₱2,700<span style="color:var(--dw-muted);font-weight:400">/mo est</span></span>
+            <span class="chip accepted">Accepted</span>
+          </div>
+          <div class="item">
+            <div class="grow"><div class="ttl">Follow-Up Engine — Mika's Café</div><div class="sub">Draft · premium writer ready</div></div>
+            <span class="chip draft">Draft</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col" style="max-width:340px; flex-shrink:0">
+
+        <div class="panel">
+          <div class="head"><b>Deal qualification</b><a href="#">Details →</a></div>
+          <div class="me">
+            <div class="avatar">ME</div>
+            <div style="flex:1">
+              <div style="font-weight:700;color:var(--dw-ink);font-size:13.5px">LF personal assistant</div>
+              <div style="font-size:11.5px;color:var(--dw-muted);margin:2px 0 6px">vs. your skills</div>
+              <span class="skill v">✓ n8n automation</span>
+              <span class="skill v">✓ Social media</span>
+              <span class="skill p">Calendar · portfolio</span>
+              <span class="skill p">Calls · assessment</span>
+              <div style="font-size:11.5px;color:var(--dw-green-700);font-weight:700;margin-top:6px">TAKE THE DEAL — 6/8 covered</div>
+              <div style="font-size:11px;color:var(--dw-muted)">Gaps: physical errands (coordinate), after-hours (Growth plan)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="head"><b>Needs your attention</b></div>
+          <div class="item">
+            <div class="grow"><div class="ttl">LF follow-up questions</div><div class="sub">Budget &amp; timezone unanswered for 2 days</div></div>
+            <a href="#" class="btn ghost" style="padding:5px 12px;font-size:12px">Nudge</a>
+          </div>
+          <div class="item">
+            <div class="grow"><div class="ttl">Nightly backup</div><div class="sub">Last verified Sep 27 · restore test due Oct 1</div></div>
+            <span class="chip ready">OK</span>
+          </div>
+        </div>
+
+        <div class="footer-note">Figures marked <span class="chip estimate">est</span> are estimates from recorded assumptions — never guarantees. Solo mode: team language disabled across all outputs.</div>
+
+      </div>
+    </div>
+  </main>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dealwright — Theme & Design Tokens</title>
+<style>
+  :root {
+    /* ===== Dealwright money-green theme (v1, 2026-09-28) ===== */
+    --dw-green-950: #04241B;
+    --dw-green-900: #0B3D2E;   /* dark surfaces, sidebar, gradients */
+    --dw-green-800: #0E5941;   /* gradient partner, hovers on dark */
+    --dw-green-700: #116E4F;   /* primary buttons (white text, 5.9:1) */
+    --dw-green-600: #15825D;   /* links, icons, emphasis */
+    --dw-green-500: #1DA06E;   /* active states, chart accents */
+    --dw-green-100: #D7F0E4;   /* verified chip bg */
+    --dw-green-50:  #EFF8F3;   /* page tint, selected rows */
+    --dw-gold-600:  #B79121;   /* premium accents, star, borders */
+    --dw-gold-100:  #FBF3D9;
+    --dw-amber-text:#9A6B13;   /* estimate/warning text on amber bg */
+    --dw-amber-bg:  #FDF3E2;
+    --dw-red-600:   #C0392B;   /* errors, gaps */
+    --dw-red-bg:    #FBE9E9;
+    --dw-teal-600:  #0E7490;   /* info notes (replaces blue) */
+    --dw-teal-bg:   #E0F2F7;
+    --dw-ink:       #16241D;   /* green-tinted near-black, headings */
+    --dw-body:      #374151;
+    --dw-muted:     #6B7280;
+    --dw-line:      #E6E8EE;
+    --dw-canvas:    #F6F8F7;   /* app background, green-tinted */
+    --dw-grad: linear-gradient(135deg, var(--dw-green-800), var(--dw-green-900));
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--dw-canvas); color: var(--dw-body); line-height: 1.55; font-size: 14px;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 40px 24px 64px; }
+  header.hero { background: var(--dw-grad); color: #fff; padding: 44px 24px; text-align: center; }
+  header.hero .logo {
+    display: inline-flex; align-items: center; gap: 10px; font-weight: 800; font-size: 22px; letter-spacing: -.02em;
+  }
+  header.hero .logo .mark {
+    width: 34px; height: 34px; border-radius: 9px; background: var(--dw-gold-600);
+    display: inline-flex; align-items: center; justify-content: center; font-size: 17px;
+  }
+  header.hero p { opacity: .85; font-size: 13.5px; margin-top: 8px; }
+  h2 { color: var(--dw-ink); font-size: 17px; margin: 36px 0 4px; }
+  h2 + .sub { color: var(--dw-muted); font-size: 12.5px; margin-bottom: 14px; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+  .sw { width: 132px; border-radius: 10px; overflow: hidden; border: 1px solid var(--dw-line); background: #fff; }
+  .sw .c { height: 56px; }
+  .sw .l { padding: 8px 10px; font-size: 11px; }
+  .sw .l b { display: block; color: var(--dw-ink); font-size: 11.5px; }
+  .sw .l span { color: var(--dw-muted); font-family: ui-monospace, monospace; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin: 8px 0; }
+  .btn {
+    display: inline-block; border-radius: 10px; padding: 9px 20px; font-weight: 700; font-size: 13.5px;
+    border: 1.5px solid transparent; cursor: default; text-decoration: none;
+  }
+  .btn.primary { background: var(--dw-green-700); color: #fff; }
+  .btn.primary:hover-demo { background: var(--dw-green-800); }
+  .btn.ghost { background: #fff; color: var(--dw-green-700); border-color: var(--dw-green-700); }
+  .btn.gold { background: #fff; color: var(--dw-gold-600); border-color: var(--dw-gold-600); }
+  .btn.danger { background: #fff; color: var(--dw-red-600); border-color: var(--dw-red-600); }
+  .btn.disabled { background: #E9ECEF; color: #ADB5BD; border-color: transparent; }
+  .chip { display: inline-block; border-radius: 999px; padding: 3px 11px; font-size: 11.5px; font-weight: 600; margin: 2px 3px 2px 0; }
+  .chip.verified { background: var(--dw-green-100); color: var(--dw-green-800); }
+  .chip.proficient { background: var(--dw-green-50); color: var(--dw-green-600); border: 1px solid var(--dw-green-100); }
+  .chip.claimed { background: #F2F3F7; color: var(--dw-muted); }
+  .chip.estimate { background: var(--dw-amber-bg); color: var(--dw-amber-text); }
+  .chip.premium { background: var(--dw-gold-100); color: var(--dw-gold-600); }
+  .chip.gap { background: var(--dw-red-bg); color: var(--dw-red-600); }
+  .chip.info { background: var(--dw-teal-bg); color: var(--dw-teal-600); }
+  .chip.status-draft { background: #F2F3F7; color: var(--dw-muted); }
+  .chip.status-sent { background: var(--dw-teal-bg); color: var(--dw-teal-600); }
+  .chip.status-accepted { background: var(--dw-green-100); color: var(--dw-green-800); }
+  .chip.status-declined { background: var(--dw-red-bg); color: var(--dw-red-600); }
+  .type-demo div { padding: 4px 0; border-bottom: 1px dashed var(--dw-line); }
+  .type-demo small { color: var(--dw-muted); font-family: ui-monospace, monospace; font-size: 11px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border: 1px solid var(--dw-line); border-radius: 10px; overflow: hidden; }
+  th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: .5px; color: var(--dw-muted); padding: 8px 12px; border-bottom: 2px solid var(--dw-line); background: var(--dw-green-50); }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--dw-line); }
+  tr:last-child td { border-bottom: none; }
+  .card { background: #fff; border: 1px solid var(--dw-line); border-radius: 12px; padding: 16px 18px; }
+  .field { margin: 10px 0; }
+  .field label { display: block; font-size: 12px; font-weight: 700; color: var(--dw-ink); margin-bottom: 4px; }
+  .field .hint { font-size: 11px; color: var(--dw-muted); margin-bottom: 5px; }
+  .field input, .field select, .field textarea {
+    width: 100%; max-width: 420px; border: 1.5px solid var(--dw-line); border-radius: 9px;
+    padding: 9px 12px; font-size: 13.5px; font-family: inherit; color: var(--dw-body); background: #fff;
+  }
+  .field input:focus-demo { border-color: var(--dw-green-600); outline: 2px solid var(--dw-green-100); }
+  .stat { flex: 1; min-width: 150px; }
+  .stat .num { font-size: 22px; font-weight: 800; color: var(--dw-ink); }
+  .stat .num em { font-style: normal; color: var(--dw-green-600); }
+  .stat .lbl { font-size: 11px; color: var(--dw-muted); text-transform: uppercase; letter-spacing: .5px; }
+  .note {
+    border-left: 4px solid var(--dw-teal-600); background: var(--dw-teal-bg);
+    border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: 12.5px; color: #155E75;
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="logo"><span class="mark">₱</span>Dealwright</div>
+  <p>Theme v1 — “money green” · deep jade + restrained gold · system fonts · design tokens below are canonical for all screens and templates</p>
+</header>
+
+<div class="wrap">
+
+  <h2>Palette</h2>
+  <div class="sub">Green carries money, growth, and “verified” — one family does triple duty. Gold is spent only on premium moments. Amber is always “estimate”.</div>
+  <div class="swatches">
+    <div class="sw"><div class="c" style="background:#04241B"></div><div class="l"><b>green-950</b><span>#04241B</span></div></div>
+    <div class="sw"><div class="c" style="background:#0B3D2E"></div><div class="l"><b>green-900</b><span>#0B3D2E</span> sidebar/hero</div></div>
+    <div class="sw"><div class="c" style="background:#0E5941"></div><div class="l"><b>green-800</b><span>#0E5941</span> gradient</div></div>
+    <div class="sw"><div class="c" style="background:#116E4F"></div><div class="l"><b>green-700</b><span>#116E4F</span> primary btn</div></div>
+    <div class="sw"><div class="c" style="background:#15825D"></div><div class="l"><b>green-600</b><span>#15825D</span> links/icons</div></div>
+    <div class="sw"><div class="c" style="background:#1DA06E"></div><div class="l"><b>green-500</b><span>#1DA06E</span> active</div></div>
+    <div class="sw"><div class="c" style="background:#D7F0E4"></div><div class="l"><b>green-100</b><span>#D7F0E4</span> verified bg</div></div>
+    <div class="sw"><div class="c" style="background:#EFF8F3"></div><div class="l"><b>green-50</b><span>#EFF8F3</span> tint/selected</div></div>
+    <div class="sw"><div class="c" style="background:#B79121"></div><div class="l"><b>gold-600</b><span>#B79121</span> premium</div></div>
+    <div class="sw"><div class="c" style="background:#C0392B"></div><div class="l"><b>red-600</b><span>#C0392B</span> errors/gaps</div></div>
+    <div class="sw"><div class="c" style="background:#0E7490"></div><div class="l"><b>teal-600</b><span>#0E7490</span> info</div></div>
+    <div class="sw"><div class="c" style="background:#16241D"></div><div class="l"><b>ink</b><span>#16241D</span> headings</div></div>
+  </div>
+
+  <h2>Typography</h2>
+  <div class="sub">System font stack (no webfonts — performance & simplicity). Weight 800 for numbers, 700 for headings.</div>
+  <div class="card type-demo">
+    <div><small>30px / 800</small> &nbsp; <b style="font-size:30px;color:var(--dw-ink)">Your Personal Support System</b></div>
+    <div><small>19px / 700</small> &nbsp; <b style="font-size:19px;color:var(--dw-ink)">What you get back</b></div>
+    <div><small>14.5px / 400</small> &nbsp; Body text — estimates shown with editable assumptions, never guarantees.</div>
+    <div><small>22px / 800 mono-ish</small> &nbsp; <span style="font-size:22px;font-weight:800">₱8,736</span> <small>money figures: weight 800, green-600 for benefits</small></div>
+  </div>
+
+  <h2>Buttons</h2>
+  <div class="row">
+    <span class="btn primary">✓ Approve Growth plan</span>
+    <span class="btn ghost">Run extraction</span>
+    <span class="btn gold">★ Premium draft</span>
+    <span class="btn danger">Decline</span>
+    <span class="btn disabled">Sending…</span>
+  </div>
+
+  <h2>Chips & badges — the semantic core</h2>
+  <div class="sub">Green = verified (same family as the brand: verified skill, accepted deal). Amber = estimate, always. Gold = premium. Red = gap/error. Teal = neutral info.</div>
+  <div class="card">
+    <span class="chip verified">✓ Verified — completed project</span>
+    <span class="chip proficient">Proficient — portfolio</span>
+    <span class="chip claimed">Claimed — no evidence yet</span>
+    <span class="chip estimate">ESTIMATE</span>
+    <span class="chip premium">★ Premium</span>
+    <span class="chip gap">✗ Exceeds budget</span>
+    <span class="chip info">Delegation mode</span><br><br>
+    <span class="chip status-draft">Draft</span>
+    <span class="chip status-sent">Sent</span>
+    <span class="chip status-accepted">Accepted</span>
+    <span class="chip status-declined">Declined</span>
+  </div>
+
+  <h2>Forms</h2>
+  <div class="card" style="max-width:520px">
+    <div class="field">
+      <label>Client's time value (per hour)</label>
+      <div class="hint">Editable assumption — shown in every proposal</div>
+      <input value="₱400.00">
+    </div>
+    <div class="field">
+      <label>Scenario</label>
+      <select><option>Expected (90% handled by VA)</option><option>Conservative (75%)</option><option>Optimistic (100%)</option></select>
+    </div>
+  </div>
+
+  <h2>Tables & cards</h2>
+  <div class="sub">Green-50 header band, dashed nothing, generous padding — tables are the product's face.</div>
+  <table>
+    <tr><th></th><th>Conservative</th><th>Expected</th><th>Optimistic</th></tr>
+    <tr><td>Hours freed / month</td><td>26.0</td><td><b>31.2</b></td><td>34.6</td></tr>
+    <tr><td>Estimated net benefit</td><td style="color:var(--dw-green-600);font-weight:700">₱7,280</td><td style="color:var(--dw-green-600);font-weight:700">₱8,736</td><td style="color:var(--dw-green-600);font-weight:700">₱9,688</td></tr>
+  </table>
+
+  <h2>Composition sample — stat cards</h2>
+  <div class="row">
+    <div class="card stat"><div class="num"><em>₱8,736</em><span class="chip estimate">est</span></div><div class="lbl">Net benefit · LF proposal</div></div>
+    <div class="card stat"><div class="num">62%</div><div class="lbl">Proposal win rate</div></div>
+    <div class="card stat"><div class="num">9<em>h</em></div><div class="lbl">Pastor case · saved/mo</div></div>
+    <div class="card stat"><div class="num">248<em>h</em></div><div class="lbl">Client hours saved · all</div></div>
+  </div>
+
+  <div class="note" style="margin-top:28px">
+    <b>Rules of use:</b> one green hero/gradient per screen · gold only on premium accents (never body text) · every money figure in app UI carries the <i>estimate</i> chip or traces to a stored catalog price · the ₱ glyph in the logo mark doubles as the favicon.
+  </div>
+
+</div>
+</body>
+</html>
