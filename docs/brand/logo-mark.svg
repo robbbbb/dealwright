@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Dealwright mark">
+  <!--
+    Dealwright logo mark - gold rounded square with white peso glyph.
+    PRODUCTION NOTE: the peso sign below is a live <text> element rendered with the
+    system font stack. Its metrics vary across OS/font combinations and PDF/export
+    pipelines may substitute or drop it. Before production use, replace this <text>
+    with an outlined <path> version of the glyph:
+      <path d="...peso outline..." fill="#FFFFFF"/>
+    centered at (32, 32), cap height ~26 units.
+  -->
+  <!-- Depth edge: 3px darker-gold sliver along the bottom (minimal, optional) -->
+  <rect x="4" y="7" width="56" height="56" rx="16" fill="#9C7B1C"/>
+  <!-- Gold face (gold-600) -->
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="#B79121"/>
+  <!-- Peso glyph: optically centered on the gold face; convert to path for production -->
+  <text x="32" y="32" text-anchor="middle" dominant-baseline="central"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif"
+        font-weight="800" font-size="36" fill="#FFFFFF">&#8369;</text>
+</svg>

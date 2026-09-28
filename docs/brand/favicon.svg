@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" role="img" aria-label="Dealwright favicon">
+  <!--
+    Dealwright favicon: flatter small-size variant - no depth edge, full-bleed square,
+    larger glyph so the peso stays legible at 16px.
+    PRODUCTION NOTE: the peso is a live <text> element on the system font stack.
+    Replace it with an outlined <path> before production use.
+  -->
+  <rect width="32" height="32" rx="8" fill="#B79121"/>
+  <text x="16" y="16.5" text-anchor="middle" dominant-baseline="central"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif"
+        font-weight="800" font-size="22" fill="#FFFFFF">&#8369;</text>
+</svg>

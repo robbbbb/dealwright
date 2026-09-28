@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="64" viewBox="0 0 260 64" role="img" aria-label="Dealwright">
+  <!--
+    Dealwright horizontal lockup: mark + ink wordmark for light surfaces.
+    PRODUCTION NOTE: both <text> elements render with the system font stack; metrics
+    vary by platform and PDF exporters may substitute fonts. Convert the peso glyph
+    and the wordmark to outlined <path> elements before production use, then trim
+    the viewBox width to the measured content.
+  -->
+  <!-- Mark (identical geometry to logo-mark.svg) -->
+  <rect x="4" y="7" width="56" height="56" rx="16" fill="#9C7B1C"/>
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="#B79121"/>
+  <text x="32" y="32" text-anchor="middle" dominant-baseline="central"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif"
+        font-weight="800" font-size="36" fill="#FFFFFF">&#8369;</text>
+  <!-- Wordmark: ink, weight 800, tracking -0.01em, ~14px gap from the mark -->
+  <text x="78" y="33" dominant-baseline="central"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif"
+        font-weight="800" font-size="32" letter-spacing="-0.01em" fill="#16241D">Dealwright</text>
+</svg>
