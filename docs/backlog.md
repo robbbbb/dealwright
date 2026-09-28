@@ -26,6 +26,20 @@ Registry of deferred work and open items. Status lines updated as items move. De
 - **Committed generated `static/css/app.css`** — chosen so clone-and-run works with zero tooling; Docker rebuilds fresh at image build. Revisit if it causes noisy diffs. Status: note.
 - **`docker compose up --build` not yet exercised end-to-end** — no Docker daemon in build environment; web service + Tailwind stage verified by construction only. Run locally to close (same as Postgres item above). Status: open.
 
+## Auth implementation residuals (2026-09-29, Robb-directed between cards)
+
+`docs/mockups/auth-mockup.html` implemented across allauth (login, signup, verify-email states, password reset, TOTP MFA + one-time recovery codes). Commits `9b89a06` / `d2c2e9b` / `3e37fee`; review dispatch at `docs/reviews/auth-dispatch.md`. Residuals:
+
+- **`django-allauth[mfa]` dep addition** (pulls `qrcode` + `fido2`) beyond the locked minimal list — needed for the TOTP QR SVG; confirm/keep at Card 11 dep review. Status: open (Card 11).
+- **Google provider app now conditionally installed** with the credentials env keys — fixes a Card 0 gap: the provider was never registered without it, so social login could not have resolved even with credentials set. Status: fixed in `9b89a06`.
+- **Verification-mode tension (adjudicate at next between-card window):** production sets `ACCOUNT_EMAIL_VERIFICATION=mandatory` (Card 0 backlog line) → unverified users cannot log in at all; the mockup frame-3 note says "providers can browse, but proposals can't send until verified", which implies `optional` + a `@verified_email_required` gate on send/share views (Card 8). No code changed mid-card; flag at Card 1 close. Status: open (decision needed).
+- **Frame 3 deviation — no logged-out email change:** the mockup's "Wrong address? [input]" for signed-out users is intentionally not implemented (changing an account's email pre-verification is a classic account-takeover vector). Wrong-address copy routes back to signup; logged-in users use the styled email-manage page. Status: recorded (security-first deviation).
+- **Resend-confirmation endpoint** is a new project surface (`POST /accounts/resend-confirmation/`): anti-enumeration copy, sends capped at 5/hour/address via Django cache (LocMem in dev — swap to a shared cache in prod if multi-process). Status: open (prod cache check at Card 11).
+- **OTP 6-box presentation** is a dependency-free JS progressive enhancement over allauth's single `code` field; without JS the plain input remains fully functional. Untested by automation (smoke tier). Status: note.
+- **MFA triggers not wired** (by design): "offered after first proposal send" (solo) and "required for Agency tier" enforcement belong to Cards 8–9. Status: deferred.
+- **Non-branded edge pages** intentionally left on allauth's default layouts: reauthenticate (account + MFA), trust-device, social login error/cancel, signup-closed, password-set, login-by-code, email-confirm-code. Self-contained but not themed; style if pilots hit them. Status: deferred.
+- **`ACCOUNT_RATE_LIMITS` untouched** — allauth defaults apply (login attempts, confirm-email cooldown). Revisit if pilot abuse appears. Status: note.
+
 ## Post-Card-0 additions (2026-09-28, between-card work at Robb's request)
 
 - **Public landing page built** (`templates/landing.html` from `docs/mockups/landing-mockup.html`; `/` now serves it to anonymous visitors instead of redirecting to login). Canonical amber tokens added to `static/css/src/input.css` `@theme` (`dw-amber`, `dw-amber-bg` — theme.html values). Residuals:
