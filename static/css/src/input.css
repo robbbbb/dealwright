@@ -20,6 +20,8 @@
   --color-dw-950: #04241B;
   --color-dw-gold: #B79121;
   --color-dw-gold-100: #FBF3D9;
+  --color-dw-amber: #9A6B13;     /* estimate/warning text on amber bg (theme.html canonical) */
+  --color-dw-amber-bg: #FDF3E2;
   --color-dw-ink: #16241D;
   --color-dw-body: #374151;
   --color-dw-muted: #6B7280;

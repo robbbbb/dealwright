@@ -24,6 +24,14 @@ Registry of deferred work and open items. Status lines updated as items move. De
 - **Committed generated `static/css/app.css`** — chosen so clone-and-run works with zero tooling; Docker rebuilds fresh at image build. Revisit if it causes noisy diffs. Status: note.
 - **`docker compose up --build` not yet exercised end-to-end** — no Docker daemon in build environment; web service + Tailwind stage verified by construction only. Run locally to close (same as Postgres item above). Status: open.
 
+## Post-Card-0 additions (2026-09-28, between-card work at Robb's request)
+
+- **Public landing page built** (`templates/landing.html` from `docs/mockups/landing-mockup.html`; `/` now serves it to anonymous visitors instead of redirecting to login). Canonical amber tokens added to `static/css/src/input.css` `@theme` (`dw-amber`, `dw-amber-bg` — theme.html values). Residuals:
+  - Privacy/Terms footer links are `#` placeholders — real pages are pre-launch items, not in any card. Status: open.
+  - "See a real proposal →" hero CTA points to signup until a public sample proposal surface exists. Status: open.
+  - Pricing tiers displayed are the Q10 hypotheses (₱399/₱899/₱1,990 + Founding-20 banner); checkout/billing stays deferred per the pre-launch checklist line above. Status: note.
+  - Built outside the card registry (user-directed between Card 0 review and Card 1) — smoke tests only, per the templates/UI tier; not covered by a reviewer pass. Status: recorded.
+
 ## Concurrency incident (2026-09-28, note for review)
 
 - A parallel session committed `aa67d42` while the builder session had uncommitted Tailwind work; that commit mixed the builder's files (Dockerfile css stage, compose web, templates, scripts, generated css) under a `docs(system-design)` message. Content is intact; history not rewritten (nothing pushed, other session may be live). **Rule reminder: one card per fresh session — one writer session per repo at a time; never `git add -A` in a shared tree.** Status: recorded.
