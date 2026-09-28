@@ -1,0 +1,1 @@
+"""Dealwright core app."""
