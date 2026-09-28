@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Dealwright monogram — DW">
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Dealwright DW monogram</title>
+  <desc id="desc">A refined white DW monogram on a rounded gold square.</desc>
   <!--
-    Dealwright logo mark: elegant "DW" monogram — thin weight, wide tracking,
-    flat gold field. No bars, no depth edge, no ornaments.
-    PRODUCTION NOTE: the DW is a live <text> element on the system font stack.
-    Rendering varies by OS (thin weights fall back to regular on some Linux
-    stacks) and PDF exporters may substitute fonts. Before production use,
-    replace the <text> with an outlined <path> version, optically centered at
-    (32, 32), then re-verify the tracking against the drawn letterforms.
+    Primary Dealwright mark. The custom monoline letterforms preserve the original
+    light, widely spaced DW idea without depending on an installed font.
   -->
   <rect x="4" y="4" width="56" height="56" rx="16" fill="#B79121"/>
-  <!-- x is shifted +1.5 (half the letter-spacing) so the monogram stays optically centered -->
-  <text x="33.5" y="32" text-anchor="middle" dominant-baseline="central"
-        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif"
-        font-weight="300" font-size="28" letter-spacing="3" fill="#FFFFFF">DW</text>
+  <g fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M15 21.5v21h3.1c6.7 0 10.7-4 10.7-10.5s-4-10.5-10.7-10.5H15Z"/>
+    <path d="m35.2 21.5 4.2 21 5-14.8 5 14.8 4.2-21"/>
+  </g>
 </svg>

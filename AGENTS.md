@@ -15,6 +15,16 @@ Dealwright: Django SaaS that turns discovery-call notes into ROI estimates, serv
 5. **Financial and claim discipline is the product.** Python computes all money; the LLM extracts and narrates only; every client-facing figure traces to a stored field; banned-phrase filter always on; estimates are labelled estimates. Protected personal characteristics do not exist in the schema.
 6. **Secrets** live in env vars / Railway config. Never paste tokens into chat, never echo values.
 
+## Design system (canonical)
+
+**Entry point for ALL design work:** open `docs/brand/brand-preview.html` — `file:///home/robbb/dealwright/docs/brand/brand-preview.html` — logo assets, core palette, usage principles, and links to everything else.
+
+- **Tokens & components:** `docs/mockups/theme.html` is the full reference. Use its `--dw-*` CSS variables verbatim; never hardcode new colors or fonts.
+- **Screens:** `docs/mockups/index.html` is the gallery of every mocked screen.
+- **Logo files** (`docs/brand/`): `logo-mark.svg` (thin tracked "DW" on flat gold #B79121), `logo-horizontal.svg` (ink wordmark, light surfaces), `logo-horizontal-light.svg` (white wordmark, dark surfaces), `favicon.svg`. Glyphs are system-font `<text>` — outline to paths before production PDF use.
+- **Chip semantics are product rules, not styling:** green = verified/accepted, amber = "estimate" (always), gold = premium only, red = gaps/errors, teal = neutral info. Never violate these mappings in UI work.
+- Theme decisions live in `docs/design/design-log.md` (Q12); challenge them between cards, not mid-card.
+
 ## Conventions
 
 - Django + Postgres + HTMX; templates server-rendered; Django admin acceptable for catalog/bench management in MVP.
