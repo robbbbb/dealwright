@@ -8,5 +8,11 @@ from core import views as core_views
 urlpatterns = [
     path("", core_views.home, name="home"),
     path("admin/", admin.site.urls),
+    # Auth mockup frame 3: "Resend confirmation" (must precede the allauth include).
+    path(
+        "accounts/resend-confirmation/",
+        core_views.resend_confirmation,
+        name="resend_confirmation",
+    ),
     path("accounts/", include("allauth.urls")),
 ]
