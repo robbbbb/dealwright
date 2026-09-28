@@ -25,6 +25,10 @@ Dealwright: Django SaaS that turns discovery-call notes into ROI estimates, serv
 - **Chip semantics are product rules, not styling:** green = verified/accepted, amber = "estimate" (always), gold = premium only, red = gaps/errors, teal = neutral info. Never violate these mappings in UI work.
 - Theme decisions live in `docs/design/design-log.md` (Q12); challenge them between cards, not mid-card.
 
+## Style guide
+
+HackSoft Django Styleguide, adapted for Dealwright — see `docs/styleguide.md` (read before first code change in any domain app): business logic in `services.py`, queries in `selectors.py`, thin views, forms validate input only, `full_clean()` in services before save, `transaction.atomic` around multi-write services, no signals for business logic, templates presentation-only, type hints everywhere. Deviations need a design-log entry.
+
 ## Conventions
 
 - Django + Postgres + HTMX; templates server-rendered; Django admin acceptable for catalog/bench management in MVP.

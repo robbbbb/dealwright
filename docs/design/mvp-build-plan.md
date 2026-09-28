@@ -18,6 +18,8 @@ TDD anchor: `test_login_page_renders` + `test_settings_read_env`.
 Done when: `pytest` green locally, login works, Postgres connected, registry files committed.
 Deps: name decision (above).
 
+> **Status (2026-09-28, builder session):** implemented — pytest 3/3 green, ruff clean, `manage.py check` clean, migrations applied, live smoke: `/`→302→`/accounts/login/` 200. Postgres config committed (compose + Railway plugin) but **not connected in this environment** (no Docker daemon; sqlite fallback used — see backlog). Review: dispatch card committed at `docs/reviews/card-0-dispatch.md`; no reviewer subagent available in-session → awaiting Robb-run review. Do not start Card 1 before the verdict is recorded here.
+
 ## Card 1 — Core domain models
 **Goal:** the discovery side of the data model.
 Models: `Client` (owner FK, industry, contact), `DiscoverySession` (client FK, raw notes, status), `WorkflowActivity` (employees, hours/week, hourly cost, tools, error/delay notes), `BusinessProblem` (description, severity, tags). Admin registered; migrations; factories.

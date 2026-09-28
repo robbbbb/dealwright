@@ -10,6 +10,14 @@ Registry of deferred work and open items. Status lines updated as items move. De
 - [ ] **Verify Railway Postgres backup policy per plan** — if insufficient, the n8n off-site pg_dump flow (system-design §9b) becomes mandatory, not stopgap. Status: open.
 - [ ] **Pricing page + checkout** — tiers set (₱399/₱899/₱1,990, Q10 in design log); page mockup and billing integration are post-MVP. Status: deferred.
 
+## Card 0 residuals (2026-09-28)
+
+- **whitenoise + gunicorn added** beyond the locked minimal-dep list — required for Railway static serving + prod WSGI; confirm/replace at Card 11 deploy. Status: open.
+- **Transactional email/SMTP provider** — production sets `ACCOUNT_EMAIL_VERIFICATION=mandatory` (Q13); provider choice + env keys needed before email-dependent flows go live. Status: open.
+- **Google OAuth credentials not provisioned** — social login is dormant until `GOOGLE_OAUTH_CLIENT_ID`/`GOOGLE_OAUTH_SECRET` env keys exist (allauth settings-APP form, no DB rows). Status: open.
+- **Postgres-backed pytest verification pending** — no Docker daemon in the Card 0 build environment; tests used the sqlite fallback (`DATABASE_URL` honored when set). Run `docker compose up -d db` + `pytest` locally to close. Status: open.
+- **Production `Site` row** — set the real domain (Sites framework) when the Railway URL exists (Card 11). Status: open.
+
 ## Post-pilot / deferred product work
 
 - Quality-mode toggle (Fast = Flash-writes ₱0.10 vs Premium = GLM-5.3 ₱0.52) — decide from pilot usage data. Status: deferred.

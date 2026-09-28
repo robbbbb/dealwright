@@ -4,7 +4,7 @@
 
 Django SaaS for automation freelancers, VAs, and small agencies: paste what the client said → get structured facts, transparent ROI estimates, service recommendations from the catalog, a rule-based VA match, and a guardrailed, client-ready proposal with PDF export.
 
-**Stage: design complete → ready for Card 0 (build not started).** All design decisions live in `docs/design/`.
+**Stage: Card 0 (scaffold) implemented — in review.** All design decisions live in `docs/design/`.
 
 ## Repository map
 
@@ -22,6 +22,18 @@ Django SaaS for automation freelancers, VAs, and small agencies: paste what the 
 ## Locked stack (do not relitigate mid-build)
 
 Django + PostgreSQL · server-rendered templates + HTMX (no SPA, no npm) · WeasyPrint PDF · pytest · z.ai LLM via thin client (GLM-5.3-Flash extraction, GLM-5.3 writing; **no LangChain**) · guardrails as versioned data · deployed on Railway (Hobby to ~1k users) · single-user MVP with tenancy-ready `owner` FK · AI never emits a number.
+
+## Run it (dev)
+
+```bash
+python3 -m uv sync            # deps into .venv
+cp .env.example .env          # then fill in values (never commit .env)
+docker compose up -d db       # local Postgres (optional; sqlite fallback without it)
+.venv/bin/python manage.py migrate
+.venv/bin/python manage.py runserver
+```
+
+Tests / lint: `.venv/bin/python -m pytest` · `.venv/bin/python -m ruff check .`
 
 ## Building
 
