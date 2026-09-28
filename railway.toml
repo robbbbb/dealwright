@@ -1,0 +1,11 @@
+# Railway deploy config (system-design.md: Dockerfile build, app-sleeping OFF on prod).
+[build]
+builder = "DOCKERFILE"
+
+[deploy]
+startCommand = "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn dealwright.wsgi:application --bind 0.0.0.0:$PORT --workers 2"
+healthcheckPath = "/accounts/login/"
+healthcheckTimeout = 120
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+numReplicas = 1
