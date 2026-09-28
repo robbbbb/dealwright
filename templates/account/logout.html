@@ -1,0 +1,13 @@
+{# allauth account/logout.html — POST-only logout confirmation #}
+{% extends "auth-base.html" %}
+{% block title %}Log out · Dealwright{% endblock %}
+{% block auth_content %}
+  <h1 class="dw-h1">Log out</h1>
+  <p class="dw-sub">Are you sure you want to sign out of Dealwright?</p>
+  <form method="post" action="{% url 'account_logout' %}">
+    {% csrf_token %}
+    {% if redirect_field_value %}<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">{% endif %}
+    <button type="submit" class="btn-primary">Log out</button>
+  </form>
+  <p class="dw-swap"><a href="{% url 'home' %}">Cancel and go back</a></p>
+{% endblock %}

@@ -1,0 +1,15 @@
+{# allauth mfa/recovery_codes/generate.html — confirm generating a new set #}
+{% extends "auth-base.html" %}
+{% block title %}Generate recovery codes · Dealwright{% endblock %}
+{% block auth_content %}
+  <h1 class="dw-h1">New recovery codes</h1>
+  <p class="dw-sub">Each code signs you in once if your phone is lost.</p>
+  {% if unused_code_count %}
+    <div class="dw-banner dw-banner-warn">⚠&nbsp; Generating a new set invalidates your existing {{ unused_code_count }} unused codes.</div>
+  {% endif %}
+  <form method="post" action="{% url 'mfa_generate_recovery_codes' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn-primary">Generate codes</button>
+  </form>
+  <p class="dw-swap"><a href="{% url 'mfa_index' %}">Cancel</a></p>
+{% endblock %}

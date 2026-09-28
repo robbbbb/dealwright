@@ -1,0 +1,74 @@
+{# Auth mockup frame 6 — allauth mfa/authenticate.html #}
+{% extends "auth-base.html" %}
+{% block title %}Two-factor check · Dealwright{% endblock %}
+{% block auth_content %}
+  <h1 class="dw-h1">Two-factor check</h1>
+  <p class="dw-sub">Enter the 6-digit code from your authenticator app</p>
+  {{ form.non_field_errors }}
+  <form method="post" action="{% url 'mfa_authenticate' %}" id="dw-otp-form">
+    {% csrf_token %}
+    <div class="my-3.5" id="dw-otp-host">
+      {# Real field stays functional without JS; JS enhances it into 6 boxes. #}
+      {{ form.code }}
+    </div>
+    {{ form.code.errors }}
+    <p class="dw-fineprint mb-3 text-center">Codes refresh every 30 seconds. Lost your phone? Enter one of your recovery codes here instead.</p>
+    <button type="submit" class="btn-primary">Verify</button>
+  </form>
+  <form id="logout-from-stage" method="post" action="{% url 'account_logout' %}">
+    <input type="hidden" name="next" value="{% url 'account_login' %}">
+    {% csrf_token %}
+  </form>
+  <p class="dw-swap"><button type="submit" form="logout-from-stage" class="dw-inline-link">Cancel and return to log in</button></p>
+  <script>
+    (function () {
+      try {
+        var real = document.getElementById('{{ form.code.id_for_label }}');
+        var host = document.getElementById('dw-otp-host');
+        var form = document.getElementById('dw-otp-form');
+        if (!real || !host || !form || real.dataset.otpEnhanced) return;
+        var boxes = [];
+        for (var i = 0; i < 6; i++) {
+          var box = document.createElement('input');
+          box.type = 'text';
+          box.inputMode = 'numeric';
+          box.autocomplete = i === 0 ? 'one-time-code' : 'off';
+          box.maxLength = 1;
+          box.className = 'dw-otp-box';
+          box.setAttribute('aria-label', 'Digit ' + (i + 1));
+          boxes.push(box);
+        }
+        var row = document.createElement('div');
+        row.className = 'flex justify-center gap-2';
+        boxes.forEach(function (box) { row.appendChild(box); });
+        host.appendChild(row);
+        real.hidden = true;
+        real.dataset.otpEnhanced = '1';
+        function sync() { real.value = boxes.map(function (b) { return b.value; }).join(''); }
+        boxes.forEach(function (box, idx) {
+          box.addEventListener('input', function () {
+            box.value = box.value.replace(/\D/g, '').slice(-1);
+            if (box.value && idx < 5) boxes[idx + 1].focus();
+            sync();
+          });
+          box.addEventListener('keydown', function (e) {
+            if (e.key === 'Backspace' && !box.value && idx > 0) boxes[idx - 1].focus();
+            if (e.key === 'ArrowLeft' && idx > 0) boxes[idx - 1].focus();
+            if (e.key === 'ArrowRight' && idx < 5) boxes[idx + 1].focus();
+          });
+          box.addEventListener('paste', function (e) {
+            e.preventDefault();
+            var digits = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+            digits.split('').forEach(function (d, i) { if (boxes[i]) boxes[i].value = d; });
+            boxes[Math.min(digits.length, 5)].focus();
+            sync();
+          });
+        });
+        form.addEventListener('submit', sync);
+        boxes[0].focus();
+      } catch (err) {
+        /* Enhancement only — the plain field above keeps working. */
+      }
+    })();
+  </script>
+{% endblock %}

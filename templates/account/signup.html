@@ -1,14 +1,51 @@
-{% extends "base.html" %}
-{% block title %}Create account · Dealwright{% endblock %}
-{% block content %}
-  <section class="card mx-auto mt-12 max-w-[420px]">
-    <h1 class="text-xl font-bold text-dw-ink">Create your account</h1>
-    <p class="mb-4 text-dw-muted">Sign up with your email — no username needed.</p>
-    <form method="post" action="{% url 'account_signup' %}">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="btn-primary">Create account</button>
-    </form>
-    <p class="alt-link">Already registered? <a href="{% url 'account_login' %}">Sign in</a></p>
-  </section>
+{# Auth mockup frame 2 — allauth account/signup.html #}
+{% extends "auth-base.html" %}
+{% load dw_auth socialaccount %}
+{% block title %}Create your account · Dealwright{% endblock %}
+{% block brand_tagline %}<div class="mt-1 text-[11.5px] text-white/80">Win one client and it's paid for the year.</div>{% endblock %}
+{% block auth_content %}
+  <h1 class="dw-h1">Create your account</h1>
+  <p class="dw-sub">14-day Professional trial · no card required</p>
+  {{ form.non_field_errors }}
+  <form method="post" action="{% url 'account_signup' %}">
+    {% csrf_token %}
+    {% if redirect_field_value %}<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">{% endif %}
+    <div class="dw-field">
+      <label for="{{ form.name.id_for_label }}">Full name</label>
+      {{ form.name }}
+      {{ form.name.errors }}
+    </div>
+    <div class="dw-field">
+      <label for="{{ form.email.id_for_label }}">Work email</label>
+      {{ form.email }}
+      {{ form.email.errors }}
+    </div>
+    <div class="dw-field">
+      <label for="{{ form.password1.id_for_label }}">Password</label>
+      {{ form.password1 }}
+      {{ form.password1.errors }}
+      <div class="dw-strength" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div class="dw-hint">At least 10 characters. Mix words only you would know.</div>
+    </div>
+    <div class="dw-field">
+      <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+      {{ form.password2 }}
+      {{ form.password2.errors }}
+    </div>
+    <div class="dw-field flex items-start gap-2">
+      {{ form.terms }}
+      <label for="{{ form.terms.id_for_label }}" class="mb-0 text-[11.5px] font-normal text-dw-muted">{{ form.terms.label }}</label>
+      {{ form.terms.errors }}
+    </div>
+    <button type="submit" class="btn-primary">Create account</button>
+  </form>
+  {% google_available as google_ok %}
+  {% if google_ok %}
+    <div class="dw-or">or</div>
+    <a class="dw-btn-google" href="{% provider_login_url 'google' %}">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92a8.78 8.78 0 0 0 2.68-6.62Z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.32A9 9 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.97 10.72a5.41 5.41 0 0 1 0-3.44V4.96H.96a9 9 0 0 0 0 8.08l3-2.32Z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.59A9 9 0 0 0 .96 4.96l3.01 2.32C4.68 5.16 6.66 3.58 9 3.58Z"/></svg>
+      Sign up with Google
+    </a>
+  {% endif %}
+  <p class="dw-swap">Already have an account? <a href="{% url 'account_login' %}">Log in</a></p>
 {% endblock %}

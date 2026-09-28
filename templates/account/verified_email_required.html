@@ -1,0 +1,18 @@
+{# Auth mockup frame 3 — allauth account/verified_email_required.html (logged-in gate state) #}
+{% extends "auth-base.html" %}
+{% block title %}Verify your email · Dealwright{% endblock %}
+{% block auth_content %}
+  <h1 class="dw-h1">Check your inbox</h1>
+  <p class="dw-sub">We sent a confirmation link to <b>{{ request.user.email }}</b></p>
+  <div class="dw-banner dw-banner-ok">✉&nbsp; Click the link in the email to activate sending &amp; share links. Your workspace is ready to explore meanwhile.</div>
+  <div class="dw-field">
+    <label>Wrong address?</label>
+    <a class="dw-inline-link" href="{% url 'account_email' %}">Change your email address</a>
+    <div class="dw-hint">Change it and we'll resend the confirmation.</div>
+  </div>
+  <form method="post" action="{% url 'resend_confirmation' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn-primary">Resend confirmation</button>
+  </form>
+  <p class="dw-swap"><a href="{% url 'home' %}">← Back to your workspace</a></p>
+{% endblock %}

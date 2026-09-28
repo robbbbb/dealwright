@@ -1,0 +1,30 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Dealwright{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body class="flex min-h-screen items-center justify-center bg-dw-canvas px-4 py-10 text-dw-body antialiased">
+  <main class="w-full max-w-[400px]">
+    <section class="overflow-hidden rounded-2xl border border-dw-line bg-white shadow-xl shadow-dw-700/15">
+      <header class="bg-linear-to-br from-dw-800 to-dw-900 px-6 py-[22px] text-white">
+        <a href="{% url 'home' %}" class="inline-flex items-center gap-[9px] text-[16px] font-extrabold tracking-tight text-white no-underline">
+          <span class="inline-flex h-[26px] w-[26px] items-center justify-center rounded-[7px] bg-dw-gold text-[10.5px] font-light tracking-[1px]">DW</span>Dealwright
+        </a>
+        {% block brand_tagline %}{% endblock %}
+      </header>
+      <div class="px-6 pb-6 pt-5">
+        {% if messages %}
+          <ul class="mb-4 list-none">
+            {% for message in messages %}<li class="msg">{{ message }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+        {% block auth_content %}{% endblock %}
+      </div>
+    </section>
+  </main>
+</body>
+</html>

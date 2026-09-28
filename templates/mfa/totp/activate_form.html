@@ -1,0 +1,23 @@
+{# Auth mockup frame 7 (setup) — allauth mfa/totp/activate_form.html #}
+{% extends "auth-base.html" %}
+{% block title %}Protect your deals · Dealwright{% endblock %}
+{% block auth_content %}
+  <h1 class="dw-h1">Protect your deals</h1>
+  <p class="dw-sub">You handle client data and prices — add two-factor in a minute</p>
+  <div class="dw-banner dw-banner-info">②&nbsp; Scan with Google Authenticator, Authy, or 1Password, then confirm one code.</div>
+  {{ form.non_field_errors }}
+  <form method="post" action="{% url 'mfa_activate_totp' %}">
+    {% csrf_token %}
+    <img src="{{ totp_svg_data_uri }}" alt="Two-factor QR code" class="mx-auto my-2 h-[120px] w-[120px] rounded-[10px] border-[1.5px] border-dw-line bg-white p-1.5">
+    <div class="my-3 rounded-[8px] border border-dashed border-dw-600 bg-dw-50 px-2.5 py-2 text-center font-mono text-[11px] tracking-[1px] text-dw-800">
+      {{ form.secret }}
+    </div>
+    <div class="dw-field">
+      <label for="{{ form.code.id_for_label }}">Enter the 6-digit code to confirm</label>
+      {{ form.code }}
+      {{ form.code.errors }}
+    </div>
+    <button type="submit" class="btn-primary">Confirm &amp; show recovery codes</button>
+  </form>
+  <p class="dw-swap"><a href="{% url 'mfa_index' %}">Cancel</a></p>
+{% endblock %}

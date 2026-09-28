@@ -1,0 +1,33 @@
+{# allauth account/email.html — manage email addresses (linked from verified_email_required) #}
+{% extends "auth-base.html" %}
+{% load i18n %}
+{% block title %}Email addresses · Dealwright{% endblock %}
+{% block auth_content %}
+  <h1 class="dw-h1">Email addresses</h1>
+  <p class="dw-sub">Manage the email on your account</p>
+  {% if user.emailaddress_set.all %}
+    <ul class="mb-4 list-none">
+      {% for emailaddress in user.emailaddress_set.all %}
+        <li class="msg flex items-center justify-between gap-2">
+          <span>{{ emailaddress.email }}
+            {% if emailaddress.verified %}<span class="text-[11px] font-semibold text-dw-600">· verified</span>
+            {% else %}<span class="text-[11px] font-semibold text-dw-amber">· pending</span>{% endif %}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <form method="post" action="{% url 'account_email' %}">
+    {% csrf_token %}
+    {% if redirect_field_value %}<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">{% endif %}
+    {{ form.non_field_errors }}
+    <div class="dw-field">
+      <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+      {{ form.email }}
+      {{ form.email.errors }}
+    </div>
+    {{ form.action.errors }}
+    <button type="submit" class="btn-primary">{% trans "Add email / resend confirmation" %}</button>
+  </form>
+  <p class="dw-swap"><a href="{% url 'home' %}">← Back to your workspace</a></p>
+{% endblock %}

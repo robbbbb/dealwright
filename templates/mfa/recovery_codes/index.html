@@ -1,0 +1,24 @@
+{# Auth mockup frame 7 (recovery codes, shown once) — allauth mfa/recovery_codes/index.html #}
+{% extends "auth-base.html" %}
+{% block title %}Recovery codes · Dealwright{% endblock %}
+{% block auth_content %}
+  <h1 class="dw-h1">Recovery codes</h1>
+  <p class="dw-sub">{{ unused_codes|length }} of {{ total_count }} codes unused — each signs you in once if your phone is lost.</p>
+  {% if can_view_codes %}
+    <div class="rounded-[10px] bg-dw-950 p-3.5">
+      <div class="grid grid-cols-2 gap-x-4">
+        {% for code in unused_codes %}
+          <div class="py-0.5 font-mono text-[12px] tracking-[1px] text-dw-100">{{ code }}</div>
+        {% endfor %}
+      </div>
+    </div>
+    <p class="dw-fineprint mb-3 mt-2">Shown once — download or copy now.</p>
+    <a class="dw-btn-white" href="{% url 'mfa_download_recovery_codes' %}">Download codes</a>
+  {% else %}
+    <div class="dw-banner dw-banner-info">🔒&nbsp; These codes were shown once and can't be displayed again. Generate a new set if you've lost them.</div>
+  {% endif %}
+  {% if can_generate_codes %}
+    <p class="dw-swap"><a href="{% url 'mfa_generate_recovery_codes' %}">Generate new codes</a></p>
+  {% endif %}
+  <p class="dw-swap"><a href="{% url 'mfa_index' %}">← Back to two-factor settings</a></p>
+{% endblock %}

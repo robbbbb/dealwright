@@ -29,6 +29,9 @@
   --color-dw-canvas: #F6F8F7;
   --color-dw-red: #C0392B;
   --color-dw-red-bg: #FBE9E9;
+  --color-dw-teal: #0E7490;       /* info (theme.html) */
+  --color-dw-teal-bg: #E0F2F7;
+  --color-dw-amber-line: #F0E2BE; /* warn-banner border (auth mockup) */
 }
 
 @layer base {
@@ -36,6 +39,7 @@
   form label { display: block; font-size: 12.5px; font-weight: 600; color: var(--color-dw-ink); margin-bottom: 3px; }
   form input { width: 100%; border: 1px solid var(--color-dw-line); border-radius: 9px; padding: 9px 11px; font-size: 14px; background: #fff; }
   form input:focus { outline: 2px solid var(--color-dw-600); border-color: var(--color-dw-600); }
+  form input[type="checkbox"] { width: auto; }
   ul.errorlist { color: var(--color-dw-red); font-size: 12.5px; margin-bottom: 6px; list-style: none; }
 }
 
@@ -59,4 +63,42 @@
     background: var(--color-dw-50); border: 1px solid var(--color-dw-100);
     color: var(--color-dw-800); border-radius: 10px; padding: 9px 14px; margin-bottom: 6px;
   }
+
+  /* Auth screens (docs/mockups/auth-mockup.html) — shared patterns. */
+  .dw-h1 { font-size: 16.5px; font-weight: 700; color: var(--color-dw-ink); }
+  .dw-sub { font-size: 12px; color: var(--color-dw-muted); margin-bottom: 14px; }
+  .dw-field { margin-bottom: 12px; }
+  .dw-field label { display: block; font-size: 12px; font-weight: 700; color: var(--color-dw-ink); margin-bottom: 4px; }
+  .dw-hint { font-size: 10.5px; color: var(--color-dw-muted); margin-top: 3px; }
+  .dw-banner { border-radius: 9px; padding: 9px 12px; font-size: 12px; margin-bottom: 12px; }
+  .dw-banner-ok { background: var(--color-dw-50); color: var(--color-dw-800); border: 1px solid var(--color-dw-100); }
+  .dw-banner-warn { background: var(--color-dw-amber-bg); color: var(--color-dw-amber); border: 1px solid var(--color-dw-amber-line); }
+  .dw-banner-info { background: var(--color-dw-teal-bg); color: var(--color-dw-teal); border: 1px solid #C7E7F0; }
+  .dw-or { display: flex; align-items: center; gap: 10px; color: var(--color-dw-muted); font-size: 11px; margin: 13px 0; }
+  .dw-or::before, .dw-or::after { content: ""; flex: 1; height: 1px; background: var(--color-dw-line); }
+  .dw-btn-google {
+    display: flex; width: 100%; align-items: center; justify-content: center; gap: 9px;
+    border-radius: 10px; border: 1.5px solid var(--color-dw-line); background: #fff;
+    color: var(--color-dw-ink); padding: 10px; font-size: 13.5px; font-weight: 700; text-decoration: none;
+  }
+  .dw-btn-google:hover { background: var(--color-dw-50); }
+  .dw-btn-white {
+    display: block; width: 100%; text-align: center; border-radius: 10px; border: 1.5px solid var(--color-dw-line);
+    background: #fff; color: var(--color-dw-ink); padding: 10px; font-size: 13.5px; font-weight: 700; text-decoration: none;
+    cursor: pointer;
+  }
+  .dw-btn-white:hover { background: var(--color-dw-50); }
+  .dw-swap { text-align: center; font-size: 12.5px; color: var(--color-dw-muted); margin-top: 14px; }
+  .dw-swap a { color: var(--color-dw-600); font-weight: 700; text-decoration: none; }
+  .dw-inline-link { color: var(--color-dw-600); font-weight: 600; text-decoration: none; }
+  .dw-fineprint { font-size: 10.5px; color: var(--color-dw-muted); }
+  .dw-fineprint a { color: var(--color-dw-600); }
+  .dw-otp-box {
+    width: 42px; height: 50px; border: 1.5px solid var(--color-dw-line); border-radius: 10px;
+    text-align: center; font-size: 20px; font-weight: 800; color: var(--color-dw-ink); background: #fff;
+    padding: 0;
+  }
+  .dw-otp-box:focus { outline: 2px solid var(--color-dw-600); border-color: var(--color-dw-600); }
+  .dw-strength { display: flex; gap: 4px; margin-top: 6px; }
+  .dw-strength i { flex: 1; height: 4px; border-radius: 2px; background: var(--color-dw-line); }
 }

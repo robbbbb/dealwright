@@ -1,0 +1,14 @@
+{# allauth mfa/totp/deactivate_form.html — confirm deactivating the authenticator #}
+{% extends "auth-base.html" %}
+{% block title %}Deactivate authenticator · Dealwright{% endblock %}
+{% block auth_content %}
+  <h1 class="dw-h1">Deactivate authenticator app?</h1>
+  <p class="dw-sub">Confirm with your current authenticator code to turn two-factor off.</p>
+  <div class="dw-banner dw-banner-warn">⚠&nbsp; Without two-factor, your account is protected by password only.</div>
+  <form method="post" action="{% url 'mfa_deactivate_totp' %}">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <button type="submit" class="btn-primary">Deactivate</button>
+  </form>
+  <p class="dw-swap"><a href="{% url 'mfa_index' %}">Cancel</a></p>
+{% endblock %}

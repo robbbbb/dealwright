@@ -1,0 +1,24 @@
+{# Email confirmation link landing — allauth account/email_confirm.html #}
+{% extends "auth-base.html" %}
+{% load account %}
+{% block title %}Confirm email · Dealwright{% endblock %}
+{% block auth_content %}
+  <h1 class="dw-h1">Confirm your email</h1>
+  <p class="dw-sub">One click to activate sending &amp; share links</p>
+  {% if confirmation %}
+    {% user_display confirmation.email_address.user as user_display %}
+    {% if can_confirm %}
+      <div class="dw-banner dw-banner-info">✉&nbsp; Confirm that <b>{{ confirmation.email_address.email }}</b> is an email address for {{ user_display }}.</div>
+      <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+        {% csrf_token %}
+        {% if redirect_field_value %}<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">{% endif %}
+        <button type="submit" class="btn-primary">Confirm email</button>
+      </form>
+    {% else %}
+      <div class="dw-banner dw-banner-warn">⚠&nbsp; Unable to confirm this address — it is already confirmed by a different account.</div>
+    {% endif %}
+  {% else %}
+    <div class="dw-banner dw-banner-warn">⚠&nbsp; This confirmation link expired or is invalid. Log in and request a new confirmation from your email settings.</div>
+    <a class="dw-btn-white" href="{% url 'account_login' %}">Log in</a>
+  {% endif %}
+{% endblock %}
