@@ -9,6 +9,7 @@ Registry of deferred work and open items. Status lines updated as items move. De
 - [ ] **Railway region selection** — closest to PH; decided at Card 11 deploy. Status: open.
 - [ ] **Verify Railway Postgres backup policy per plan** — if insufficient, the n8n off-site pg_dump flow (system-design §9b) becomes mandatory, not stopgap. Status: open.
 - [ ] **Pricing page + checkout** — tiers set (₱399/₱899/₱1,990, Q10 in design log); page mockup and billing integration are post-MVP. Status: deferred.
+- [ ] **Marketing copy review** — implied-outcome lines need a copy/legal pass before launch, e.g. landing stats strip "1 client — won deal pays for the year" (figure-free but outcome-adjacent; flagged in landing review pass 1). Status: open.
 
 ## Card 0 residuals (2026-09-28)
 

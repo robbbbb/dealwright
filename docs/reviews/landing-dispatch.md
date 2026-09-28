@@ -61,4 +61,24 @@ Record the verdict below under **Verdict (reviewer)** and mirror the disposition
 
 ## Verdict (reviewer)
 
-_Pending — dispatch committed; reviewer subagent spawn attempted in builder session._
+### Pass 1 (scope: `d54f79b`) — CHANGES REQUIRED
+
+```
+Verdict: CHANGES REQUIRED
+Blocking findings: Gate 4 — committed static/css/app.css (f766f19d, 24811 B) is not reproducible from committed sources (deterministic rebuild yields f378ad0, 24355 B; ~456 B of stale unused theme vars from an intermediate template state). Fix: run scripts/build_css.sh and commit the refreshed artifact, then fresh reviewer pass on that commit.
+Minor findings: demo-card secondary proposal link dropped vs mockup (consistent with deviation 3); "won deal pays for the year" implied-outcome copy (figure-free, mockup-baseline — revisit at pre-launch copy review); benign staticfiles UserWarning in test runs.
+Rationale: All functional gates and checklist items pass and the page is faithful, disciplined, and token-clean — but the CSS-rebuild reproducibility gate fails as specified, and the committed generated artifact must match its sources.
+```
+
+All 8 checklist items passed; all 6 deviations adjudicated acceptable; gates 1–3, 5–8 passed.
+
+**Builder disposition (2026-09-29):**
+- Blocking finding → fixed in `86cac97` (`scripts/build_css.sh` from committed sources; utilities layer class-for-class identical; rebuild against HEAD now zero-diff; pytest 4/4, ruff, `manage.py check` re-run green).
+- Minor: demo-card secondary link dropped → **accepted**, consistent with adjudicated deviation 3 (no public proposal surface; no `docs/` links in prod). No action.
+- Minor: "won deal pays for the year" implied-outcome copy → **actioned**: pre-launch checklist line added to `docs/backlog.md` (marketing copy review before launch). Copy unchanged now (mockup baseline, figure-free).
+- Minor: staticfiles UserWarning → **accepted**, pre-existing since Card 0 (no `collectstatic` in dev/test trees). No action.
+- Fresh reviewer pass 2 on `86cac97` follows below.
+
+### Pass 2 (scope: `86cac97`, fix verification)
+
+_Pending — fresh reviewer pass in flight._
