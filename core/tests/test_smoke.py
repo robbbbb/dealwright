@@ -25,7 +25,7 @@ def test_home_redirects_anonymous_to_login(client: Client) -> None:
 
 def test_settings_read_env(monkeypatch: pytest.MonkeyPatch) -> None:
     """Anchor (Card 0): settings are env-driven — SECRET_KEY comes from the environment."""
-    import dealwright.settings.base as base
+    import config.settings.base as base
 
     monkeypatch.setenv("DJANGO_SECRET_KEY", "env-driven-value")
     module = importlib.reload(base)

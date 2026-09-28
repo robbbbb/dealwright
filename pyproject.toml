@@ -25,7 +25,7 @@ dev = [
 package = false
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "dealwright.settings.testing"
+DJANGO_SETTINGS_MODULE = "config.settings.testing"
 testpaths = ["core"]
 python_files = ["test_*.py"]
 

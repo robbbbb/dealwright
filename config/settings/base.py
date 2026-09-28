@@ -69,8 +69,8 @@ TEMPLATES = [
     },
 ]
 
-ROOT_URLCONF = "dealwright.urls"
-WSGI_APPLICATION = "dealwright.wsgi.application"
+ROOT_URLCONF = "config.urls"
+WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": env.db("DATABASE_URL"),

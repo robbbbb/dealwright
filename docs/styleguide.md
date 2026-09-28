@@ -6,7 +6,7 @@ Adapted from the [HackSoft Django Styleguide](https://github.com/HacksoftBG/Djan
 
 ```
 manage.py
-dealwright/            # project package (not an app)
+config/                # project package (not an app) — renamed from `dealwright/` per Robb, 2026-09-28
   settings/            # base | development | testing | production — env-driven
   urls.py  wsgi.py  asgi.py
 core/                  # home + shared surfaces

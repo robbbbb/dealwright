@@ -38,6 +38,8 @@
 4. `TIME_ZONE = "Asia/Manila"` (PH-anchored product) — not previously locked.
 5. Production `ACCOUNT_EMAIL_VERIFICATION = "mandatory"` vs base/dev `"optional"` (Q13 gate implemented at env level; send/share gating still lands with proposal cards).
 
+5. Project package is `config/` (settings/urls/wsgi/asgi) — renamed from `dealwright/` at Robb's request to flatten the double-folder nesting; equally mainstream (cookiecutter-django style), deviation noted for the record.
+
 ## Verdict format
 
 ```
