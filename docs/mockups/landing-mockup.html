@@ -1,332 +1,41 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dealwright — Turn discovery calls into signed deals</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dealwright — From discovery call to defensible proposal</title>
 <style>
-  :root {
-    --dw-green-950:#04241B; --dw-green-900:#0B3D2E; --dw-green-800:#0E5941; --dw-green-700:#116E4F;
-    --dw-green-600:#15825D; --dw-green-500:#1DA06E; --dw-green-100:#D7F0E4; --dw-green-50:#EFF8F3;
-    --dw-gold-600:#B79121; --dw-gold-100:#FBF3D9;
-    --dw-amber-text:#9A6B13; --dw-amber-bg:#FDF3E2;
-    --dw-teal-600:#0E7490; --dw-teal-bg:#E0F2F7;
-    --dw-ink:#16241D; --dw-body:#374151; --dw-muted:#6B7280; --dw-line:#E6E8EE; --dw-canvas:#F6F8F7;
-    --dw-grad: linear-gradient(135deg, var(--dw-green-800), var(--dw-green-900));
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-    background:#fff; color:var(--dw-body); font-size:15px; line-height:1.6;
-  }
-  a { text-decoration:none; color:inherit; }
-  .nav-links a { color:var(--dw-body); font-weight:600; }
-  .container { max-width:1080px; margin:0 auto; padding:0 24px; }
-
-  /* Nav */
-  nav { position:sticky; top:0; background:rgba(255,255,255,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--dw-line); z-index:10; }
-  .nav-in { display:flex; align-items:center; gap:26px; padding:14px 0; }
-  .logo { display:inline-flex; align-items:center; gap:9px; font-weight:800; font-size:18px; color:var(--dw-ink); }
-  .logo .mark { width:30px; height:30px; border-radius:8px; background:var(--dw-gold-600); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:300; font-size:12px; letter-spacing:1px; }
-  .nav-links { display:flex; gap:22px; margin-left:auto; font-size:13.5px; color:var(--dw-body); font-weight:600; }
-  .nav-links a:hover { color:var(--dw-green-600); }
-  .btn { display:inline-block; border-radius:10px; padding:10px 20px; font-weight:700; font-size:13.5px; border:1.5px solid transparent; }
-  .btn.primary { background:var(--dw-green-700); color:#fff; }
-  .btn.ghost { background:#fff; color:var(--dw-green-700); border-color:var(--dw-green-700); }
-  .btn.light { background:rgba(255,255,255,.14); color:#fff; border-color:rgba(255,255,255,.5); }
-
-  /* Hero */
-  .hero { background:var(--dw-grad); color:#fff; padding:72px 0 84px; text-align:center; position:relative; overflow:hidden; }
-  .hero .badge { display:inline-block; border:1px solid rgba(255,255,255,.35); background:rgba(255,255,255,.1); border-radius:999px; font-size:11.5px; letter-spacing:1px; text-transform:uppercase; padding:5px 16px; margin-bottom:18px; }
-  .hero h1 { font-size:40px; line-height:1.15; letter-spacing:-.02em; max-width:720px; margin:0 auto 14px; }
-  .hero h1 em { font-style:normal; color:#7FD8AC; }
-  .hero p { max-width:600px; margin:0 auto 26px; opacity:.9; font-size:16px; }
-  .hero .cta { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
-  .hero .fine { font-size:12px; opacity:.7; margin-top:16px; }
-
-  /* Hero demo card (paste-the-call input) */
-  .hero-grid { display:flex; gap:44px; align-items:center; flex-wrap:wrap; }
-  .hero-left { flex:1; min-width:300px; text-align:left; }
-  .hero-left h1 { font-size:34px; margin:0 0 14px; }
-  .hero-left p { margin:0 0 24px; }
-  .hero-left .cta { justify-content:flex-start; }
-  .demo-card {
-    flex:1; min-width:300px; max-width:440px; margin-left:auto;
-    background:#fff; border-radius:16px; padding:20px 22px; color:var(--dw-body);
-    box-shadow:0 24px 60px rgba(0,0,0,.3);
-  }
-  .demo-card .dc-label { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.8px; color:var(--dw-green-700); margin-bottom:8px; }
-  .demo-card textarea {
-    width:100%; height:158px; border:1.5px solid var(--dw-line); border-radius:10px;
-    padding:11px 13px; font:inherit; font-size:12px; line-height:1.5; color:var(--dw-body);
-    resize:none; background:var(--dw-canvas);
-  }
-  .demo-card textarea:focus { border-color:var(--dw-green-600); outline:2px solid var(--dw-green-100); }
-  .demo-card .dc-btn {
-    display:block; text-align:center; background:var(--dw-green-700); color:#fff;
-    border-radius:10px; padding:11px; font-weight:700; font-size:13.5px; margin-top:10px;
-  }
-  .demo-card .dc-out { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; padding-top:12px; border-top:1px dashed var(--dw-line); }
-  .demo-card .dc-out span { font-size:10.5px; font-weight:700; background:var(--dw-green-100); color:var(--dw-green-800); border-radius:999px; padding:3px 10px; }
-  .demo-card .dc-out span.q { background:var(--dw-amber-bg); color:var(--dw-amber-text); }
-  .demo-card .dc-fine { font-size:10.5px; color:var(--dw-muted); margin-top:10px; text-align:center; }
-  .demo-card .dc-fine a { color:var(--dw-green-600); font-weight:700; }
-
-  /* Stats strip */
-  .stats { display:flex; gap:0; border:1px solid var(--dw-line); border-radius:14px; background:#fff; margin:-38px auto 0; max-width:860px; position:relative; box-shadow:0 6px 24px rgba(11,61,46,.08); flex-wrap:wrap; }
-  .stat { flex:1; min-width:190px; text-align:center; padding:20px 14px; border-right:1px solid var(--dw-line); }
-  .stat:last-child { border-right:none; }
-  .stat .n { font-size:22px; font-weight:800; color:var(--dw-green-700); }
-  .stat .l { font-size:12px; color:var(--dw-muted); }
-
-  section { padding:64px 0; }
-  section.alt { background:var(--dw-canvas); }
-  h2 { color:var(--dw-ink); font-size:26px; text-align:center; letter-spacing:-.01em; margin-bottom:8px; }
-  .sub { text-align:center; color:var(--dw-muted); max-width:560px; margin:0 auto 36px; font-size:14.5px; }
-
-  /* Old vs new */
-  .vs { display:flex; gap:20px; flex-wrap:wrap; }
-  .vs .col { flex:1; min-width:280px; border-radius:14px; padding:24px; border:1px solid var(--dw-line); background:#fff; }
-  .vs .old { background:#FAFAFA; }
-  .vs .new { border:2px solid var(--dw-green-600); background:var(--dw-green-50); }
-  .vs h3 { font-size:15px; color:var(--dw-ink); margin-bottom:10px; }
-  .vs ul { list-style:none; font-size:13.5px; }
-  .vs li { padding:5px 0 5px 26px; position:relative; }
-  .vs .old li::before { content:"✗"; position:absolute; left:2px; color:var(--dw-muted); font-weight:800; }
-  .vs .new li::before { content:"✓"; position:absolute; left:2px; color:var(--dw-green-600); font-weight:800; }
-
-  /* Steps */
-  .steps { display:flex; gap:18px; flex-wrap:wrap; }
-  .step { flex:1; min-width:220px; background:#fff; border:1px solid var(--dw-line); border-radius:14px; padding:22px; }
-  .step .num { width:30px; height:30px; border-radius:9px; background:var(--dw-green-700); color:#fff; font-weight:800; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
-  .step b { display:block; color:var(--dw-ink); margin-bottom:4px; font-size:14.5px; }
-  .step span { font-size:13px; color:var(--dw-muted); }
-
-  /* Features */
-  .feats { display:flex; flex-wrap:wrap; gap:16px; }
-  .feat { flex:1; min-width:260px; background:#fff; border:1px solid var(--dw-line); border-radius:14px; padding:20px; }
-  .feat .ic { font-size:22px; margin-bottom:8px; }
-  .feat b { display:block; color:var(--dw-ink); margin-bottom:4px; font-size:14.5px; }
-  .feat span { font-size:13px; color:var(--dw-muted); }
-  .feat .chip { display:inline-block; margin-top:10px; background:var(--dw-amber-bg); color:var(--dw-amber-text); font-size:10.5px; font-weight:700; border-radius:5px; padding:2px 7px; letter-spacing:.5px; }
-
-  /* Pricing */
-  .plans { display:flex; gap:16px; flex-wrap:wrap; align-items:stretch; }
-  .plan { flex:1; min-width:240px; background:#fff; border:1px solid var(--dw-line); border-radius:16px; padding:26px; display:flex; flex-direction:column; }
-  .plan.rec { border:2px solid var(--dw-green-600); box-shadow:0 8px 28px rgba(17,110,79,.14); position:relative; }
-  .plan.rec .flag { position:absolute; top:-13px; left:50%; transform:translateX(-50%); background:var(--dw-green-700); color:#fff; font-size:11px; font-weight:800; letter-spacing:.5px; border-radius:999px; padding:4px 14px; }
-  .plan .pname { font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--dw-green-700); font-weight:800; }
-  .plan .price { font-size:30px; font-weight:800; color:var(--dw-ink); margin:8px 0 0; }
-  .plan .per { font-size:12px; color:var(--dw-muted); margin-bottom:16px; }
-  .plan ul { list-style:none; font-size:13px; margin-bottom:18px; flex:1; }
-  .plan li { padding:4px 0 4px 22px; position:relative; }
-  .plan li::before { content:"✓"; position:absolute; left:0; color:var(--dw-green-600); font-weight:800; }
-  .launch { text-align:center; background:var(--dw-gold-100); border:1px solid #EBDCA8; color:#7A5A10; border-radius:12px; padding:12px 18px; font-size:13px; margin-top:22px; }
-
-  /* FAQ */
-  .faq { max-width:720px; margin:0 auto; }
-  .faq .q { border:1px solid var(--dw-line); border-radius:12px; background:#fff; padding:16px 18px; margin-bottom:10px; }
-  .faq b { color:var(--dw-ink); font-size:14px; display:block; margin-bottom:4px; }
-  .faq span { font-size:13.5px; color:var(--dw-body); }
-
-  footer { background:var(--dw-green-950); color:#9DBBAF; padding:36px 0; font-size:12.5px; }
-  .foot-in { display:flex; gap:30px; align-items:center; flex-wrap:wrap; }
-  footer .logo { color:#fff; font-size:15px; }
-  footer a { color:#9DBBAF; margin-right:18px; }
-  footer a:hover { color:#fff; }
-  footer .est { margin-top:14px; font-size:11px; opacity:.7; }
+:root{--dw-green-950:#04241B;--dw-green-900:#0B3D2E;--dw-green-800:#0E5941;--dw-green-700:#116E4F;--dw-green-600:#15825D;--dw-green-500:#1DA06E;--dw-green-100:#D7F0E4;--dw-green-50:#EFF8F3;--dw-gold-600:#B79121;--dw-gold-100:#FBF3D9;--dw-amber-text:#9A6B13;--dw-amber-bg:#FDF3E2;--dw-red-600:#C0392B;--dw-red-bg:#FBE9E9;--dw-teal-600:#0E7490;--dw-teal-bg:#E0F2F7;--dw-ink:#16241D;--dw-body:#374151;--dw-muted:#6B7280;--dw-line:#E6E8EE;--dw-canvas:#F6F8F7;--dw-grad:linear-gradient(135deg,var(--dw-green-800),var(--dw-green-900))}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{background:#fff;color:var(--dw-body);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}a{color:inherit;text-decoration:none}.container{width:min(1180px,calc(100% - 48px));margin:auto}.section{padding:80px 0}.alt{background:var(--dw-canvas)}
+.btn{display:inline-flex;min-height:44px;align-items:center;justify-content:center;border:1.5px solid transparent;border-radius:10px;padding:10px 20px;font-size:13.5px;font-weight:750;transition:.18s}.btn.primary{background:var(--dw-green-700);color:#fff}.btn.primary:hover{background:var(--dw-green-800);transform:translateY(-1px)}.btn.ghost{border-color:var(--dw-green-700);background:#fff;color:var(--dw-green-700)}.btn.light{border-color:rgba(255,255,255,.55);background:rgba(255,255,255,.08);color:#fff}
+nav{position:sticky;z-index:20;top:0;border-bottom:1px solid var(--dw-line);background:rgba(255,255,255,.96);backdrop-filter:blur(10px)}.nav-in{display:flex;min-height:66px;align-items:center;gap:24px}.brand img{display:block;width:130px;height:32px}.nav-links{display:flex;margin-left:auto;gap:26px;font-size:13px;font-weight:650}.nav-links a:hover{color:var(--dw-green-600)}.nav-actions{display:flex;gap:10px}
+.hero{overflow:hidden;background:var(--dw-grad);color:#fff}.hero-in{display:grid;grid-template-columns:.9fr 1.25fr;align-items:center;gap:55px;padding:76px 0 82px}.eyebrow{display:inline-flex;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:rgba(255,255,255,.08);padding:5px 13px;font-size:10.5px;letter-spacing:.9px;text-transform:uppercase}.hero h1{max-width:560px;margin:18px 0 16px;font-size:48px;line-height:1.06;letter-spacing:-.04em}.hero-copy{max-width:555px;color:rgba(255,255,255,.84);font-size:16px}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:27px}.fine{margin-top:14px;color:rgba(255,255,255,.67);font-size:11.5px}
+.pipeline-shell{position:relative;padding:24px 0}.pipeline-label{position:absolute;top:0;right:6%;left:38%;border-top:1px solid rgba(255,255,255,.42);color:rgba(255,255,255,.8);font-size:10px;text-align:center}.pipeline-label:before,.pipeline-label:after{position:absolute;top:-1px;width:1px;height:12px;background:rgba(255,255,255,.42);content:""}.pipeline-label:before{left:0}.pipeline-label:after{right:0}.pipeline{display:grid;grid-template-columns:1.15fr 28px 1.85fr;align-items:center;gap:10px}.arrow{color:var(--dw-green-100);font-size:30px;text-align:center}.ui-card{border:1px solid rgba(4,36,27,.12);border-radius:12px;background:#fff;color:var(--dw-body);box-shadow:0 14px 35px rgba(4,36,27,.22)}.notes{overflow:hidden}.ui-head{display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--dw-line);padding:10px 12px;color:var(--dw-ink);font-size:10.5px;font-weight:750}.dot{width:7px;height:7px;border-radius:50%;background:var(--dw-teal-600)}.tabs{display:flex;background:var(--dw-canvas);color:var(--dw-muted);font-size:9px}.tabs span{flex:1;padding:5px;text-align:center}.tabs .active{background:#fff;color:var(--dw-ink);font-weight:700}.note-lines{padding:10px 11px 6px;font-size:9px;line-height:1.4}.note{display:grid;grid-template-columns:30px 1fr;gap:6px;margin-bottom:6px}.time{color:var(--dw-teal-600);font-size:8px}.sensitive{border-radius:6px;background:var(--dw-red-bg);padding:5px 6px;color:var(--dw-red-600)}.chips{display:flex;flex-wrap:wrap;gap:4px;padding:3px 11px 12px}.chip{display:inline-flex;align-items:center;border-radius:999px;padding:3px 7px;font-size:8px;font-weight:750;line-height:1.2}.verified{background:var(--dw-green-100);color:var(--dw-green-800)}.estimate{background:var(--dw-amber-bg);color:var(--dw-amber-text)}.gap{background:var(--dw-red-bg);color:var(--dw-red-600)}.info{background:var(--dw-teal-bg);color:var(--dw-teal-600)}
+.outputs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.output{min-height:202px;padding:11px 10px}.output-title{display:flex;align-items:center;gap:6px;color:var(--dw-ink);font-size:10px;font-weight:800}.output-icon{display:flex;width:20px;height:20px;align-items:center;justify-content:center;border-radius:6px;background:var(--dw-green-50);color:var(--dw-green-700)}.mini-list{margin-top:10px;list-style:none;font-size:8.5px}.mini-list li{position:relative;margin:7px 0;padding-left:13px}.mini-list li:before{position:absolute;left:0;color:var(--dw-green-600);content:"✓";font-weight:800}.price-box{margin:10px 0;border-radius:7px;background:var(--dw-amber-bg);padding:8px}.price-box strong{color:var(--dw-ink);font-size:17px}.price-box small{color:var(--dw-amber-text);font-size:7px;font-weight:700}.doc-mini{margin-top:10px;border:1px solid var(--dw-line);border-radius:6px;padding:8px}.doc-mini b{color:var(--dw-ink);font-size:8px}.skeleton{height:4px;margin-top:5px;border-radius:3px;background:var(--dw-line)}.short{width:62%}
+.value-wrap{position:relative;z-index:3}.value-strip{display:grid;grid-template-columns:repeat(3,1fr);max-width:900px;margin:-34px auto 0;border:1px solid var(--dw-line);border-radius:14px;background:#fff;box-shadow:0 9px 26px rgba(4,36,27,.1)}.value{display:flex;align-items:center;justify-content:center;gap:11px;padding:18px 22px}.value+.value{border-left:1px solid var(--dw-line)}.value-icon{display:flex;width:34px;height:34px;align-items:center;justify-content:center;border-radius:10px;background:var(--dw-green-50);color:var(--dw-green-700);font-weight:850}.value b{display:block;color:var(--dw-green-700);font-size:14px}.value span{display:block;color:var(--dw-muted);font-size:10px}
+.section-head{max-width:650px;margin:0 auto 38px;text-align:center}.section-head h2{color:var(--dw-ink);font-size:32px;line-height:1.2;letter-spacing:-.025em}.section-head p{margin-top:9px;color:var(--dw-muted)}.workflow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.work-card{position:relative;border:1px solid var(--dw-line);border-radius:14px;background:#fff;padding:18px}.work-card:not(:last-child):after{position:absolute;z-index:2;top:48%;right:-19px;color:var(--dw-green-600);content:"→";font-size:22px;font-weight:800}.work-top{display:grid;grid-template-columns:30px 1fr;gap:10px}.work-num{display:flex;width:30px;height:30px;align-items:center;justify-content:center;border-radius:50%;background:var(--dw-green-700);color:#fff;font-size:12px;font-weight:800}.work-top h3{color:var(--dw-ink);font-size:14px}.work-top p{color:var(--dw-muted);font-size:10.5px;line-height:1.35}.mini-ui{min-height:170px;margin-top:14px;border:1px solid var(--dw-line);border-radius:9px;background:var(--dw-canvas);padding:11px}.mini-ui>b{display:block;margin-bottom:9px;color:var(--dw-ink);font-size:10px}.row{display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--dw-line);padding:6px 0;font-size:9px}.row:last-child{border:0}.check{color:var(--dw-green-600);font-weight:850}.row small{margin-left:auto;border-radius:4px;background:#fff;padding:2px 4px;color:var(--dw-muted);font-size:7.5px}.roi-total{display:flex;align-items:center;justify-content:space-between;border-radius:7px;background:var(--dw-amber-bg);padding:8px}.roi-total strong{color:var(--dw-ink);font-size:18px}.metric{display:flex;justify-content:space-between;border-bottom:1px solid var(--dw-line);padding:6px 2px;font-size:8.5px}.metric em{color:var(--dw-green-700);font-style:normal;font-weight:800}.mini-button{margin-top:9px;border:1px solid var(--dw-green-700);border-radius:6px;padding:6px;color:var(--dw-green-700);font-size:8px;font-weight:750;text-align:center}.proposal-mini{display:grid;grid-template-columns:1fr .8fr;gap:8px}.proposal-sheet,.proposal-checks{border:1px solid var(--dw-line);border-radius:7px;background:#fff;padding:8px}.proposal-sheet b{color:var(--dw-ink);font-size:8px}.proposal-checks div{margin-bottom:7px;font-size:7.5px}
+.trust-grid{display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:70px}.proposal-stack{position:relative;min-height:480px}.paper-back{position:absolute;inset:30px 54px 0 10px;transform:rotate(-4deg);border:1px solid var(--dw-line);border-radius:5px;background:#fff;box-shadow:0 14px 35px rgba(4,36,27,.08)}.proposal-paper{position:absolute;inset:0 10px 20px 48px;border:1px solid var(--dw-line);border-radius:5px;background:#fff;padding:36px;box-shadow:0 18px 45px rgba(4,36,27,.12)}.paper-brand{display:flex;align-items:center;gap:8px;color:var(--dw-ink);font-size:11px;font-weight:800}.paper-mark{display:flex;width:25px;height:25px;align-items:center;justify-content:center;border-radius:7px;background:var(--dw-gold-600);color:#fff;font-size:8px;font-weight:300}.paper-date{float:right;color:var(--dw-muted);font-size:8px;text-align:right}.proposal-paper h3{margin-top:28px;color:var(--dw-ink);font-size:27px}.for{color:var(--dw-muted);font-size:11px}.paper-content{display:grid;grid-template-columns:1.2fr .8fr;gap:22px;margin-top:28px}.paper-copy b{color:var(--dw-ink);font-size:11px}.paper-copy p{margin-top:8px;color:var(--dw-muted);font-size:9px}.investment{border:1px solid var(--dw-green-100);border-radius:9px;background:var(--dw-green-50);padding:13px}.investment small{color:var(--dw-muted);font-size:8px}.investment strong{display:block;color:var(--dw-ink);font-size:22px}.investment dl{margin-top:10px;font-size:8px}.investment dl div{display:flex;justify-content:space-between;padding:3px 0}.investment dt{color:var(--dw-muted)}.investment dd{color:var(--dw-ink);font-weight:700}.trust-copy h2{color:var(--dw-ink);font-size:34px;line-height:1.15;letter-spacing:-.025em}.trust-copy>p{margin:11px 0 25px;color:var(--dw-muted)}.proof{display:grid;grid-template-columns:40px 1fr;gap:12px;margin-bottom:12px;border:1px solid var(--dw-line);border-radius:12px;background:#fff;padding:15px}.proof-icon{display:flex;width:40px;height:40px;align-items:center;justify-content:center;border-radius:11px;background:var(--dw-green-50);color:var(--dw-green-700);font-weight:850}.proof b{display:block;color:var(--dw-ink);font-size:13px}.proof span{display:block;margin-top:2px;color:var(--dw-muted);font-size:11.5px}
+.mid-cta{background:var(--dw-green-950);color:#fff}.mid-cta-in{display:flex;align-items:center;justify-content:space-between;gap:30px;padding:45px 0}.mid-cta h2{font-size:28px;letter-spacing:-.02em}.mid-cta p{margin-top:5px;color:rgba(255,255,255,.65);font-size:13px}.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.plan{display:flex;flex-direction:column;border:1px solid var(--dw-line);border-radius:16px;background:#fff;padding:27px}.plan.rec{position:relative;border:2px solid var(--dw-green-600);box-shadow:0 10px 30px rgba(17,110,79,.12)}.plan-flag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);border-radius:999px;background:var(--dw-green-700);padding:4px 14px;color:#fff;font-size:10px;font-weight:800;white-space:nowrap}.plan-name{color:var(--dw-green-700);font-size:11px;font-weight:850;letter-spacing:1px;text-transform:uppercase}.plan-price{margin-top:7px;color:var(--dw-ink);font-size:31px;font-weight:850}.plan-price span{color:var(--dw-muted);font-size:12px}.plan-for{margin-bottom:18px;color:var(--dw-muted);font-size:11.5px}.plan ul{flex:1;margin-bottom:22px;list-style:none;font-size:12.5px}.plan li{position:relative;padding:5px 0 5px 20px}.plan li:before{position:absolute;left:0;color:var(--dw-green-600);content:"✓";font-weight:850}.launch{margin-top:22px;border:1px solid rgba(183,145,33,.35);border-radius:12px;background:var(--dw-gold-100);padding:13px 18px;color:var(--dw-ink);font-size:12.5px;text-align:center}.faq{max-width:800px;margin:auto}details{margin-bottom:10px;border:1px solid var(--dw-line);border-radius:12px;background:#fff;padding:15px 18px}summary{cursor:pointer;color:var(--dw-ink);font-size:13.5px;font-weight:750}details p{margin-top:8px;font-size:13px}footer{background:var(--dw-green-950);color:#9DBBAF;padding:34px 0;font-size:12px}.footer-top{display:flex;align-items:center;gap:24px}.footer-top .brand img{width:118px}.footer-links{display:flex;margin-left:auto;gap:19px}.disclaimer{margin-top:14px;color:rgba(215,240,228,.55);font-size:10.5px}
+@media(max-width:1050px){.hero-in{grid-template-columns:1fr}.pipeline-shell{max-width:800px}.workflow{grid-template-columns:repeat(2,1fr)}.work-card:nth-child(2):after{display:none}.trust-grid{gap:35px}}
+@media(max-width:760px){.container{width:calc(100% - 32px)}.section{padding:62px 0}.nav-links{display:none}.nav-actions{margin-left:auto}.nav-actions .ghost{display:none}.hero-in{padding:58px 0 68px}.hero h1{font-size:38px}.pipeline-label{display:none}.pipeline{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}.outputs{grid-template-columns:repeat(2,1fr)}.value-strip{grid-template-columns:1fr}.value{justify-content:flex-start}.value+.value{border-top:1px solid var(--dw-line);border-left:0}.workflow,.trust-grid,.plans{grid-template-columns:1fr}.work-card:after{display:none}.proposal-stack{min-height:430px}.proposal-paper{inset:0 0 20px 22px;padding:24px}.paper-back{inset:25px 24px 0 0}.mid-cta-in,.footer-top{align-items:flex-start;flex-direction:column}.footer-links{flex-wrap:wrap;margin-left:0}}
+@media(max-width:470px){.brand img{width:112px}.hero h1{font-size:33px}.hero-actions{align-items:stretch;flex-direction:column}.output{min-height:190px}.proposal-stack{min-height:390px}.paper-content{grid-template-columns:1fr}.investment{display:none}}
 </style>
 </head>
 <body>
-
-<nav>
-  <div class="container nav-in">
-    <a href="#" class="logo"><span class="mark">DW</span>Dealwright</a>
-    <div class="nav-links">
-      <a href="#how">How it works</a>
-      <a href="#features">Features</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#faq">FAQ</a>
-    </div>
-    <a href="#" class="btn ghost">Log in</a>
-    <a href="#" class="btn primary">Start free</a>
-  </div>
-</nav>
-
-<header class="hero">
-  <div class="container">
-    <div class="hero-grid">
-      <div class="hero-left">
-        <div class="badge">For freelancers · VAs · agencies</div>
-        <h1>Turn discovery calls into <em>signed deals</em>.</h1>
-        <p>Paste what the client said. Dealwright extracts the facts, computes transparent ROI, recommends the right services, matches your assistant — and writes the client-ready proposal.</p>
-        <div class="cta">
-          <a href="#" class="btn primary" style="padding:13px 28px; font-size:14.5px;">Start 14-day free trial</a>
-          <a href="proposal-solo-va-mockup.html" class="btn light">See a real proposal →</a>
-        </div>
-        <div class="fine">No card required · Every number traceable · Estimates labelled as estimates, always</div>
-      </div>
-      <div class="demo-card">
-        <div class="dc-label">📋 Paste what your client said</div>
-        <textarea>LF: FEMALE PERSONAL ASSISTANT 😂
-Role: be my human checklist + reminder app
-• Manage and organize my schedule
-• Keep track of appointments, deadlines
-• Send reminders and follow-ups
-• Do small errands or coordinate for me
-• Make calls, inquiries, bookings, reservations
-• Be my "one call away" person
-• Basically: help make my life less chaotic</textarea>
-        <a href="proposal-solo-va-mockup.html" class="dc-btn">Craft my proposal →</a>
-        <div class="dc-out">
-          <span>✓ 8 tasks extracted</span>
-          <span>✓ Delegation ROI mode</span>
-          <span class="q">7 follow-up questions</span>
-          <span>≈ ₱8,700/mo est</span>
-        </div>
-        <div class="dc-fine">Sample data — in the app this runs live in ~15 s. <a href="proposal-solo-va-mockup.html">See the full proposal it produces →</a></div>
-      </div>
-    </div>
-  </div>
-</header>
-
-<div class="container">
-  <div class="stats">
-    <div class="stat"><div class="n">₱0.52</div><div class="l">AI cost per proposal generated</div></div>
-    <div class="stat"><div class="n">~15 min</div><div class="l">From call notes to sendable proposal</div></div>
-    <div class="stat"><div class="n">1 client</div><div class="l">Won deal pays for the year</div></div>
-  </div>
-</div>
-
-<section>
-  <div class="container">
-    <h2>The old way costs you deals</h2>
-    <p class="sub">Proposal tools format what you already wrote. Dealwright decides what to write — and proves every number.</p>
-    <div class="vs">
-      <div class="col old">
-        <h3>ChatGPT + spreadsheet + template</h3>
-        <ul>
-          <li>Numbers you retype and can't defend</li>
-          <li>Savings claims the client correctly doubts</li>
-          <li>Forget which VA has which verified skill</li>
-          <li>Hours per proposal — so you send fewer</li>
-        </ul>
-      </div>
-      <div class="col new">
-        <h3>Dealwright</h3>
-        <ul>
-          <li>Facts extracted from the call, each traceable to a quote</li>
-          <li>ROI computed in code, assumptions shown to the client</li>
-          <li>Rule-based match from your bench, verified ≠ claimed</li>
-          <li>Minutes per proposal — so you pitch everyone</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="alt" id="how">
-  <div class="container">
-    <h2>How it works</h2>
-    <p class="sub">One messy paragraph from a client in. A polished, honest proposal out.</p>
-    <div class="steps">
-      <div class="step"><div class="num">1</div><b>Paste the call</b><span>Raw notes, a Facebook want-list, a transcript — Dealwright reads it like an analyst.</span></div>
-      <div class="step"><div class="num">2</div><b>Confirm facts &amp; assumptions</b><span>Every extracted fact shows its source. Missing info becomes follow-up questions, never guesses.</span></div>
-      <div class="step"><div class="num">3</div><b>Get the numbers &amp; the match</b><span>Deterministic ROI with editable assumptions. Services priced from your catalog. Your best-matched assistant with reasons.</span></div>
-      <div class="step"><div class="num">4</div><b>Send the proposal</b><span>AI writes the story — never the figures. You review, tweak, export the PDF. Then track the outcome.</span></div>
-    </div>
-  </div>
-</section>
-
-<section id="features">
-  <div class="container">
-    <h2>Built so you can defend every peso</h2>
-    <p class="sub">The AI writes words. The math is Python. The prices come from your catalog. That's the whole discipline.</p>
-    <div class="feats">
-      <div class="feat"><div class="ic">📐</div><b>Deterministic ROI engine</b><span>Automation and delegation modes, three scenarios, payback math — computed in code, not hallucinated.</span><span class="chip">ESTIMATES ONLY</span></div>
-      <div class="feat"><div class="ic">🛡</div><b>Generation guardrails</b><span>The AI can't invent prices, savings, or skills. Banned-phrase filter kills "guaranteed" before your client sees it.</span></div>
-      <div class="feat"><div class="ic">✅</div><b>Verified skill bench</b><span>Every VA skill carries evidence: assessments, completed projects, portfolios. Claimed is never shown as proven.</span></div>
-      <div class="feat"><div class="ic">🧩</div><b>Your catalog, your prices</b><span>Ships with 26 seed services across 8 categories — edit to your own offers. Prices never come from the AI.</span></div>
-      <div class="feat"><div class="ic">👤</div><b>Solo or team, same app</b><span>Solo VA? Proposals present you. Agency? They present the matched bench. The app knows the difference.</span></div>
-      <div class="feat"><div class="ic">📄</div><b>Proposal + PDF + tracking</b><span>Editable web proposal, clean PDF export, status tracking from sent to signed — feeding better assumptions over time.</span></div>
-    </div>
-  </div>
-</section>
-
-<section class="alt" id="pricing">
-  <div class="container">
-    <h2>Win one client and it's paid for the year</h2>
-    <p class="sub">Priced for Filipino freelancers and agencies. Annual billing saves 2 months.</p>
-    <div class="plans">
-      <div class="plan">
-        <div class="pname">Starter</div>
-        <div class="price">₱399<span style="font-size:13px">/mo</span></div>
-        <div class="per">for the solo VA starting out</div>
-        <ul>
-          <li>10 proposals / month</li>
-          <li>1 seat · 5 bench profiles</li>
-          <li>ROI engine + full catalog</li>
-          <li>PDF export</li>
-        </ul>
-        <a href="#" class="btn ghost" style="text-align:center">Start free trial</a>
-      </div>
-      <div class="plan rec">
-        <div class="flag">MOST CHOSEN</div>
-        <div class="pname">Professional</div>
-        <div class="price">₱899<span style="font-size:13px">/mo</span></div>
-        <div class="per">for the serious freelancer</div>
-        <ul>
-          <li>40 proposals / month</li>
-          <li>Your branding, your logo</li>
-          <li>Custom service catalog</li>
-          <li>n8n &amp; email integrations</li>
-          <li>Proposal tracking</li>
-        </ul>
-        <a href="#" class="btn primary" style="text-align:center">Start free trial</a>
-      </div>
-      <div class="plan">
-        <div class="pname">Agency</div>
-        <div class="price">₱1,990<span style="font-size:13px">/mo</span></div>
-        <div class="per">for teams with a bench</div>
-        <ul>
-          <li>Unlimited proposals (fair use)</li>
-          <li>5 seats · unlimited bench</li>
-          <li>Full white-label</li>
-          <li>Client workspaces</li>
-          <li>Priority support</li>
-        </ul>
-        <a href="#" class="btn ghost" style="text-align:center">Talk to us</a>
-      </div>
-    </div>
-    <div class="launch">🎁 <b>Founding 20:</b> first twenty members lock ₱299/mo for 12 months — in exchange for sharing your proposal outcomes (anonymized) so the assumptions engine gets smarter for everyone.</div>
-  </div>
-</section>
-
-<section id="faq">
-  <div class="container">
-    <h2>Fair questions</h2>
-    <p class="sub">Straight answers, the same way we write proposals.</p>
-    <div class="faq">
-      <div class="q"><b>Does the AI make up the savings numbers?</b><span>No — and that's the point. All money math runs in Python from assumptions you and the client can see and edit. The AI only restates the client's goals and explains the results in plain language. Every figure in its writing traces back to a stored field.</span></div>
-      <div class="q"><b>Do you guarantee savings or results?</b><span>Never. Every figure is labelled an estimate with its assumptions shown. If a value can't be honestly quantified — like "consistent posting" — it's presented as a benefit, not a number.</span></div>
-      <div class="q"><b>I'm a solo VA, not an agency. Does this still fit?</b><span>It's built for you first. In solo mode, proposals present your own verified skills and rates, and the matching engine checks whether <i>you</i> should take a deal — with honest gaps and what to do about them.</span></div>
-      <div class="q"><b>Who owns my client data?</b><span>You do. Your clients, notes, and proposals are yours, exportable. We keep daily backups, and we never train on your data.</span></div>
-      <div class="q"><b>Can I cancel anytime?</b><span>Yes. Monthly plans cancel in a click; your data stays exportable for 90 days.</span></div>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="container">
-    <div class="foot-in">
-      <a href="#" class="logo"><span class="mark" style="width:24px;height:24px;font-weight:300;font-size:9.5px;letter-spacing:.8px;">DW</span>Dealwright</a>
-      <div style="margin-left:auto;">
-        <a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Sign in</a>
-      </div>
-    </div>
-    <div class="est">All savings and revenue figures produced by Dealwright are estimates derived from stated assumptions — not guarantees of outcomes. © 2026 Dealwright.</div>
-  </div>
-</footer>
-
+<nav><div class="container nav-in"><a class="brand" href="#"><img src="../brand/logo-horizontal.svg" alt="Dealwright"></a><div class="nav-links"><a href="#how">How it works</a><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a></div><div class="nav-actions"><a class="btn ghost" href="auth-mockup.html">Log in</a><a class="btn primary" href="auth-mockup.html">Start free</a></div></div></nav>
+<header class="hero"><div class="container hero-in"><div><span class="eyebrow">For freelancers · VAs · agencies</span><h1>From messy call notes to a proposal that proves its numbers.</h1><p class="hero-copy">Extract the facts. Show the assumptions. Compute honest ROI. Match the right delivery. Send a client-ready proposal in minutes.</p><div class="hero-actions"><a class="btn primary" href="auth-mockup.html">Start 14-day free trial</a><a class="btn light" href="proposal-solo-va-mockup.html">View example proposal</a></div><p class="fine">No card required · Every figure traceable · Estimates clearly labelled</p></div>
+<div class="pipeline-shell" aria-label="Discovery notes become traceable proposal outputs"><div class="pipeline-label">Dealwright turns notes into a client-ready proposal</div><div class="pipeline"><article class="ui-card notes"><div class="ui-head"><span class="dot"></span>Discovery call notes</div><div class="tabs"><span class="active">Transcript</span><span>Notes</span></div><div class="note-lines"><div class="note"><span class="time">00:12</span><span>We're getting 200–300 leads a month, but follow-up is messy.</span></div><div class="note"><span class="time">01:48</span><span>I think we can spend around ₱8–10k per month.</span></div><div class="note"><span class="time">03:21</span><span>We also need someone to handle client onboarding.</span></div><div class="note"><span class="time">04:05</span><span class="sensitive">We'd prefer a female assistant for the role.</span></div></div><div class="chips"><span class="chip info">“200–300 leads”</span><span class="chip info">“around ₱8–10k”</span><span class="chip gap">Protected preference excluded</span></div></article><div class="arrow">→</div>
+<div class="outputs"><article class="ui-card output"><div class="output-title"><span class="output-icon">✓</span>Facts</div><ul class="mini-list"><li>200–300 leads/month</li><li>Needs follow-up support</li><li>Client onboarding required</li><li>Protected preference excluded</li></ul><span class="chip info">Source 00:12 · +4 more</span></article><article class="ui-card output"><div class="output-title"><span class="output-icon">₱</span>ROI estimate</div><div class="price-box"><strong>₱8,700</strong><small>/mo estimate</small></div><ul class="mini-list"><li>40 hours/month</li><li>₱250/hour average</li><li>Estimated 3.2× ROI</li></ul><span class="chip estimate">Assumptions shown</span></article><article class="ui-card output"><div class="output-title"><span class="output-icon">◇</span>Delivery fit</div><ul class="mini-list"><li>Virtual assistant</li><li>Lead management</li><li>Client onboarding</li><li>Data handling</li></ul><span class="chip verified">Matched from catalog</span></article><article class="ui-card output"><div class="output-title"><span class="output-icon">▤</span>Proposal</div><div class="doc-mini"><b>Client Proposal</b><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton short"></div></div><ul class="mini-list"><li>Ready to send</li><li>Figures traceable</li><li>Assumptions included</li></ul><span class="chip verified">Client-ready</span></article></div></div></div></div></header>
+<div class="container value-wrap"><div class="value-strip"><div class="value"><span class="value-icon">◷</span><div><b>~15 min</b><span>to a sendable proposal</span></div></div><div class="value"><span class="value-icon">▤</span><div><b>Every peso traceable</b><span>from call to calculation</span></div></div><div class="value"><span class="value-icon">◇</span><div><b>Solo or team-ready</b><span>built for how you work</span></div></div></div></div>
+<main><section class="section" id="how"><div class="container"><div class="section-head"><h2>One input. Four decisions already made.</h2><p>Paste your notes and Dealwright handles the rest — from raw facts to a client-ready proposal.</p></div><div class="workflow">
+<article class="work-card"><div class="work-top"><span class="work-num">1</span><div><h3>Extract the facts</h3><p>Finds and structures what matters from the call.</p></div></div><div class="mini-ui"><b>Extracted facts (6)</b><div class="row"><span class="check">✓</span>200–300 leads per month<small>00:12</small></div><div class="row"><span class="check">✓</span>Needs follow-up support<small>01:48</small></div><div class="row"><span class="check">✓</span>Client onboarding required<small>03:21</small></div><div class="row"><span class="check">✓</span>Budget around ₱8–10k<small>04:05</small></div></div></article>
+<article class="work-card"><div class="work-top"><span class="work-num">2</span><div><h3>Calculate the ROI</h3><p>Computes from your catalog, with clear assumptions.</p></div></div><div class="mini-ui"><b>ROI estimate</b><div class="roi-total"><strong>₱8,700<small>/mo</small></strong><span class="chip estimate">estimate</span></div><div class="metric"><span>Estimated hours</span><b>40 hrs/mo</b></div><div class="metric"><span>Your rate</span><b>₱250/hr</b></div><div class="metric"><span>Estimated ROI</span><em>3.2×</em></div><div class="mini-button">View assumptions →</div></div></article>
+<article class="work-card"><div class="work-top"><span class="work-num">3</span><div><h3>Match the delivery</h3><p>Gets the right services and team fit from your catalog.</p></div></div><div class="mini-ui"><b>Recommended package</b><div class="row"><span class="check">✓</span>Virtual assistant<small>40 hrs/mo</small></div><div class="row"><span class="check">✓</span>Lead management<small>Included</small></div><div class="row"><span class="check">✓</span>Client onboarding<small>Included</small></div><div class="row"><span>□</span>Data handling (NDA)<small>Required</small></div><div class="mini-button">View service details</div></div></article>
+<article class="work-card"><div class="work-top"><span class="work-num">4</span><div><h3>Write the proposal</h3><p>Drafts a clear proposal you can review and send.</p></div></div><div class="mini-ui"><b>Proposal preview</b><div class="proposal-mini"><div class="proposal-sheet"><b>Client Proposal</b><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton short"></div><div class="skeleton"></div></div><div class="proposal-checks"><div><span class="check">✓</span> Figures from catalog</div><div><span class="check">✓</span> Assumptions included</div><div><span class="check">✓</span> Ready to send</div></div></div><div class="mini-button">Export PDF</div></div></article></div></div></section>
+<section class="section alt" id="features"><div class="container trust-grid"><div class="proposal-stack" aria-label="Client proposal preview"><div class="paper-back"></div><article class="proposal-paper"><span class="paper-date">May 10, 2026<br>CONFIDENTIAL</span><div class="paper-brand"><span class="paper-mark">DW</span>Dealwright</div><h3>Client Proposal</h3><p class="for">Virtual Assistant Support · Prepared for Acme Co.</p><div class="paper-content"><div class="paper-copy"><b>Executive summary</b><p>Dedicated support to manage lead follow-up and client onboarding, with a focus on measurable outcomes and responsible data handling.</p></div><aside class="investment"><small>Investment (monthly)</small><strong>₱8,700 <span class="chip estimate">estimate</span></strong><dl><div><dt>Estimated hours</dt><dd>40 hrs</dd></div><div><dt>Rate</dt><dd>₱250/hr</dd></div><div><dt>Estimated ROI</dt><dd>3.2×</dd></div></dl></aside></div></article></div><div class="trust-copy"><h2>Why clients trust the proposal</h2><p>Every figure is backed by a source. No black boxes. No vague estimates.</p><div class="proof"><span class="proof-icon">▦</span><div><b>Assumptions are visible</b><span>Clients can see what each number is based on — from call quotes to your catalog.</span></div></div><div class="proof"><span class="proof-icon">▤</span><div><b>Prices come from your catalog</b><span>The AI uses your defined services, rates, and delivery rules. No made-up numbers.</span></div></div><div class="proof"><span class="proof-icon">✎</span><div><b>AI writes the story — not the figures</b><span>You get a tailored narrative while every number remains grounded in your data.</span></div></div></div></div></section>
+<section class="mid-cta"><div class="container mid-cta-in"><div><h2>Turn the next discovery call into a defensible proposal.</h2><p>Try Dealwright free for 14 days. No card required.</p></div><a class="btn primary" href="auth-mockup.html">Start free trial →</a></div></section>
+<section class="section alt" id="pricing"><div class="container"><div class="section-head"><h2>Win one client and it’s paid for the year</h2><p>Priced for Filipino freelancers and agencies. Annual billing saves two months.</p></div><div class="plans"><article class="plan"><span class="plan-name">Starter</span><div class="plan-price">₱399<span>/mo</span></div><div class="plan-for">for the solo VA starting out</div><ul><li>10 proposals / month</li><li>1 seat · 5 bench profiles</li><li>ROI engine + full catalog</li><li>PDF export</li></ul><a class="btn ghost" href="auth-mockup.html">Start free trial</a></article><article class="plan rec"><span class="plan-flag">MOST CHOSEN</span><span class="plan-name">Professional</span><div class="plan-price">₱899<span>/mo</span></div><div class="plan-for">for the serious freelancer</div><ul><li>40 proposals / month</li><li>Your branding, your logo</li><li>Custom service catalog</li><li>n8n &amp; email integrations</li><li>Proposal tracking</li></ul><a class="btn primary" href="auth-mockup.html">Start free trial</a></article><article class="plan"><span class="plan-name">Agency</span><div class="plan-price">₱1,990<span>/mo</span></div><div class="plan-for">for teams with a bench</div><ul><li>Unlimited proposals (fair use)</li><li>5 seats · unlimited bench</li><li>Full white-label</li><li>Client workspaces</li><li>Priority support</li></ul><a class="btn ghost" href="auth-mockup.html">Talk to us</a></article></div><div class="launch"><b>Founding 20:</b> the first twenty members lock ₱299/month for 12 months in exchange for sharing anonymized proposal outcomes.</div></div></section>
+<section class="section" id="faq"><div class="container"><div class="section-head"><h2>Fair questions</h2><p>Straight answers, the same way we write proposals.</p></div><div class="faq"><details open><summary>Does the AI make up the savings numbers?</summary><p>No. All money math runs in code from assumptions you and the client can see and edit. The AI explains the results; every figure traces back to a stored field.</p></details><details><summary>Do you guarantee savings or results?</summary><p>Never. Every figure is labelled as an estimate with its assumptions shown.</p></details><details><summary>I’m a solo VA, not an agency. Does this still fit?</summary><p>Yes. Solo mode presents your own verified skills and rates while checking your fit and identifying honest gaps.</p></details><details><summary>Who owns my client data?</summary><p>You do. Your clients, notes, and proposals remain yours and are exportable.</p></details><details><summary>Can I cancel anytime?</summary><p>Yes. Monthly plans can be cancelled at any time.</p></details></div></div></section></main>
+<footer><div class="container"><div class="footer-top"><a class="brand" href="#"><img src="../brand/logo-horizontal-light.svg" alt="Dealwright"></a><div class="footer-links"><a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a href="#">Privacy</a><a href="#">Terms</a><a href="auth-mockup.html">Sign in</a></div></div><p class="disclaimer">All savings and revenue figures produced by Dealwright are estimates derived from stated assumptions — not guarantees of outcomes. © 2026 Dealwright.</p></div></footer>
 </body>
 </html>
