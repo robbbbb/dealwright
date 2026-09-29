@@ -32,3 +32,17 @@ Rationale: All 7 gates pass with real output; the diff (9d65123) matches the dis
 ```
 
 **Builder disposition (2026-09-29):** minor 1 → fixed immediately ("Integrations" added to the asserted sidebar items, tests green). Minor 2 → accepted (reviewer's visible-text verification recorded here). **Dashboard shell: approved & closed.** Card 9 wiring deferred per plan.
+
+---
+
+# Pass 2 — mobile hamburger drawer (Robb request, 2026-09-29)
+
+**Scope:** `templates/app-base.html` rework — below `md` the sidebar is replaced by a compact top bar (hamburger + logo); the nav + who-block live in a JS-toggled drop-down drawer (single markup source; `hidden`↔`flex` toggle, `aria-expanded` drives the hamburger↔X swap via `group-aria-expanded` variants; Escape + outside-click close; `<noscript>` forces the drawer statically open so no-JS users keep full navigation). Desktop (md+) rendering unchanged. Test asserts the button + `aria-controls`. **For:** fresh GLM-5.3 reviewer (read-only, gates).
+
+**Visual evidence (builder-verified):** closed `/tmp/dw-drawer-closed2.png`, open `/tmp/dw-drawer-open3.png` (solid dw-900 panel, sections, who-block below nav), desktop unchanged `/tmp/dw-dash-desktop2.png`. Reviewer may substitute DOM checks per pass-1 precedent.
+
+**Gates:** same as pass 1 (pytest 25, ruff, check, CSS reproducible, live smoke, template hygiene incl. the inline script has no business logic, responsive classes: `max-md:absolute`, `group-aria-expanded:*`, `md:flex` on drawer present in compiled CSS).
+
+**Adjudicate:** inline `<script>` + `<noscript>` fallback in the template (progressive-enhancement precedent: OTP boxes); drawer accessible name/aria pattern.
+
+## Verdict (pass 2)

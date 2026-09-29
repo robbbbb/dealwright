@@ -10,30 +10,41 @@
 <body class="bg-dw-canvas text-[14px] leading-relaxed text-dw-body antialiased">
 <div class="flex min-h-screen flex-col md:flex-row">
 
-  <aside class="shrink-0 bg-dw-900 text-white md:flex md:w-[228px] md:flex-col">
-    <div class="flex items-center px-[18px] pb-2 pt-5 md:pb-3">
+  <aside class="max-md:relative shrink-0 bg-dw-900 text-white md:flex md:w-[228px] md:flex-col">
+    <div class="flex items-center gap-3 px-4 py-2.5 md:hidden">
+      <button id="dw-menu-btn" type="button" aria-expanded="false" aria-controls="dw-drawer" class="group flex h-10 w-10 shrink-0 items-center justify-center rounded-[9px] text-white hover:bg-dw-800">
+        <svg class="h-5 w-5 group-aria-expanded:hidden" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 5.5h14M3 10h14M3 14.5h14"/></svg>
+        <svg class="hidden h-5 w-5 group-aria-expanded:block" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>
+        <span class="sr-only">Menu</span>
+      </button>
       <img src="{% static 'brand/logo-horizontal-light.svg' %}" alt="Dealwright" class="block h-7 w-auto">
     </div>
-    <nav class="flex gap-1 overflow-x-auto px-2.5 pb-3 md:flex-1 md:flex-col md:overflow-visible md:pb-0" aria-label="App navigation">
-      <div class="hidden px-2.5 pb-1 pt-3.5 text-[10px] uppercase tracking-[1.2px] text-white/55 md:block">Work</div>
-      <a href="{% url 'home' %}" class="flex shrink-0 items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800 {% if request.resolver_match.url_name == 'home' %}bg-dw-700 font-bold text-white{% endif %}"><span class="w-[18px] text-center opacity-80">▦</span>Dashboard</a>
-      <a href="#" title="Coming soon" aria-disabled="true" class="flex shrink-0 items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">👥</span>Clients</a>
-      <a href="#" title="Coming soon" aria-disabled="true" class="flex shrink-0 items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">🎙</span>Discovery sessions</a>
-      <a href="#" title="Coming soon" aria-disabled="true" class="flex shrink-0 items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">📐</span>ROI estimates</a>
-      <a href="#" title="Coming soon" aria-disabled="true" class="flex shrink-0 items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">📄</span>Proposals</a>
-      <div class="hidden px-2.5 pb-1 pt-3.5 text-[10px] uppercase tracking-[1.2px] text-white/55 md:block">Setup</div>
-      <a href="#" title="Coming soon" aria-disabled="true" class="flex shrink-0 items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">🧩</span>Service catalog</a>
-      <a href="#" title="Coming soon" aria-disabled="true" class="flex shrink-0 items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">✅</span>My skills &amp; bench</a>
-      <a href="#" title="Coming soon" aria-disabled="true" class="flex shrink-0 items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">🔗</span>Integrations</a>
-      <a href="#" title="Coming soon" aria-disabled="true" class="flex shrink-0 items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">⚙</span>Settings</a>
-    </nav>
-    <div class="border-t border-white/10 px-4 py-3.5 text-[12px] text-dw-100/85">
-      <b class="block text-[13px] text-white">{{ user.get_short_name|default:user.email }}</b>
-      {{ user.email }}
-      <form method="post" action="{% url 'account_logout' %}" class="mt-1.5">
-        {% csrf_token %}
-        <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[12px] font-bold text-dw-100/80 underline hover:text-white">Log out</button>
-      </form>
+
+    <div id="dw-drawer" class="hidden flex-col max-md:absolute max-md:inset-x-0 max-md:top-full max-md:z-30 max-md:border-t max-md:border-white/10 max-md:bg-dw-900 max-md:pb-2 max-md:shadow-xl md:flex md:w-[228px] md:flex-col">
+      <div class="hidden items-center px-[18px] pb-2 pt-5 md:flex">
+        <img src="{% static 'brand/logo-horizontal-light.svg' %}" alt="Dealwright" class="block h-7 w-auto">
+      </div>
+      <nav class="flex flex-col gap-1 px-2.5 pb-3 md:flex-1 md:pb-0" aria-label="App navigation">
+        <div class="px-2.5 pb-1 pt-3.5 text-[10px] uppercase tracking-[1.2px] text-white/55">Work</div>
+        <a href="{% url 'home' %}" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800 {% if request.resolver_match.url_name == 'home' %}bg-dw-700 font-bold text-white{% endif %}"><span class="w-[18px] text-center opacity-80">▦</span>Dashboard</a>
+        <a href="#" title="Coming soon" aria-disabled="true" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">👥</span>Clients</a>
+        <a href="#" title="Coming soon" aria-disabled="true" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">🎙</span>Discovery sessions</a>
+        <a href="#" title="Coming soon" aria-disabled="true" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">📐</span>ROI estimates</a>
+        <a href="#" title="Coming soon" aria-disabled="true" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">📄</span>Proposals</a>
+        <div class="px-2.5 pb-1 pt-3.5 text-[10px] uppercase tracking-[1.2px] text-white/55">Setup</div>
+        <a href="#" title="Coming soon" aria-disabled="true" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">🧩</span>Service catalog</a>
+        <a href="#" title="Coming soon" aria-disabled="true" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">✅</span>My skills &amp; bench</a>
+        <a href="#" title="Coming soon" aria-disabled="true" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">🔗</span>Integrations</a>
+        <a href="#" title="Coming soon" aria-disabled="true" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">⚙</span>Settings</a>
+      </nav>
+      <div class="border-t border-white/10 px-4 py-3.5 text-[12px] text-dw-100/85">
+        <b class="block text-[13px] text-white">{{ user.get_short_name|default:user.email }}</b>
+        {{ user.email }}
+        <form method="post" action="{% url 'account_logout' %}" class="mt-1.5">
+          {% csrf_token %}
+          <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[12px] font-bold text-dw-100/80 underline hover:text-white">Log out</button>
+        </form>
+      </div>
     </div>
   </aside>
 
@@ -47,5 +58,25 @@
   </main>
 
 </div>
+
+<noscript><style>#dw-drawer{display:flex !important;position:static !important}</style></noscript>
+<script>
+  (function () {
+    var btn = document.getElementById("dw-menu-btn");
+    var drawer = document.getElementById("dw-drawer");
+    if (!btn || !drawer) return;
+    function setOpen(open) {
+      drawer.classList.toggle("hidden", !open);
+      drawer.classList.toggle("flex", open);
+      btn.setAttribute("aria-expanded", String(open));
+    }
+    btn.addEventListener("click", function () { setOpen(drawer.classList.contains("hidden")); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") setOpen(false); });
+    document.addEventListener("click", function (e) {
+      if (drawer.classList.contains("hidden")) return;
+      if (!drawer.contains(e.target) && !btn.contains(e.target)) setOpen(false);
+    });
+  })();
+</script>
 </body>
 </html>

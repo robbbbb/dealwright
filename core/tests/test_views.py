@@ -36,6 +36,8 @@ def test_signed_in_users_get_dashboard(client: Client) -> None:
     assert response.status_code == 200
     content = response.content.decode()
     assert "Robb" in content  # greeting uses the first name
+    # Mobile hamburger: button controls the drawer; nav still in DOM for no-JS users
+    assert 'dw-menu-btn' in content and 'aria-controls="dw-drawer"' in content
     # Sidebar sections per docs/mockups/dashboard-mockup.html
     for nav_item in (
         "Dashboard", "Clients", "Discovery sessions", "ROI estimates",
