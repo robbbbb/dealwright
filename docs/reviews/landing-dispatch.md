@@ -165,3 +165,4 @@ Rationale: All 7 gates pass with pasted evidence (pytest 25/25, ruff and manage.
 
 ### Micro-addendum (post-pass-2, 2026-09-29, no new formal pass)
 Robb-directed cosmetic tweak to the pipeline label (drop white border, 10px → 15px, re-center) plus his own NDA-checkbox flip. Builder fix-up: the 15px label overflowed its absolute overlay and clipped behind the cards, so it became a static centered caption above the pipeline. Committed with screenshot evidence (`/tmp/dw-label2.png`, `/tmp/dw-label2-m.png`); requester = reviewer (Robb's own directive). No other changes; gates re-run green (25 passed, ruff/check clean, CSS reproducible).
+Robb follow-up (same day): label re-centered over the outputs column (grid item, arrow+outputs span, row 1) — screenshot `/tmp/dw-label4.png`; his mockup NDA flip already mirrored. Gates re-run green.
