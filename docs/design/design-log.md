@@ -86,6 +86,15 @@ Full MVP card breakdown: `mvp-build-plan.md` — 12 cards (0–11), one per fres
 
 **System design (2026-09-28):** `system-design.md` — Railway deployment (Robb on Hobby $5). Key findings: Railway meters CPU/RAM usage, not requests; request volume is a non-issue for this app (<10% of one worker at 1k-user peak); real caps are RAM, LLM-wait worker starvation, PDF spikes — all config/queue fixes. Hobby covers to ~1k users ($8–13/mo usage), Pro natural at 1k+. App-sleeping opt-in, keep OFF on prod. n8n stays local, talks via token webhooks.
 
+## Card 4 build decisions (2026-09-29, Robb-directed)
+
+- **Run order:** Card 4 (bench) built before Card 1 — its models carry no Card 1 dependency; owner-FK tenancy rule followed. Card 1 (core domain models) remains the next card.
+- **App label:** `bench` (supply side: freelancer profile + VA roster + skills). Model names keep Q9 vocabulary (`ProviderProfile`, `VAProfile`) so docs and code stay aligned.
+- **Skill model superseded (Robb decision):** the claimed/verified evidence ladder from D4/the build plan is replaced by a proficiency ladder — beginner/intermediate/advanced (self-reported, matching weights advanced highest) — plus free-text `tasks` ("what do you actually do"), the concrete line proposals narrate from. Green "verified" chip semantics remain reserved for future real verification. Supersedes the Card 4 TDD anchor `test_capability_distinguishes_claimed_from_verified`.
+- **Rate basis:** `VAProfile` carries `rate_basis` hourly | per-project with separate fields; rates are never converted across bases (no invented numbers — same discipline as Q3 no-FX). Matching compares hourly-vs-hourly only; project rates surface on the one-time/setup side, mirroring the catalog's two-part pricing.
+- **Admin deferred:** real `/bench/` UI covers CRUD in MVP (AGENTS.md allows admin for bench; the working-flow UI was chosen instead). Admin registration may land later if pilots want it.
+- **Migration hygiene:** `bench.0001` was regenerated twice before commit while schema was in flux (nothing deployed; Robb's dev DB reset via `migrate bench zero`). After first deploy, migrations are append-only.
+
 ## Open design questions
 
 - Q1 Entry mode: form-first vs notes-first. Recommendation: hybrid — paste notes → AI extraction → review as editable grouped form with source snippets and missing-field follow-ups.
