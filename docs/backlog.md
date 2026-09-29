@@ -41,7 +41,8 @@ Registry of deferred work and open items. Status lines updated as items move. De
 - **Non-branded edge pages** intentionally left on allauth's default layouts: reauthenticate (account + MFA), trust-device, social login error/cancel, signup-closed, password-set, login-by-code, email-confirm-code. Self-contained but not themed; style if pilots hit them. Status: deferred.
 - **Google "G" button SVG** uses Google's own brand colors verbatim (third-party asset, not Dealwright tokens) — extracted to `templates/account/snippets/google_button.html`; recorded as a deliberate tokens-only exception. Status: recorded (accepted, review pass 1 minor).
 - **Password-strength bars are decorative** (mockup shows a demo state; no live scoring) — post-MVP polish if wanted. Status: note (accepted, review pass 1 minor).
-- **`ACCOUNT_RATE_LIMITS` untouched** — allauth defaults apply (login attempts, confirm-email cooldown). Revisit if pilot abuse appears. Status: note.
+- **Concurrency (repeat of the 2026-09-28 rule):** Robb edited `google_button.html` in his editor while the builder session was live (comment header removed) — kept as-is per his instruction (`8a06609`). One writer session per repo; tell the session before hand-editing files it owns.
+- **Post-Card-0 test-DB leak fixed (pass-3 review):** `testing.py` now bypasses os.environ entirely (`Env.db_url_config` from a pre-import capture); tests are sqlite-backed unless `DATABASE_URL` is exported before Python starts. Found because Robb's `.env` gained a `DATABASE_URL` during the auth work. Status: fixed (`a709d10`).
 
 ## Post-Card-0 additions (2026-09-28, between-card work at Robb's request)
 
