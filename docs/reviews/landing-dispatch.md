@@ -136,3 +136,17 @@ Rationale: All 7 gates pass with pasted evidence (pytest 25/25, ruff and manage.
 ```
 
 **Builder disposition (2026-09-29):** minors 1–2 → fixed in the follow-up commit (hero CTAs stack at ≤470px; 1→2 arrow restored at lg). Minor 3 → accepted (standard Tailwind steps; exact arbitrary variants used where the mockup demanded 420/470). **Landing v2: approved & closed.**
+
+---
+
+# Pass 2 — pipeline declutter (Robb visual feedback, 2026-09-29)
+
+**Trigger:** Robb reviewed the live render (headless-Chromium screenshots at 390/768/1440, which the builder can now capture and view) and judged the hero pipeline cards too small and cluttered — the v2 mockup's 4-across print miniature with 8–9px type reads as noise on real screens; the ROI card's "Assumptions shown" chip overlapped its list.
+
+**Scope:** commit `4daccff` — hero pipeline only: outputs 2×2 at ≥440px (1-col below), type up one to two steps throughout the notes + output cards, padding/min-height fixes. Plus `docs/backlog.md` residual recording the mockup/live divergence. **Evidence screenshots (pre-fix):** `/tmp/dw-desktop.png`, `/tmp/dw-mobile.png`. **Post-fix:** `/tmp/dw-desktop2.png`, `/tmp/dw-mobile2.png` — reviewer should view these image files (read tool supports PNG).
+
+**Gates:** same 7 as pass 1 (pytest 25, ruff, check, CSS reproducible, live smoke, template hygiene, responsive classes). **Checklist:** pass-1 checklist still holds; additionally confirm no regression outside the hero pipeline and that estimate/chip discipline survived the type-size changes.
+
+**Deviation to adjudicate:** outputs grid no longer matches the v2 mockup (mockup: 4-across micro; live: 2×2 legible). Mockup sync recorded as backlog residual — treat live page as canonical for the hero.
+
+## Verdict (pass 2)
