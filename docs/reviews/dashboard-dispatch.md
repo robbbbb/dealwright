@@ -60,3 +60,15 @@ Rationale: Five of six gates pass ... but adjudication item 3 fails against the 
 **Builder disposition (2026-09-29):** blocking 1 → fixed (`md:flex-1` on drawer; desktop screenshot re-verified — who-block bottom-pinned, mobile drawer unchanged). Minors a–d → fixed in the same commit (md:pb-3 parity; hamburger hidden via noscript; noscript moved to `<head>`; Escape returns focus). Minor e → accepted (smoke tier, per card intent).
 
 ## Pass 3 — fresh reviewer on the fix
+### Pass 3 verdict — APPROVED
+
+Fix commit verified exact (app-base + app.css only, all four expected changes); desktop stretch chain verifiably unbroken (wrapper min-h-screen → aside md:flex-col → drawer md:flex-1 → nav md:flex-1 → who-block last child); gates green; CSS proven byte-reproducible at the fix commit in a detached worktree (the apparent in-repo drift was Robb's concurrent `max-w-[1200px]` removal, root-caused).
+
+```
+Verdict: APPROVED
+Blocking findings: None.
+Minor findings: (1) Escape handler calls btn.focus() unconditionally — on mobile, pressing Escape anywhere pulls focus to the menu button; a hidden guard would scope it. Harmless — acceptable, suggest folding into a future UI card. (2) Robb's concurrent uncommitted edit (max-w-[1200px] removed from <main>) — app.css will need a rebuild when it lands. (3) Pass-2 minor e remains accepted.
+Rationale: Fix commit 7b83759 matches the pass-2 remediation exactly ... [full rationale in review transcript]
+```
+
+**Builder disposition (2026-09-29):** minor 1 → accepted (future UI card). Minor 2 → Robb's edit committed verbatim right after this verdict with CSS rebuilt (prunes `max-w-[1200px]`). **Mobile drawer: approved & closed.**
