@@ -6,7 +6,7 @@
   <title>{% block title %}Dealwright{% endblock %}</title>
   <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
-  <noscript><style>#dw-drawer{display:flex !important;position:static !important}#dw-menu-btn{display:none !important}#dw-user-btn{display:none !important}#dw-who-logout{display:block !important}</style></noscript>
+  <noscript><style>#dw-drawer{display:flex !important;position:static !important}#dw-menu-btn{display:none !important}#dw-user-btn{display:none !important}#dw-who{display:block !important}#dw-who-logout{display:block !important}</style></noscript>
 </head>
 <body class="bg-dw-canvas text-[14px] leading-relaxed text-dw-body antialiased">
 <div class="flex min-h-screen flex-col md:flex-row">
@@ -38,7 +38,7 @@
         <a href="#" title="Coming soon" aria-disabled="true" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">🔗</span>Integrations</a>
         <a href="#" title="Coming soon" aria-disabled="true" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">⚙</span>Settings</a>
       </nav>
-      <div class="border-t border-white/10 px-4 py-3.5 text-[12px] text-dw-100/85">
+      <div id="dw-who" class="border-t border-white/10 px-4 py-3.5 text-[12px] text-dw-100/85 md:hidden">
         <b class="block text-[13px] text-white">{{ user.get_short_name|default:user.email }}</b>
         {{ user.email }}
         <form id="dw-who-logout" method="post" action="{% url 'account_logout' %}" class="mt-1.5 md:hidden">
