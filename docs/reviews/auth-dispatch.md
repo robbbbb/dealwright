@@ -138,3 +138,16 @@ Rationale: All runnable gates are green and the themed socialaccount surfaces + 
 - Minor 5 → satisfied: post-fix gate run is sqlite-backed (25 passed).
 
 Fresh reviewer pass 4 on `a709d10` follows below.
+
+### Pass 4 (scope: `a709d10`, `259acb9`, `8a06609`, docs `f7d6635`/`eb92f3e`) — APPROVED
+
+Blocking fix proven empirically in both directions (parent export → postgresql; no export with .env postgres URL → sqlite3 — the .env leak bypassed). Regression tests deterministic, leak-branch provably executing. EMAIL_USE_TLS rejection verified at `.env.example` line 26. All gates green at HEAD (25 passed sqlite-backed, ruff, check, CSS byte-reproducible, no migrations).
+
+```
+Verdict: APPROVED
+Blocking findings: none
+Minor findings: 1) test_database_hermetic_by_default recomputes its expected value with the same helper and input the settings use (mild tautology-lean) — acceptable because test_runtime_env_leak_is_ignored pins the literal sqlite engine string and its guard is provably active on this machine; 2) the brand-exception rationale now lives only in docs/backlog.md since Robb's committed edit removed the in-file comment on google_button.html — cosmetic, recorded.
+Rationale: The pass-3 blocking fix is empirically real in both directions (parent export → postgresql; no export with .env postgres URL → sqlite3), the regression tests are deterministic with the leak-branch provably executing, the EMAIL_USE_TLS rejection is verified correct at .env.example line 26, minors 4 and 1 are cleanly dispositioned, and all five gates pass at HEAD with 25 tests green and a byte-reproducible CSS build.
+```
+
+**Builder disposition (2026-09-29):** minors 1–2 accepted as noted (backlog already records the brand-asset exception). **Addendum approved & closed.** Card 1 remains unblocked.
