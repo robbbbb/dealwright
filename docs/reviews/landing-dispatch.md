@@ -162,3 +162,6 @@ Rationale: All 7 gates pass with pasted evidence (pytest 25/25, ruff and manage.
 ```
 
 **Builder disposition (2026-09-29):** minor 1 → accepted (builder's session performed the visual half; reviewer performed the measurable half — loop closed with both). Minor 2 → accepted; noted for a future legibility pass if Robb wants the timestamps/chips larger. Mockup sync → stays in backlog until Robb touches `landing-mockup.html` next. **Pass 2: approved & closed.**
+
+### Micro-addendum (post-pass-2, 2026-09-29, no new formal pass)
+Robb-directed cosmetic tweak to the pipeline label (drop white border, 10px → 15px, re-center) plus his own NDA-checkbox flip. Builder fix-up: the 15px label overflowed its absolute overlay and clipped behind the cards, so it became a static centered caption above the pipeline. Committed with screenshot evidence (`/tmp/dw-label2.png`, `/tmp/dw-label2-m.png`); requester = reviewer (Robb's own directive). No other changes; gates re-run green (25 passed, ruff/check clean, CSS reproducible).
