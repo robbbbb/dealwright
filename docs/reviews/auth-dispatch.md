@@ -97,4 +97,4 @@ Rationale: All gates pass and frames 1-2/4-7 are faithful, but frame 3's gate-st
 - Minor 4 (test through rendered form) → **fixed** in the same commit.
 - Deviation 7 (fido2) → **resolved against dropping it**: `fido2` is hard-imported by `allauth.mfa.stages` on the login path regardless of WebAuthn being disabled (verified: removal breaks boot); `mfa` extra kept with an explanatory `pyproject.toml` comment.
 
-Fresh reviewer pass 2 on `4e6a81d` follows below.
+Fresh reviewer pass 2 on `4e6a81d` + `033a31c` (docker compose auto-sync fix, surfaced by Robb's local fido2 error) follows below.

@@ -19,7 +19,10 @@ services:
 
   web:
     build: .
-    command: sh -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"
+    # uv sync at start: the named venv volume survives image rebuilds, so deps
+    # added later must be installed on boot (otherwise they silently go missing
+    # — fido2 incident, 2026-09-29). Cheap no-op when already in sync.
+    command: sh -c "uv sync --frozen --no-dev && python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.development
       DATABASE_URL: postgres://dealwright:dealwright@db:5432/dealwright
