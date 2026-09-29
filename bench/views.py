@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
+from django.views.decorators.http import require_POST
 
 from . import selectors, services
 from .forms import SkillForm, VAForm
@@ -19,7 +20,7 @@ def bench_home(request: HttpRequest) -> HttpResponse:
         if skill_form.is_valid():
             services.add_capability(holder=profile, **skill_form.cleaned_data)
             messages.success(request, "Skill added.")
-            return redirect("bench_home")
+            return redirect("bench:bench_home")
     return render(
         request,
         "bench/bench.html",
@@ -40,7 +41,7 @@ def va_add(request: HttpRequest) -> HttpResponse:
         if form.is_valid():
             va = services.create_va_profile(owner=request.user, **form.cleaned_data)
             messages.success(request, f"{va.display_name} added to your bench.")
-            return redirect("va_detail", pk=va.pk)
+            return redirect("bench:va_detail", pk=va.pk)
     else:
         form = VAForm()
     return render(request, "bench/va_add.html", {"form": form})
@@ -56,7 +57,7 @@ def va_detail(request: HttpRequest, pk: int) -> HttpResponse:
         if form.is_valid():
             services.update_va_profile(va=va, **form.cleaned_data)
             messages.success(request, "Bench member updated.")
-            return redirect("va_detail", pk=va.pk)
+            return redirect("bench:va_detail", pk=va.pk)
     else:
         form = VAForm(instance=va)
     return render(
@@ -72,6 +73,7 @@ def va_detail(request: HttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
+@require_POST  # mutations are never GET-reachable (CSRF surface — review pass 1)
 def va_skill_add(request: HttpRequest, pk: int) -> HttpResponse:
     va = selectors.get_va_for_owner(request.user, pk)
     if va is None:
@@ -82,16 +84,17 @@ def va_skill_add(request: HttpRequest, pk: int) -> HttpResponse:
         messages.success(request, f"Skill added to {va.display_name}.")
     else:
         messages.error(request, _first_error(form))
-    return redirect("va_detail", pk=va.pk)
+    return redirect("bench:va_detail", pk=va.pk)
 
 
 def _redirect_target_for(capability) -> HttpResponse:  # type: ignore[no-untyped-def]
     if capability.va_profile_id is not None:
-        return redirect("va_detail", pk=capability.va_profile_id)
-    return redirect("bench_home")
+        return redirect("bench:va_detail", pk=capability.va_profile_id)
+    return redirect("bench:bench_home")
 
 
 @login_required
+@require_POST  # mutations are never GET-reachable (CSRF surface — review pass 1)
 def skill_update(request: HttpRequest, cap_pk: int) -> HttpResponse:
     cap = selectors.get_capability_for_owner(request.user, cap_pk)
     if cap is None:
@@ -106,6 +109,7 @@ def skill_update(request: HttpRequest, cap_pk: int) -> HttpResponse:
 
 
 @login_required
+@require_POST  # mutations are never GET-reachable (CSRF surface — review pass 1)
 def skill_delete(request: HttpRequest, cap_pk: int) -> HttpResponse:
     cap = selectors.get_capability_for_owner(request.user, cap_pk)
     if cap is None:

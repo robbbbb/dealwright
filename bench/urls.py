@@ -1,8 +1,10 @@
-"""URLs for bench & skills (mounted at /bench/)."""
+"""bench namespace — template references become {% url 'bench:...' %}."""
 
 from django.urls import path
 
 from . import views
+
+app_name = "bench"
 
 urlpatterns = [
     path("", views.bench_home, name="bench_home"),
