@@ -29,6 +29,58 @@
 5. **Admin registration deferred** to the real UI (AGENTS.md permits admin for bench; UI chosen).
 6. **`bench.0001` regenerated twice pre-commit** (schema in flux, nothing deployed); Robb's dev DB was reset via `migrate bench zero` + re-apply. Post-deploy rule noted: migrations append-only.
 
-## Verdict (reviewer)
+## Verdict (pass 1)
+### Pass 1 verdict — CHANGES REQUIRED
+
+Gates 1–5 + 7 green with real output; all six adjudicated deviations accepted (verified against the design-log entry, not the card's prose); money/tenancy/template discipline holds. One blocking security/correctness defect on a shipped write path:
+
+```
+Verdict: CHANGES REQUIRED
+Blocking findings:
+1. bench/views.py::skill_delete mutates on GET (live-proven: GET → 302, capability deleted) —
+   CSRF-exempt mutation; violates the card's PRG claim. Add @require_POST to skill_delete,
+   va_skill_add, skill_update + tests (GET → 405, no state change).
+Minor findings:
+1. Sidebar active-state never fires (resolver_match.namespaces empty — no app_name); card claims it works.
+2. Dispatch card says 50 bench tests, actual 48; @transaction.atomic claimed on capability writes
+   but only add_capability decorated (single-statement writes unaffected).
+3. Hardcoded ₱ in bench.html despite stored va.currency field.
+4. "Active" chip uses green primary family — chip semantics reserve green for verified/accepted.
+5. Uncommitted docs/mockups/landing-mockup.html change in tree at card boundary — commit or discard before Card 1.
+Rationale: All six recorded deviations are properly adjudicated and match the code; gates 1–5 pass with
+real evidence; product/money/tenancy/template discipline holds. The single blocking security/correctness
+defect (state-changing, CSRF-exempt GET on the delete path) violates the card's own PRG guarantee —
+fix and re-dispatch for a fresh pass.
+```
+
+**Builder disposition (2026-09-29):**
+- **Blocking 1 → fixed** in `de0d82a`: `@require_POST` on `skill_delete`/`va_skill_add`/`skill_update`; tests assert GET → 405 with no state change (3 new tests). Suite now **77 passed**.
+- **Minor 1 → fixed** in same commit: `app_name = "bench"` + namespaced includes/reverses everywhere (templates, views, tests); sidebar active state now fires.
+- **Minor 2 → corrected:** bench test count was 48 at pass 1, **52 after the fix commit** (card prose updated here); `@transaction.atomic` claim narrowed to `add_capability` only (update/delete are single-statement writes — no correctness impact).
+- **Minor 3 → fixed:** new `bench/templatetags/dw_money.py` (`dw_symbol` filter — formatting only, no math); rate column renders the symbol from the stored `va.currency` (USD test included).
+- **Minor 4 → fixed:** Active chip re-mapped to teal (`dw-teal-bg`/`dw-teal` = neutral info per theme.html); green stays reserved for verified/accepted.
+- **Minor 5 → with Robb** (his uncommitted landing-mockup glyph edit — per the one-writer-per-file convention, not the builder's to commit).
+
+---
+
+# Pass 2 — fresh reviewer on the fix
+
+**Scope:** commit `de0d82a` only (bench/views.py, bench/urls.py, bench/templatetags/, bench/tests/test_views.py, templates/bench/*, templates/app-base.html). **For:** fresh GLM-5.3 reviewer (read-only, gates).
+
+**Gates:**
+1. `.venv/bin/python -m pytest` — expect **77 passed**
+2. `.venv/bin/python -m ruff check .` — clean
+3. `.venv/bin/python manage.py check` — clean
+4. `.venv/bin/python manage.py makemigrations bench --check --dry-run` — no changes
+5. Live smoke via throwaway Client: GET `skill_delete`/`skill_update`/`va_skill_add` → 405 and no state change; POST delete still works; USD bench member renders `$40` and no `₱40`
+
+**Adjudicate:**
+1. Blocking fix complete: all three mutation endpoints reject GET with 405 before any logic runs (`require_POST` decorator order with `login_required` acceptable — both return 40x without mutating).
+2. Namespace fix complete and consistent: every reverse (templates, views, tests) namespaced; sidebar active-state now verifiably fires on `/bench/*` pages.
+3. `dw_symbol` filter is formatting-only (no math, no conversion — money discipline intact).
+4. Teal Active chip consistent with theme chip semantics (green = verified/accepted, teal = neutral info).
+5. Pass-1 minors 2 (card prose) and 5 (Robb's working-tree file) dispositioned above — confirm handling.
+
+## Verdict (reviewer pass 2)
 
 *(pending — fresh GLM-5.3 reviewer pass)*
