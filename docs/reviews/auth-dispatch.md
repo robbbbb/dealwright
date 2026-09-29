@@ -97,4 +97,17 @@ Rationale: All gates pass and frames 1-2/4-7 are faithful, but frame 3's gate-st
 - Minor 4 (test through rendered form) → **fixed** in the same commit.
 - Deviation 7 (fido2) → **resolved against dropping it**: `fido2` is hard-imported by `allauth.mfa.stages` on the login path regardless of WebAuthn being disabled (verified: removal breaks boot); `mfa` extra kept with an explanatory `pyproject.toml` comment.
 
-Fresh reviewer pass 2 on `4e6a81d` + `033a31c` (docker compose auto-sync fix, surfaced by Robb's local fido2 error) follows below.
+Fresh reviewer pass 2 on `4e6a81d` + `49e34e6` (docker compose auto-sync fix, surfaced by Robb's local fido2 error) follows below.
+
+### Pass 2 (scope: `4e6a81d`, `49e34e6`) — APPROVED
+
+All gates re-run green at HEAD (22 passed, ruff clean, check clean, CSS byte-reproducible, no missing migrations, live smoke 200s). Blocking fix verified three independent ways (decorator path with CSRF on, live HTTP drives, committed tests). fido2 resolution experimentally confirmed (login path dies without it — the exact error Robb hit). Compose fix correct and prod-safe by inspection (uv baked into image, identical flags, host lockfile governs via bind mount, Railway unaffected).
+
+```
+Verdict: APPROVED
+Blocking findings: none
+Minor findings: 1) dispatch card cites stale pre-amend hash 033a31c (reachable commit is 49e34e6) — cosmetic doc nit; 2) compose auto-sync fix not yet exercised against a real Docker daemon (no daemon in review environment; backlog honestly records the gap + safe recovery) — dispositioned, close with Robb's next local `up --build`; 3) backlog compose bullet has a doubled status line — cosmetic.
+Rationale: The pass-1 blocking defect is definitively fixed (rendered-payload + bare-form + live-HTTP drives all send mail and land on the verification-sent page), all four minors and the fido2 resolution are verified (login-path break without fido2 reproduced), the compose fix is correct and prod-safe by inspection, and every runnable gate passes with 22 tests green and a byte-reproducible CSS build.
+```
+
+**Builder disposition (2026-09-29):** minors 1 and 3 fixed in this verdict-recording commit (hash reference corrected, status line de-duplicated); minor 2 stays open on Robb's machine (backlog: `Status: fixed in compose (49e34e6); local up --build confirmation pending`). **Auth mockup implementation: approved & closed.** Card 1 remains unblocked.
