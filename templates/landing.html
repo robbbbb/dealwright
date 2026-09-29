@@ -33,7 +33,7 @@
       <span class="inline-flex items-center rounded-full border border-white/35 bg-white/10 px-3.5 py-[5px] text-[10.5px] uppercase tracking-[.9px]">For freelancers · VAs · agencies</span>
       <h1 class="mt-4 max-w-[560px] text-[33px] font-extrabold leading-[1.06] tracking-[-.04em] sm:text-[38px] lg:text-[48px]">From messy call notes to a proposal that proves its numbers.</h1>
       <p class="mt-4 max-w-[555px] text-[16px] text-white/85">Extract the facts. Show the assumptions. Compute honest ROI. Match the right delivery. Send a client-ready proposal in minutes.</p>
-      <div class="mt-7 flex flex-wrap gap-3">
+      <div class="mt-7 flex flex-wrap gap-3 max-[470px]:flex-col max-[470px]:items-stretch">
         <a href="{% url 'account_signup' %}" class="inline-flex min-h-[44px] items-center rounded-[10px] bg-dw-700 px-5 text-[13.5px] font-bold text-white no-underline hover:bg-dw-800">Start 14-day free trial</a>
         <a href="{% url 'account_signup' %}" class="inline-flex min-h-[44px] items-center rounded-[10px] border-[1.5px] border-white/55 bg-white/10 px-5 text-[13.5px] font-bold text-white no-underline hover:bg-white/20">View example proposal</a>
       </div>
@@ -132,6 +132,7 @@
       </div>
       <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
         <article class="relative rounded-[14px] border border-dw-line bg-white p-[18px]">
+          <span class="absolute -right-[19px] top-[48%] hidden text-[22px] font-extrabold text-dw-600 lg:block">→</span>
           <div class="grid grid-cols-[30px_1fr] gap-2.5">
             <span class="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-dw-700 text-[12px] font-extrabold text-white">1</span>
             <div><h3 class="text-[14px] font-bold text-dw-ink">Extract the facts</h3><p class="text-[10.5px] leading-snug text-dw-muted">Finds and structures what matters from the call.</p></div>
