@@ -48,6 +48,8 @@ def test_team_page_lists_vas_and_my_skills(client, user, va) -> None:
 
     assert response.status_code == 200
     assert "My skills" in content
+    assert "Add a skill" in content
+    assert "Team roster" in content
     assert "Maria" in content
     assert "Kim" in content
     assert "Rates not set" in content  # identity-only member, honest state

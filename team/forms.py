@@ -69,7 +69,10 @@ class SkillForm(forms.Form):
         max_length=255,
         required=False,
         label="Tasks — what do you actually do?",
-        widget=forms.TextInput(
-            attrs={"placeholder": "e.g. Klaviyo flows, campaign copy, list management"}
+        widget=forms.Textarea(
+            attrs={
+                "rows": 2,
+                "placeholder": "e.g. Klaviyo flows, campaign copy, list management",
+            }
         ),
     )

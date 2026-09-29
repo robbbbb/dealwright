@@ -38,9 +38,11 @@
 @layer base {
   form p { margin-bottom: 10px; }
   form label { display: block; font-size: 12.5px; font-weight: 600; color: var(--color-dw-ink); margin-bottom: 3px; }
-  form input { width: 100%; border: 1px solid var(--color-dw-line); border-radius: 9px; padding: 9px 11px; font-size: 14px; background: #fff; }
-  form input:focus { outline: 2px solid var(--color-dw-600); border-color: var(--color-dw-600); }
+  form input, form select { width: 100%; border: 1px solid var(--color-dw-line); border-radius: 9px; padding: 9px 11px; font: inherit; font-size: 14px; color: var(--color-dw-body); background: #fff; }
+  form input:focus, form select:focus { outline: 2px solid var(--color-dw-100); border-color: var(--color-dw-600); }
   form input[type="checkbox"] { width: auto; }
+  form textarea { width: 100%; border: 1px solid var(--color-dw-line); border-radius: 9px; padding: 9px 11px; font: inherit; font-size: 14px; color: var(--color-dw-body); background: #fff; resize: vertical; min-height: 2.5em; }
+  form textarea:focus { outline: 2px solid var(--color-dw-100); border-color: var(--color-dw-600); }
   ul.errorlist { color: var(--color-dw-red); font-size: 12.5px; margin-bottom: 6px; list-style: none; }
 }
 

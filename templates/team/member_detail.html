@@ -52,7 +52,7 @@
           <tr class="border-b border-dw-line last:border-b-0">
             <td class="px-4 py-2.5 font-bold text-dw-ink">{{ cap.skill }}</td>
             <td class="px-4 py-2.5">{% include "team/_level_chip.html" %}</td>
-            <td class="px-4 py-2.5 text-[12px] text-dw-muted">{{ cap.tasks|default:"—" }}</td>
+            <td class="px-4 py-2.5 text-[12px] text-dw-muted">{{ cap.tasks|linebreaksbr|default:"—" }}</td>
             <td class="px-4 py-2.5">
               <form method="post" action="{% url 'team:skill_delete' cap.pk %}" class="m-0">
                 {% csrf_token %}
