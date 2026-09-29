@@ -1,0 +1,8 @@
+{% comment %}Proficiency chip for a Capability (neutral — green stays reserved for real verification).{% endcomment %}
+{% if cap.level == "advanced" %}
+  <span class="inline-flex items-center rounded-full bg-dw-canvas px-2 py-px text-[9.5px] font-bold text-dw-ink">Advanced</span>
+{% elif cap.level == "intermediate" %}
+  <span class="inline-flex items-center rounded-full border border-dw-line px-2 py-px text-[9.5px] font-bold text-dw-ink">Intermediate</span>
+{% else %}
+  <span class="inline-flex items-center rounded-full border border-dw-line px-2 py-px text-[9.5px] font-bold text-dw-muted">Beginner</span>
+{% endif %}

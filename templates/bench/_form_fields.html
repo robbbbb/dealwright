@@ -1,0 +1,13 @@
+{% comment %}Shared model-form field renderer (bench pages) — dw-field styling.{% endcomment %}
+{% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+{% if form.non_field_errors %}
+  <ul class="errorlist">{% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>
+{% endif %}
+{% for field in form.visible_fields %}
+  <div class="dw-field">
+    {{ field.label_tag }}
+    {{ field }}
+    {% if field.help_text %}<p class="dw-hint">{{ field.help_text }}</p>{% endif %}
+    {{ field.errors }}
+  </div>
+{% endfor %}

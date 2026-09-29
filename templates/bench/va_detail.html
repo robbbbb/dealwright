@@ -1,0 +1,73 @@
+{% extends "app-base.html" %}
+{% block title %}{{ va.display_name }} — bench — Dealwright{% endblock %}
+{% block app_content %}
+<a href="{% url 'bench_home' %}" class="text-[12px] font-bold text-dw-700 no-underline hover:underline">← Back to bench</a>
+<h1 class="mt-2 mb-4 flex items-center gap-2 text-[21px] font-extrabold leading-tight text-dw-ink">
+  {{ va.display_name }}
+  {% if va.is_active %}
+    <span class="inline-flex items-center rounded-full bg-dw-100 px-2 py-px text-[9.5px] font-bold text-dw-800">Active</span>
+  {% else %}
+    <span class="inline-flex items-center rounded-full border border-dw-line px-2 py-px text-[9.5px] font-bold text-dw-muted">Inactive</span>
+  {% endif %}
+</h1>
+
+<div class="flex flex-col gap-5">
+
+  <section class="card">
+    <h2 class="mb-3 text-[14.5px] font-extrabold text-dw-ink">Profile</h2>
+    <form method="post" class="m-0">
+      {% csrf_token %}
+      {% include "bench/_form_fields.html" %}
+      <button type="submit" class="btn-primary">Save changes</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2 class="mb-1 text-[14.5px] font-extrabold text-dw-ink">Skills</h2>
+    <p class="mb-4 text-[12px] text-dw-muted">Proficiency is self-reported — the Tasks line is what proposals quote.</p>
+
+    {% if skills %}
+    <div class="mb-5 overflow-hidden rounded-xl border border-dw-line bg-white">
+      <table class="w-full text-[13px]">
+        <thead>
+          <tr class="border-b border-dw-line bg-dw-50 text-left text-[11px] uppercase tracking-[.6px] text-dw-muted">
+            <th class="px-4 py-2.5 font-bold">Skill</th>
+            <th class="px-4 py-2.5 font-bold">Level</th>
+            <th class="px-4 py-2.5 font-bold">Tasks</th>
+            <th class="px-4 py-2.5 font-bold"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cap in skills %}
+          <tr class="border-b border-dw-line last:border-b-0">
+            <td class="px-4 py-2.5 font-bold text-dw-ink">{{ cap.skill }}</td>
+            <td class="px-4 py-2.5">{% include "bench/_level_chip.html" %}</td>
+            <td class="px-4 py-2.5 text-[12px] text-dw-muted">{{ cap.tasks|default:"—" }}</td>
+            <td class="px-4 py-2.5">
+              <form method="post" action="{% url 'skill_delete' cap.pk %}" class="m-0">
+                {% csrf_token %}
+                <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[11.5px] font-bold text-dw-red hover:underline">Remove</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="mb-4 text-[12.5px] text-dw-muted">No skills recorded for {{ va.display_name }} yet.</p>
+    {% endif %}
+
+    <form method="post" action="{% url 'va_skill_add' va.pk %}" class="m-0">
+      {% csrf_token %}
+      <div class="grid gap-3 md:grid-cols-[1fr_150px_1fr_auto] md:items-start">
+        <div class="dw-field">{{ skill_form.skill.label_tag }}{{ skill_form.skill }}{{ skill_form.skill.errors }}</div>
+        <div class="dw-field">{{ skill_form.level.label_tag }}{{ skill_form.level }}{{ skill_form.level.errors }}</div>
+        <div class="dw-field">{{ skill_form.tasks.label_tag }}{{ skill_form.tasks }}{{ skill_form.tasks.errors }}</div>
+        <button type="submit" class="mt-[22px] cursor-pointer rounded-[10px] border-0 bg-dw-700 px-[18px] py-2.5 text-[13px] font-bold text-white hover:bg-dw-800">Add skill</button>
+      </div>
+    </form>
+  </section>
+
+</div>
+{% endblock %}

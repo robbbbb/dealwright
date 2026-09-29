@@ -34,7 +34,7 @@
         <a href="#" title="Coming soon" aria-disabled="true" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">📄</span>Proposals</a>
         <div class="px-2.5 pb-1 pt-3.5 text-[10px] uppercase tracking-[1.2px] text-white/55">Setup</div>
         <a href="#" title="Coming soon" aria-disabled="true" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">🧩</span>Service catalog</a>
-        <a href="#" title="Coming soon" aria-disabled="true" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">✅</span>My skills &amp; bench</a>
+        <a href="{% url 'bench_home' %}" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800 {% if 'bench' in request.resolver_match.namespaces %}bg-dw-700 font-bold text-white{% endif %}"><span class="w-[18px] text-center opacity-80">✅</span>My skills &amp; bench</a>
         <a href="#" title="Coming soon" aria-disabled="true" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">🔗</span>Integrations</a>
         <a href="#" title="Coming soon" aria-disabled="true" class="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-[13.5px] text-dw-100/90 no-underline hover:bg-dw-800"><span class="w-[18px] text-center opacity-80">⚙</span>Settings</a>
       </nav>

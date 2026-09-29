@@ -15,4 +15,6 @@ urlpatterns = [
         name="resend_confirmation",
     ),
     path("accounts/", include("allauth.urls")),
+    # Card 4: provider skills + VA bench ("My skills & bench" nav item).
+    path("bench/", include("bench.urls")),
 ]
