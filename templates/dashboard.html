@@ -1,0 +1,75 @@
+{% extends "app-base.html" %}
+{% block title %}Dashboard · Dealwright{% endblock %}
+{% block app_content %}
+
+<div class="mb-[22px] flex flex-wrap items-center gap-3">
+  <h1 class="mr-auto text-[21px] font-extrabold leading-tight text-dw-ink">{{ greeting }}, {{ greeting_name }}
+    <small class="block text-[12.5px] font-normal text-dw-muted">{{ today|date:"l, F j" }}</small>
+  </h1>
+  <span title="Coming soon" aria-disabled="true" class="inline-flex min-h-[36px] cursor-not-allowed items-center rounded-[10px] border-[1.5px] border-dw-700 bg-white px-[18px] text-[13px] font-bold text-dw-700 opacity-60">New client</span>
+  <span title="Coming soon" aria-disabled="true" class="inline-flex min-h-[36px] cursor-not-allowed items-center rounded-[10px] bg-dw-700 px-[18px] text-[13px] font-bold text-white opacity-60">＋ New discovery session</span>
+  <div class="flex h-9 w-9 items-center justify-center rounded-full bg-dw-600 text-[14px] font-extrabold text-white">{{ greeting_name|first }}</div>
+</div>
+
+<div class="mb-[22px] flex flex-wrap gap-3.5">
+  <div class="min-w-[150px] flex-1 rounded-xl border border-dw-line bg-white px-4 py-3.5">
+    <div class="text-[23px] font-extrabold text-dw-ink">0</div>
+    <div class="mt-0.5 text-[10.5px] uppercase tracking-[.6px] text-dw-muted">Clients</div>
+  </div>
+  <div class="min-w-[150px] flex-1 rounded-xl border border-dw-line bg-white px-4 py-3.5">
+    <div class="text-[23px] font-extrabold text-dw-ink">0</div>
+    <div class="mt-0.5 text-[10.5px] uppercase tracking-[.6px] text-dw-muted">Sessions · this month</div>
+  </div>
+  <div class="min-w-[150px] flex-1 rounded-xl border border-dw-line bg-white px-4 py-3.5">
+    <div class="text-[23px] font-extrabold text-dw-ink">0</div>
+    <div class="mt-0.5 text-[10.5px] uppercase tracking-[.6px] text-dw-muted">Proposals sent</div>
+  </div>
+  <div class="min-w-[150px] flex-1 rounded-xl border border-dw-line bg-white px-4 py-3.5">
+    <div class="text-[23px] font-extrabold text-dw-600">—</div>
+    <div class="mt-0.5 text-[10.5px] uppercase tracking-[.6px] text-dw-muted">Win rate</div>
+  </div>
+  <div class="min-w-[150px] flex-1 rounded-xl border border-dw-line bg-white px-4 py-3.5">
+    <div class="text-[23px] font-extrabold text-dw-600">₱0 <span class="inline-flex items-center rounded-full bg-dw-amber-bg px-2 py-px align-middle text-[9.5px] font-bold text-dw-amber">est</span></div>
+    <div class="mt-0.5 text-[10.5px] uppercase tracking-[.6px] text-dw-muted">Client benefit · won deals</div>
+  </div>
+</div>
+
+<div class="flex flex-col gap-4 lg:flex-row lg:items-start">
+  <div class="min-w-0 flex-1">
+
+    <div class="mb-4 overflow-hidden rounded-xl border border-dw-line bg-white">
+      <div class="flex items-center border-b border-dw-line bg-dw-50 px-4 py-3"><b class="mr-auto text-[14px] text-dw-ink">Recent discovery sessions</b></div>
+      <div class="px-4 py-7 text-center text-[12.5px] text-dw-muted">
+        No discovery sessions yet. Your first one starts with pasted call notes — the session flow arrives with the next builds.
+      </div>
+    </div>
+
+    <div class="mb-4 overflow-hidden rounded-xl border border-dw-line bg-white">
+      <div class="flex items-center border-b border-dw-line bg-dw-50 px-4 py-3"><b class="mr-auto text-[14px] text-dw-ink">Proposals</b></div>
+      <div class="px-4 py-7 text-center text-[12.5px] text-dw-muted">
+        No proposals yet. Proposals are generated from discovery sessions once estimates exist.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="w-full shrink-0 lg:max-w-[340px]">
+
+    <div class="mb-4 overflow-hidden rounded-xl border border-dw-line bg-white">
+      <div class="flex items-center border-b border-dw-line bg-dw-50 px-4 py-3"><b class="mr-auto text-[14px] text-dw-ink">Deal qualification</b></div>
+      <div class="px-4 py-7 text-center text-[12.5px] text-dw-muted">
+        Qualification against your skills unlocks once you have a discovery session and skills on file.
+      </div>
+    </div>
+
+    <div class="mb-4 overflow-hidden rounded-xl border border-dw-line bg-white">
+      <div class="flex items-center border-b border-dw-line bg-dw-50 px-4 py-3"><b class="mr-auto text-[14px] text-dw-ink">Needs your attention</b></div>
+      <div class="px-4 py-7 text-center text-[12.5px] text-dw-muted">Nothing waiting. Nice.</div>
+    </div>
+
+    <p class="mt-[18px] text-[11.5px] text-dw-muted">Figures marked <span class="inline-flex items-center rounded-full bg-dw-amber-bg px-2 py-px text-[9.5px] font-bold text-dw-amber">est</span> are estimates from recorded assumptions — never guarantees.</p>
+
+  </div>
+</div>
+
+{% endblock %}

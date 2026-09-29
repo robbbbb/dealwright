@@ -23,10 +23,33 @@ def test_landing_renders_for_anonymous(client: Client) -> None:
 
 
 @pytest.mark.django_db
-def test_signed_in_users_get_app_home(client: Client) -> None:
-    """Authenticated users skip the landing and get the signed-in home."""
-    user = User.objects.create_user(username="pro", email="pro@example.com", password="pw12345!x")
+def test_signed_in_users_get_dashboard(client: Client) -> None:
+    """Authenticated users land on the dashboard shell (Card 9 wires real data)."""
+    user = User.objects.create_user(
+        username="pro",
+        email="pro@example.com",
+        password="pw12345!x",
+        first_name="Robb",
+    )
     client.force_login(user)
     response = client.get(reverse("home"))
     assert response.status_code == 200
-    assert b"Signed in as" in response.content
+    content = response.content.decode()
+    assert "Robb" in content  # greeting uses the first name
+    # Sidebar sections per docs/mockups/dashboard-mockup.html
+    for nav_item in (
+        "Dashboard", "Clients", "Discovery sessions", "ROI estimates",
+        "Proposals", "Service catalog", "My skills", "Settings",
+    ):
+        assert nav_item in content, f"missing sidebar item: {nav_item}"
+    # Stat labels render; counts are honest zeros — no mockup demo numbers
+    for label in ("Clients", "Sessions · this month", "Proposals sent", "Win rate",
+                  "Client benefit"):
+        assert label in content, f"missing stat label: {label}"
+    assert "62%" not in content and "₱41k" not in content
+    # Empty states, not fabricated rows
+    assert "No discovery sessions yet" in content
+    assert "No proposals yet" in content
+    # Estimate discipline on the app shell too; logout reachable
+    assert "never guarantees" in content
+    assert reverse("account_logout") in content

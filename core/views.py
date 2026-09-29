@@ -5,16 +5,31 @@ from __future__ import annotations
 from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
+from django.utils import timezone
 
 from core import services
 from core.forms import ResendConfirmationForm
 
 
 def home(request: HttpRequest) -> HttpResponse:
-    """Public landing for anonymous visitors; app home for signed-in users (dashboard: Card 9)."""
+    """Public landing for anonymous visitors; dashboard shell for signed-in users.
+
+    The dashboard is presentation-only until Cards 1-8 provide the domain data;
+    Card 9 wires the real lists and counters (docs/design/mvp-build-plan.md).
+    """
     if not request.user.is_authenticated:
         return render(request, "landing.html")
-    return render(request, "home.html")
+    hour = timezone.localtime().hour
+    greeting = "Good morning" if hour < 12 else "Good afternoon" if hour < 18 else "Good evening"
+    return render(
+        request,
+        "dashboard.html",
+        {
+            "greeting": greeting,
+            "greeting_name": request.user.first_name or request.user.email,
+            "today": timezone.localtime(),
+        },
+    )
 
 
 def resend_confirmation(request: HttpRequest) -> HttpResponse:
