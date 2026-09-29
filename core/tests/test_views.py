@@ -38,6 +38,9 @@ def test_signed_in_users_get_dashboard(client: Client) -> None:
     assert "Robb" in content  # greeting uses the first name
     # Mobile hamburger: button controls the drawer; nav still in DOM for no-JS users
     assert 'dw-menu-btn' in content and 'aria-controls="dw-drawer"' in content
+    # Desktop: logout lives in the avatar account menu, not the sidebar
+    assert 'dw-user-btn' in content and 'aria-controls="dw-user-menu"' in content
+    assert content.count("Log out") == 2  # drawer (mobile) + avatar menu (desktop)
     # Sidebar sections per docs/mockups/dashboard-mockup.html
     for nav_item in (
         "Dashboard", "Clients", "Discovery sessions", "ROI estimates",

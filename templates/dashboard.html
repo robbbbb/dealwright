@@ -8,7 +8,23 @@
   </h1>
   <span title="Coming soon" aria-disabled="true" class="inline-flex min-h-[36px] cursor-not-allowed items-center rounded-[10px] border-[1.5px] border-dw-700 bg-white px-[18px] text-[13px] font-bold text-dw-700 opacity-60">New client</span>
   <span title="Coming soon" aria-disabled="true" class="inline-flex min-h-[36px] cursor-not-allowed items-center rounded-[10px] bg-dw-700 px-[18px] text-[13px] font-bold text-white opacity-60">＋ New discovery session</span>
-  <div class="flex h-9 w-9 items-center justify-center rounded-full bg-dw-600 text-[14px] font-extrabold text-white">{{ greeting_name|first }}</div>
+  <div class="relative hidden md:block">
+    <button id="dw-user-btn" type="button" aria-expanded="false" aria-controls="dw-user-menu" class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-0 bg-dw-600 text-[14px] font-extrabold text-white hover:ring-2 hover:ring-dw-100">
+      {{ greeting_name|first }}
+      <span class="sr-only">Account menu</span>
+    </button>
+    <div id="dw-user-menu" class="hidden absolute right-0 top-full z-30 mt-2 w-56 rounded-xl border border-dw-line bg-white p-1.5 shadow-xl">
+      <div class="border-b border-dw-line px-3 py-2">
+        <b class="block text-[13px] text-dw-ink">{{ greeting_name }}</b>
+        <span class="block truncate text-[11.5px] text-dw-muted">{{ user.email }}</span>
+      </div>
+      <form method="post" action="{% url 'account_logout' %}" class="mt-1">
+        {% csrf_token %}
+        <button type="submit" class="block w-full cursor-pointer rounded-[9px] border-0 bg-transparent px-3 py-2 text-left text-[13px] font-bold text-dw-700 hover:bg-dw-50">Log out</button>
+      </form>
+    </div>
+  </div>
+  <div class="flex h-9 w-9 items-center justify-center rounded-full bg-dw-600 text-[14px] font-extrabold text-white md:hidden">{{ greeting_name|first }}</div>
 </div>
 
 <div class="mb-[22px] flex flex-wrap gap-3.5">

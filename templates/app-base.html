@@ -6,7 +6,7 @@
   <title>{% block title %}Dealwright{% endblock %}</title>
   <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
-  <noscript><style>#dw-drawer{display:flex !important;position:static !important}#dw-menu-btn{display:none !important}</style></noscript>
+  <noscript><style>#dw-drawer{display:flex !important;position:static !important}#dw-menu-btn{display:none !important}#dw-user-btn{display:none !important}#dw-who-logout{display:block !important}</style></noscript>
 </head>
 <body class="bg-dw-canvas text-[14px] leading-relaxed text-dw-body antialiased">
 <div class="flex min-h-screen flex-col md:flex-row">
@@ -41,7 +41,7 @@
       <div class="border-t border-white/10 px-4 py-3.5 text-[12px] text-dw-100/85">
         <b class="block text-[13px] text-white">{{ user.get_short_name|default:user.email }}</b>
         {{ user.email }}
-        <form method="post" action="{% url 'account_logout' %}" class="mt-1.5">
+        <form id="dw-who-logout" method="post" action="{% url 'account_logout' %}" class="mt-1.5 md:hidden">
           {% csrf_token %}
           <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[12px] font-bold text-dw-100/80 underline hover:text-white">Log out</button>
         </form>
@@ -62,19 +62,31 @@
 
 <script>
   (function () {
-    var btn = document.getElementById("dw-menu-btn");
-    var drawer = document.getElementById("dw-drawer");
-    if (!btn || !drawer) return;
-    function setOpen(open) {
-      drawer.classList.toggle("hidden", !open);
-      drawer.classList.toggle("flex", open);
-      btn.setAttribute("aria-expanded", String(open));
+    var menus = [
+      { btn: document.getElementById("dw-menu-btn"), panel: document.getElementById("dw-drawer"), openClass: "flex" },
+      { btn: document.getElementById("dw-user-btn"), panel: document.getElementById("dw-user-menu"), openClass: "block" }
+    ].filter(function (m) { return m.btn && m.panel; });
+    function setOpen(m, open) {
+      m.panel.classList.toggle("hidden", !open);
+      if (m.openClass) m.panel.classList.toggle(m.openClass, open);
+      m.btn.setAttribute("aria-expanded", String(open));
     }
-    btn.addEventListener("click", function () { setOpen(drawer.classList.contains("hidden")); });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape") { setOpen(false); btn.focus(); } });
+    function isOpen(m) { return !m.panel.classList.contains("hidden"); }
+    menus.forEach(function (m) {
+      m.btn.addEventListener("click", function () {
+        var open = !isOpen(m);
+        menus.forEach(function (o) { setOpen(o, false); });
+        setOpen(m, open);
+      });
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      menus.forEach(function (m) { if (isOpen(m)) { setOpen(m, false); m.btn.focus(); } });
+    });
     document.addEventListener("click", function (e) {
-      if (drawer.classList.contains("hidden")) return;
-      if (!drawer.contains(e.target) && !btn.contains(e.target)) setOpen(false);
+      menus.forEach(function (m) {
+        if (isOpen(m) && !m.panel.contains(e.target) && !m.btn.contains(e.target)) setOpen(m, false);
+      });
     });
   })();
 </script>
