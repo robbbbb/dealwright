@@ -76,3 +76,6 @@ Live call transcription · automated interviews · marketplace payments · publi
 
 ## Landing v2 pipeline-visual revision (2026-09-29, Robb visual feedback)
 - Robb reviewed the live render (headless-Chromium screenshots at 390/768/1440) and judged the hero pipeline cards too small and cluttered. Cause: the v2 mockup's 4-across print miniature with 8–9px type was implemented literally. Revised in the template: outputs 2×2 at ≥440px (single column below), miniature type raised to 9–11.5px, real card padding, fixed min-heights dropped. **The v2 mockup still shows the old 4-across micro layout** — update it next time it's touched, or treat the live page as canonical for the hero. Status: template fixed; mockup sync pending.
+
+## Dashboard shell (2026-09-29, Robb-directed between cards)
+- App shell (`templates/app-base.html`) + dashboard (`templates/dashboard.html`) built from `docs/mockups/dashboard-mockup.html` with honest zeros and empty states (no fabricated data; smoke test asserts the mockup's demo figures never leak). Nav items + header CTAs are disabled placeholders until Cards 1/2/7 deliver routes; **Card 9 remains the wiring card** for real counters/lists — deps respected, no model work done. Sidebar plan line and the mockup's solo-mode footer sentence deferred until persona/billing exist. Review: `docs/reviews/dashboard-dispatch.md`.
