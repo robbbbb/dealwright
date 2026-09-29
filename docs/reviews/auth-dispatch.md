@@ -56,7 +56,10 @@
 4. **Resend confirmation endpoint added** (in the mockup as a button; allauth has no equivalent view) — POST-only, rate-limited 5/h/address via Django cache, anti-enumeration.
 5. **Verification-mode tension left untouched**: production keeps `ACCOUNT_EMAIL_VERIFICATION=mandatory` (Card 0 line) while the mockup note implies `optional` + gate-at-send (Card 8 `@verified_email_required`). Flagged in backlog for a between-card decision — deliberate non-change to avoid relitigating a locked setting mid-card.
 6. **Non-branded allauth default pages remain** for edge surfaces (reauthenticate, trust, social errors, signup-closed, email-confirm-code) — self-contained, deferred in backlog.
-7. **`fido2` arrives transitively** with `allauth[mfa]` extra (unused — WebAuthn not in `MFA_SUPPORTED_TYPES` default). Acceptable, or prefer pinning `qrcode` directly?
+7. **`fido2` arrives transitively** with `allauth[mfa]` extra — RESOLVED during disposition: `fido2` is a hard runtime requirement of `allauth.mfa` (`allauth/mfa/stages.py` imports `webauthn.internal.flows` → `fido2.features` unconditionally, even with WebAuthn not in `MFA_SUPPORTED_TYPES`; verified — removing it breaks boot). The `mfa` extra is the correct declaration; a `pyproject.toml` comment warns against removing it.
+8. **(pass 1) Google "G" brand SVG duplicated in 3 templates** → fixed: extracted to `templates/account/snippets/google_button.html`; Google hexes are a third-party brand asset reproduced verbatim (exception recorded in backlog).
+9. **(pass 1) `#C7E7F0` info-banner border hardcoded** → fixed: tokenized as `--color-dw-teal-line` in `@theme`.
+10. **(pass 1) static password-strength bars are decorative** → accepted as-is (mockup shows demo state); noted in backlog — live scoring is post-MVP polish.
 
 ## Verdict format
 
@@ -74,3 +77,24 @@ Record the verdict below under **Verdict (reviewer)** and mirror the disposition
 ## Verdict (reviewer)
 
 *(pending — fresh GLM-5.3 reviewer pass)*
+
+### Pass 1 (scope: `9b89a06` / `d2c2e9b` / `3e37fee` / `c4fe1ed`) — CHANGES REQUIRED
+
+All gates 1–9 passed; frames 1–2 and 4–7 faithful; chip semantics, Q13 requirements, signup form, and backlog residuals verified. One blocking finding:
+
+```
+Verdict: CHANGES REQUIRED
+Blocking findings: 1) verified_email_required.html "Resend confirmation" form posts no email field; resend_confirmation view then rejects the form, sends nothing, and redirects the logged-in user to /accounts/login/ (verified: POST of the rendered form → 302 login, 0 mails). The only test covering the endpoint posts a payload no rendered form produces, masking the defect. Fix the form/view wiring and add a smoke test that drives the rendered form.
+Minor findings: 1) Google "G" brand-asset SVG with Google hexes duplicated across 3 templates — extract to a partial and record the gate-7 exception; 2) #C7E7F0 info-banner border hardcoded in input.css instead of a --dw-teal-line token; 3) static (non-functional) password strength bars are decorative only; 4) resend test should assert through the rendered form once fixed.
+Rationale: All gates pass and frames 1-2/4-7 are faithful, but frame 3's gate-state primary CTA is a verified silent no-op — a spec-baseline violation a green suite currently hides.
+```
+
+**Builder disposition (2026-09-29), fixes in `4e6a81d`:**
+- Blocking finding → **fixed**: hidden `email` input (session user's address) in `verified_email_required.html` + view fallback to `request.user.email` for authenticated posts; test asserts the rendered hidden field and drives both the exact rendered payload and the bare-form (no-email) fallback — live-smoked end-to-end (signup mail + bare-form resend mail both delivered on a real dev server).
+- Minor 1 (G SVG) → **fixed**: `templates/account/snippets/google_button.html` partial; exception recorded in backlog.
+- Minor 2 (teal border) → **fixed**: `--color-dw-teal-line` token in `@theme`; `app.css` rebuilt (rebuild reproducible).
+- Minor 3 (strength bars) → **accepted**, noted in backlog (decorative in the mockup too; live scoring is post-MVP).
+- Minor 4 (test through rendered form) → **fixed** in the same commit.
+- Deviation 7 (fido2) → **resolved against dropping it**: `fido2` is hard-imported by `allauth.mfa.stages` on the login path regardless of WebAuthn being disabled (verified: removal breaks boot); `mfa` extra kept with an explanatory `pyproject.toml` comment.
+
+Fresh reviewer pass 2 on `4e6a81d` follows below.

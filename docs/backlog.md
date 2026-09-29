@@ -28,9 +28,9 @@ Registry of deferred work and open items. Status lines updated as items move. De
 
 ## Auth implementation residuals (2026-09-29, Robb-directed between cards)
 
-`docs/mockups/auth-mockup.html` implemented across allauth (login, signup, verify-email states, password reset, TOTP MFA + one-time recovery codes). Commits `9b89a06` / `d2c2e9b` / `3e37fee`; review dispatch at `docs/reviews/auth-dispatch.md`. Residuals:
+`docs/mockups/auth-mockup.html` implemented across allauth (login, signup, verify-email states, password reset, TOTP MFA + one-time recovery codes). Commits `9b89a06` / `d2c2e9b` / `3e37fee` / `c4fe1ed`, review fixes `4e6a81d`; dispatch + verdicts at `docs/reviews/auth-dispatch.md` (pass 1 CHANGES REQUIRED → blocking finding fixed → pass 2 pending). Residuals:
 
-- **`django-allauth[mfa]` dep addition** (pulls `qrcode` + `fido2`) beyond the locked minimal list — needed for the TOTP QR SVG; confirm/keep at Card 11 dep review. Status: open (Card 11).
+- **`django-allauth[mfa]` dep addition** — confirmed required as-is: `qrcode` renders the TOTP QR SVG and `fido2` is hard-imported by `allauth.mfa.stages` on the login path even with WebAuthn disabled (removing it breaks boot — verified 2026-09-29; `pyproject.toml` carries a warning comment). Confirm versions at Card 11 dep review. Status: resolved (documented); Card 11 review pending.
 - **Google provider app now conditionally installed** with the credentials env keys — fixes a Card 0 gap: the provider was never registered without it, so social login could not have resolved even with credentials set. Status: fixed in `9b89a06`.
 - **Verification-mode tension (adjudicate at next between-card window):** production sets `ACCOUNT_EMAIL_VERIFICATION=mandatory` (Card 0 backlog line) → unverified users cannot log in at all; the mockup frame-3 note says "providers can browse, but proposals can't send until verified", which implies `optional` + a `@verified_email_required` gate on send/share views (Card 8). No code changed mid-card; flag at Card 1 close. Status: open (decision needed).
 - **Frame 3 deviation — no logged-out email change:** the mockup's "Wrong address? [input]" for signed-out users is intentionally not implemented (changing an account's email pre-verification is a classic account-takeover vector). Wrong-address copy routes back to signup; logged-in users use the styled email-manage page. Status: recorded (security-first deviation).
@@ -38,6 +38,8 @@ Registry of deferred work and open items. Status lines updated as items move. De
 - **OTP 6-box presentation** is a dependency-free JS progressive enhancement over allauth's single `code` field; without JS the plain input remains fully functional. Untested by automation (smoke tier). Status: note.
 - **MFA triggers not wired** (by design): "offered after first proposal send" (solo) and "required for Agency tier" enforcement belong to Cards 8–9. Status: deferred.
 - **Non-branded edge pages** intentionally left on allauth's default layouts: reauthenticate (account + MFA), trust-device, social login error/cancel, signup-closed, password-set, login-by-code, email-confirm-code. Self-contained but not themed; style if pilots hit them. Status: deferred.
+- **Google "G" button SVG** uses Google's own brand colors verbatim (third-party asset, not Dealwright tokens) — extracted to `templates/account/snippets/google_button.html`; recorded as a deliberate tokens-only exception. Status: recorded (accepted, review pass 1 minor).
+- **Password-strength bars are decorative** (mockup shows a demo state; no live scoring) — post-MVP polish if wanted. Status: note (accepted, review pass 1 minor).
 - **`ACCOUNT_RATE_LIMITS` untouched** — allauth defaults apply (login attempts, confirm-email cooldown). Revisit if pilot abuse appears. Status: note.
 
 ## Post-Card-0 additions (2026-09-28, between-card work at Robb's request)
