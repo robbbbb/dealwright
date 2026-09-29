@@ -3,6 +3,8 @@
 Smoke tier (templates & UI): through public APIs only.
 """
 
+import re
+
 import pytest
 from django.contrib.auth.models import User
 from django.test import Client
@@ -18,6 +20,7 @@ def test_landing_renders_for_anonymous(client: Client) -> None:
     assert "From messy call notes" in content  # v2 mockup headline (Robb, 2026-09-29)
     assert reverse("account_signup") in content
     assert reverse("account_login") in content
+    assert re.search(r'href="#features"[^>]*>View example proposal</a>', content)
     assert "estimates" in content.lower()  # estimate discipline on every public surface
     assert "₱399" in content and "₱1,990" in content  # Q10 pricing tiers
 
@@ -55,6 +58,9 @@ def test_signed_in_users_get_dashboard(client: Client) -> None:
     # Empty states, not fabricated rows
     assert "No discovery sessions yet" in content
     assert "No proposals yet" in content
+    assert "Your deal pipeline" in content
+    assert "Complete your setup" in content
+    assert reverse("team:team_home") in content
     # Estimate discipline on the app shell too; logout reachable
     assert "never guarantees" in content
     assert reverse("account_logout") in content

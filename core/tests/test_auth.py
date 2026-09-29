@@ -47,6 +47,7 @@ def test_login_page_renders(client: Client) -> None:
     assert "Remember me" in content
     assert "Forgot password?" in content
     assert "Create an account" in content
+    assert "From notes to numbers you can defend." in content
 
 
 @pytest.mark.django_db

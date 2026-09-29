@@ -2,89 +2,147 @@
 {% block title %}Dashboard · Dealwright{% endblock %}
 {% block app_content %}
 
-<div class="mb-[22px] flex flex-wrap items-center gap-3">
-  <h1 class="mr-auto text-[21px] font-extrabold leading-tight text-dw-ink">{{ greeting }}, {{ greeting_name }}
-    <small class="block text-[12.5px] font-normal text-dw-muted">{{ today|date:"l, F j" }}</small>
-  </h1>
-  <span title="Coming soon" aria-disabled="true" class="inline-flex min-h-[36px] cursor-not-allowed items-center rounded-[10px] border-[1.5px] border-dw-700 bg-white px-[18px] text-[13px] font-bold text-dw-700 opacity-60">New client</span>
-  <span title="Coming soon" aria-disabled="true" class="inline-flex min-h-[36px] cursor-not-allowed items-center rounded-[10px] bg-dw-700 px-[18px] text-[13px] font-bold text-white opacity-60">＋ New discovery session</span>
-  <div class="relative hidden md:block">
-    <button id="dw-user-btn" type="button" aria-expanded="false" aria-controls="dw-user-menu" class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-0 bg-dw-600 text-[14px] font-extrabold text-white hover:ring-2 hover:ring-dw-100">
-      {{ greeting_name|first }}
-      <span class="sr-only">Account menu</span>
-    </button>
-    <div id="dw-user-menu" class="hidden absolute right-0 top-full z-30 mt-2 w-56 rounded-xl border border-dw-line bg-white p-1.5 shadow-xl">
-      <div class="border-b border-dw-line px-3 py-2">
-        <b class="block text-[13px] text-dw-ink">{{ greeting_name }}</b>
-        <span class="block truncate text-[11.5px] text-dw-muted">{{ user.email }}</span>
+<div class="mx-auto max-w-[1320px]">
+  <header class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <p class="mb-1.5 text-[10.5px] font-extrabold uppercase tracking-[1.1px] text-dw-600">Overview</p>
+      <h1 class="text-[24px] font-extrabold leading-tight tracking-[-.35px] text-dw-ink">{{ greeting }}, {{ greeting_name }}</h1>
+      <p class="mt-1 text-[12.5px] text-dw-muted">{{ today|date:"l, F j" }} · Here’s where your next defensible proposal begins.</p>
+    </div>
+    <div class="flex flex-wrap gap-2.5">
+      <span title="Coming soon" aria-disabled="true" class="inline-flex min-h-[40px] cursor-not-allowed items-center rounded-[10px] border border-dw-line bg-white px-4 text-[12px] font-bold text-dw-muted">New client</span>
+      <span title="Coming soon" aria-disabled="true" class="inline-flex min-h-[40px] cursor-not-allowed items-center gap-1.5 rounded-[10px] bg-dw-700 px-4 text-[12px] font-bold text-white opacity-60"><span aria-hidden="true">＋</span> New discovery session</span>
+    </div>
+  </header>
+
+  <div class="mb-5 grid gap-4 xl:grid-cols-[1.55fr_.75fr]">
+    <section aria-labelledby="pipeline-heading" class="overflow-hidden rounded-[14px] border border-dw-line bg-white shadow-[0_1px_2px_rgba(4,36,27,.03)]">
+      <div class="border-b border-dw-line px-5 py-4 sm:px-6">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-dw-50 text-dw-700" aria-hidden="true">
+            <svg class="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h5M12 5h5M6 2l3 3-3 3M14 12l3 3-3 3M3 15h10"/></svg>
+          </span>
+          <div>
+            <h2 id="pipeline-heading" class="text-[15px] font-extrabold text-dw-ink">Your deal pipeline</h2>
+            <p class="mt-0.5 text-[12px] text-dw-muted">One clear path from discovery notes to a proposal you can stand behind.</p>
+          </div>
+        </div>
       </div>
-      <form method="post" action="{% url 'account_logout' %}" class="mt-1">
-        {% csrf_token %}
-        <button type="submit" class="block w-full cursor-pointer rounded-[9px] border-0 bg-transparent px-3 py-2 text-left text-[13px] font-bold text-dw-700 hover:bg-dw-50">Log out</button>
-      </form>
-    </div>
-  </div>
-</div>
-
-<div class="mb-[22px] flex flex-wrap gap-3.5">
-  <div class="min-w-[150px] flex-1 rounded-xl border border-dw-line bg-white px-4 py-3.5">
-    <div class="text-[23px] font-extrabold text-dw-ink">0</div>
-    <div class="mt-0.5 text-[10.5px] uppercase tracking-[.6px] text-dw-muted">Clients</div>
-  </div>
-  <div class="min-w-[150px] flex-1 rounded-xl border border-dw-line bg-white px-4 py-3.5">
-    <div class="text-[23px] font-extrabold text-dw-ink">0</div>
-    <div class="mt-0.5 text-[10.5px] uppercase tracking-[.6px] text-dw-muted">Sessions · this month</div>
-  </div>
-  <div class="min-w-[150px] flex-1 rounded-xl border border-dw-line bg-white px-4 py-3.5">
-    <div class="text-[23px] font-extrabold text-dw-ink">0</div>
-    <div class="mt-0.5 text-[10.5px] uppercase tracking-[.6px] text-dw-muted">Proposals sent</div>
-  </div>
-  <div class="min-w-[150px] flex-1 rounded-xl border border-dw-line bg-white px-4 py-3.5">
-    <div class="text-[23px] font-extrabold text-dw-600">—</div>
-    <div class="mt-0.5 text-[10.5px] uppercase tracking-[.6px] text-dw-muted">Win rate</div>
-  </div>
-  <div class="min-w-[150px] flex-1 rounded-xl border border-dw-line bg-white px-4 py-3.5">
-    <div class="text-[23px] font-extrabold text-dw-600">₱0 <span class="inline-flex items-center rounded-full bg-dw-amber-bg px-2 py-px align-middle text-[9.5px] font-bold text-dw-amber">est</span></div>
-    <div class="mt-0.5 text-[10.5px] uppercase tracking-[.6px] text-dw-muted">Client benefit · won deals</div>
-  </div>
-</div>
-
-<div class="flex flex-col gap-4 lg:flex-row lg:items-start">
-  <div class="min-w-0 flex-1">
-
-    <div class="mb-4 overflow-hidden rounded-xl border border-dw-line bg-white">
-      <div class="flex items-center border-b border-dw-line bg-dw-50 px-4 py-3"><b class="mr-auto text-[14px] text-dw-ink">Recent discovery sessions</b></div>
-      <div class="px-4 py-7 text-center text-[12.5px] text-dw-muted">
-        No discovery sessions yet. Your first one starts with pasted call notes — the session flow arrives with the next builds.
+      <div class="grid gap-3 p-5 sm:grid-cols-3 sm:p-6">
+        <a href="{% url 'team:team_home' %}" class="group rounded-xl border border-dw-100 bg-dw-50 p-4 no-underline hover:border-dw-600">
+          <div class="flex items-center justify-between">
+            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-white text-[11px] font-extrabold text-dw-700">1</span>
+            <span class="rounded-full bg-dw-teal-bg px-2 py-0.5 text-[9px] font-bold text-dw-teal">Available now</span>
+          </div>
+          <h3 class="mt-4 text-[13px] font-extrabold text-dw-ink group-hover:text-dw-700">Define delivery</h3>
+          <p class="mt-1 text-[11px] leading-[1.55] text-dw-muted">Capture your skills, rates, availability, and team.</p>
+          <span class="mt-3 inline-flex text-[10.5px] font-bold text-dw-700">Open setup →</span>
+        </a>
+        <div class="rounded-xl border border-dw-line bg-dw-canvas/60 p-4">
+          <div class="flex items-center justify-between">
+            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-white text-[11px] font-extrabold text-dw-muted">2</span>
+            <span class="text-[9px] font-bold uppercase tracking-[.5px] text-dw-muted">Coming soon</span>
+          </div>
+          <h3 class="mt-4 text-[13px] font-extrabold text-dw-ink">Capture discovery</h3>
+          <p class="mt-1 text-[11px] leading-[1.55] text-dw-muted">Paste call notes and review traceable facts.</p>
+        </div>
+        <div class="rounded-xl border border-dw-line bg-dw-canvas/60 p-4">
+          <div class="flex items-center justify-between">
+            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-white text-[11px] font-extrabold text-dw-muted">3</span>
+            <span class="text-[9px] font-bold uppercase tracking-[.5px] text-dw-muted">Coming soon</span>
+          </div>
+          <h3 class="mt-4 text-[13px] font-extrabold text-dw-ink">Build the proposal</h3>
+          <p class="mt-1 text-[11px] leading-[1.55] text-dw-muted">Compute ROI, match delivery, and review the draft.</p>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="mb-4 overflow-hidden rounded-xl border border-dw-line bg-white">
-      <div class="flex items-center border-b border-dw-line bg-dw-50 px-4 py-3"><b class="mr-auto text-[14px] text-dw-ink">Proposals</b></div>
-      <div class="px-4 py-7 text-center text-[12.5px] text-dw-muted">
-        No proposals yet. Proposals are generated from discovery sessions once estimates exist.
+    <aside aria-labelledby="setup-heading" class="rounded-[14px] border border-dw-line bg-white p-5 shadow-[0_1px_2px_rgba(4,36,27,.03)] sm:p-6">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <p class="text-[9.5px] font-extrabold uppercase tracking-[.8px] text-dw-600">Getting started</p>
+          <h2 id="setup-heading" class="mt-1 text-[15px] font-extrabold text-dw-ink">Complete your setup</h2>
+        </div>
+        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-dw-50 text-[10px] font-extrabold text-dw-700" aria-hidden="true">1/3</span>
       </div>
-    </div>
-
+      <p class="mt-2 text-[11.5px] leading-[1.55] text-dw-muted">A precise delivery profile keeps future matches and proposal claims honest.</p>
+      <div class="mt-5 h-1.5 overflow-hidden rounded-full bg-dw-line"><div class="h-full w-1/3 rounded-full bg-dw-teal"></div></div>
+      <div class="mt-2 flex items-center justify-between text-[10px]"><span class="font-bold text-dw-teal">1 tool available</span><span class="text-dw-muted">More arriving by card</span></div>
+      <a href="{% url 'team:team_home' %}" class="mt-5 inline-flex w-full items-center justify-center rounded-[10px] border border-dw-700 bg-white px-4 py-2.5 text-[12px] font-bold text-dw-700 no-underline hover:bg-dw-50">Set up skills &amp; team</a>
+    </aside>
   </div>
 
-  <div class="w-full shrink-0 lg:max-w-[340px]">
-
-    <div class="mb-4 overflow-hidden rounded-xl border border-dw-line bg-white">
-      <div class="flex items-center border-b border-dw-line bg-dw-50 px-4 py-3"><b class="mr-auto text-[14px] text-dw-ink">Deal qualification</b></div>
-      <div class="px-4 py-7 text-center text-[12.5px] text-dw-muted">
-        Qualification against your skills unlocks once you have a discovery session and skills on file.
+  <section aria-labelledby="at-a-glance-heading" class="mb-5">
+    <div class="mb-2.5 flex items-center justify-between">
+      <h2 id="at-a-glance-heading" class="text-[12px] font-extrabold uppercase tracking-[.75px] text-dw-muted">At a glance</h2>
+      <span class="text-[10.5px] text-dw-muted">Real workspace data only</span>
+    </div>
+    <dl class="grid grid-cols-2 gap-3 lg:grid-cols-5">
+      <div class="rounded-xl border border-dw-line bg-white px-4 py-3.5">
+        <dt class="text-[9.5px] font-bold uppercase tracking-[.55px] text-dw-muted">Clients</dt>
+        <dd class="mt-2 text-[23px] font-extrabold leading-none text-dw-ink">0</dd>
       </div>
-    </div>
+      <div class="rounded-xl border border-dw-line bg-white px-4 py-3.5">
+        <dt class="text-[9.5px] font-bold uppercase tracking-[.55px] text-dw-muted">Sessions · this month</dt>
+        <dd class="mt-2 text-[23px] font-extrabold leading-none text-dw-ink">0</dd>
+      </div>
+      <div class="rounded-xl border border-dw-line bg-white px-4 py-3.5">
+        <dt class="text-[9.5px] font-bold uppercase tracking-[.55px] text-dw-muted">Proposals sent</dt>
+        <dd class="mt-2 text-[23px] font-extrabold leading-none text-dw-ink">0</dd>
+      </div>
+      <div class="rounded-xl border border-dw-line bg-white px-4 py-3.5">
+        <dt class="text-[9.5px] font-bold uppercase tracking-[.55px] text-dw-muted">Win rate</dt>
+        <dd class="mt-2 text-[23px] font-extrabold leading-none text-dw-muted">—</dd>
+      </div>
+      <div class="col-span-2 rounded-xl border border-dw-line bg-white px-4 py-3.5 lg:col-span-1">
+        <dt class="text-[9.5px] font-bold uppercase tracking-[.55px] text-dw-muted">Client benefit · won deals</dt>
+        <dd class="mt-2 text-[21px] font-extrabold leading-none text-dw-ink">₱0 <span class="inline-flex items-center rounded-full bg-dw-amber-bg px-2 py-px align-middle text-[9px] font-bold text-dw-amber">est</span></dd>
+      </div>
+    </dl>
+  </section>
 
-    <div class="mb-4 overflow-hidden rounded-xl border border-dw-line bg-white">
-      <div class="flex items-center border-b border-dw-line bg-dw-50 px-4 py-3"><b class="mr-auto text-[14px] text-dw-ink">Needs your attention</b></div>
-      <div class="px-4 py-7 text-center text-[12.5px] text-dw-muted">Nothing waiting. Nice.</div>
-    </div>
+  <div class="grid gap-4 lg:grid-cols-2">
+    <section aria-labelledby="sessions-heading" class="overflow-hidden rounded-[14px] border border-dw-line bg-white">
+      <div class="flex items-center border-b border-dw-line px-5 py-3.5">
+        <h2 id="sessions-heading" class="text-[13.5px] font-extrabold text-dw-ink">Recent discovery sessions</h2>
+        <span class="ml-auto rounded-full border border-dw-line px-2 py-0.5 text-[9.5px] font-bold text-dw-muted">0</span>
+      </div>
+      <div class="px-5 py-8 text-center">
+        <span class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-dw-canvas text-dw-muted" aria-hidden="true">
+          <svg class="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="7" y="2.5" width="6" height="10" rx="3"/><path d="M4.5 9.5a5.5 5.5 0 0 0 11 0M10 15v2.5"/></svg>
+        </span>
+        <h3 class="mt-3 text-[12.5px] font-bold text-dw-ink">No discovery sessions yet</h3>
+        <p class="mx-auto mt-1 max-w-sm text-[11.5px] leading-[1.55] text-dw-muted">Your first session will begin with pasted call notes, followed by a review of the extracted facts.</p>
+      </div>
+    </section>
 
-    <p class="mt-[18px] text-[11.5px] text-dw-muted">Figures marked <span class="inline-flex items-center rounded-full bg-dw-amber-bg px-2 py-px text-[9.5px] font-bold text-dw-amber">est</span> are estimates from recorded assumptions — never guarantees.</p>
-
+    <section aria-labelledby="proposals-heading" class="overflow-hidden rounded-[14px] border border-dw-line bg-white">
+      <div class="flex items-center border-b border-dw-line px-5 py-3.5">
+        <h2 id="proposals-heading" class="text-[13.5px] font-extrabold text-dw-ink">Proposals</h2>
+        <span class="ml-auto rounded-full border border-dw-line px-2 py-0.5 text-[9.5px] font-bold text-dw-muted">0</span>
+      </div>
+      <div class="px-5 py-8 text-center">
+        <span class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-dw-canvas text-dw-muted" aria-hidden="true">
+          <svg class="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3M7.5 9h5M7.5 12h5"/></svg>
+        </span>
+        <h3 class="mt-3 text-[12.5px] font-bold text-dw-ink">No proposals yet</h3>
+        <p class="mx-auto mt-1 max-w-sm text-[11.5px] leading-[1.55] text-dw-muted">Proposals will appear here after a discovery session has validated inputs and an estimate.</p>
+      </div>
+    </section>
   </div>
+
+  <div class="mt-4 grid gap-4 lg:grid-cols-2">
+    <section class="flex items-center gap-3 rounded-xl border border-dw-line bg-white px-4 py-3.5">
+      <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-dw-canvas text-dw-muted" aria-hidden="true">◇</span>
+      <div><h2 class="text-[12.5px] font-bold text-dw-ink">Deal qualification</h2><p class="mt-0.5 text-[11px] text-dw-muted">Unlocks when a discovery session and delivery skills are on file.</p></div>
+    </section>
+    <section class="flex items-center gap-3 rounded-xl border border-dw-line bg-white px-4 py-3.5">
+      <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-dw-canvas text-dw-muted" aria-hidden="true">✓</span>
+      <div><h2 class="text-[12.5px] font-bold text-dw-ink">Needs your attention</h2><p class="mt-0.5 text-[11px] text-dw-muted">Nothing waiting. Nice.</p></div>
+    </section>
+  </div>
+
+  <p class="mt-5 text-[10.5px] text-dw-muted">Figures marked <span class="inline-flex items-center rounded-full bg-dw-amber-bg px-2 py-px text-[9px] font-bold text-dw-amber">est</span> are estimates from recorded assumptions — never guarantees.</p>
 </div>
 
 {% endblock %}

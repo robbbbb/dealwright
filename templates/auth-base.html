@@ -7,24 +7,53 @@
   <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
 </head>
-<body class="flex min-h-screen items-center justify-center bg-dw-canvas px-4 py-10 text-dw-body antialiased">
-  <main class="w-full max-w-[400px]">
-    <section class="overflow-hidden rounded-2xl border border-dw-line bg-white shadow-xl shadow-dw-700/15">
-      <header class="bg-linear-to-br from-dw-800 to-dw-900 px-6 py-[22px] text-white">
-        <a href="{% url 'home' %}" class="inline-flex items-center gap-[9px] text-[16px] font-extrabold tracking-tight text-white no-underline">
-          <span class="inline-flex h-[26px] w-[26px] items-center justify-center rounded-[7px] bg-dw-gold text-[10.5px] font-light tracking-[1px]">DW</span>Dealwright
+<body class="min-h-screen bg-dw-canvas text-dw-body antialiased">
+  <main class="mx-auto flex min-h-screen w-full max-w-[1040px] items-center px-4 py-6 sm:px-6 lg:py-10">
+    <div class="grid w-full overflow-hidden rounded-[22px] border border-dw-line bg-white shadow-[0_24px_70px_rgba(4,36,27,.12)] lg:grid-cols-[.92fr_1.08fr]">
+      <aside class="relative hidden min-h-[620px] overflow-hidden bg-linear-to-br from-dw-800 via-dw-900 to-dw-950 p-10 text-white lg:flex lg:flex-col">
+        <span class="absolute -right-28 -top-20 h-72 w-72 rounded-full border border-white/10" aria-hidden="true"></span>
+        <span class="absolute -right-12 -top-4 h-40 w-40 rounded-full border border-white/10" aria-hidden="true"></span>
+
+        <a href="{% url 'home' %}" class="relative z-10 inline-flex w-fit no-underline">
+          <img src="{% static 'brand/logo-horizontal-light.svg' %}" alt="Dealwright" class="block h-8 w-auto">
         </a>
-        {% block brand_tagline %}{% endblock %}
-      </header>
-      <div class="px-6 pb-6 pt-5">
-        {% if messages %}
-          <ul class="mb-4 list-none">
-            {% for message in messages %}<li class="msg">{{ message }}</li>{% endfor %}
+
+        <div class="relative z-10 my-auto py-10">
+          <p class="text-[10.5px] font-extrabold uppercase tracking-[1.15px] text-dw-100/70">Confident decisions, clearly made</p>
+          <h1 class="mt-4 max-w-[390px] text-[34px] font-extrabold leading-[1.08] tracking-[-.035em]">From notes to numbers you can defend.</h1>
+          <p class="mt-4 max-w-[390px] text-[14px] leading-6 text-white/72">Turn discovery calls into transparent ROI estimates, right-fit delivery, and proposals clients can trust.</p>
+
+          <ul class="mt-8 space-y-4 text-[12.5px] text-white/85">
+            <li class="flex items-center gap-3"><span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10 text-dw-100" aria-hidden="true">✓</span>Every figure traces to a recorded field</li>
+            <li class="flex items-center gap-3"><span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10 text-dw-100" aria-hidden="true">✓</span>Assumptions stay visible and editable</li>
+            <li class="flex items-center gap-3"><span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10 text-dw-100" aria-hidden="true">✓</span>AI writes the story—not the numbers</li>
           </ul>
-        {% endif %}
-        {% block auth_content %}{% endblock %}
-      </div>
-    </section>
+        </div>
+
+        <p class="relative z-10 border-t border-white/10 pt-5 text-[10.5px] leading-4 text-white/50">Savings and revenue figures are estimates derived from stated assumptions, never guarantees.</p>
+      </aside>
+
+      <section class="flex min-w-0 flex-col">
+        <header class="bg-linear-to-br from-dw-800 to-dw-900 px-6 py-[22px] text-white lg:hidden">
+          <a href="{% url 'home' %}" class="inline-flex no-underline">
+            <img src="{% static 'brand/logo-horizontal-light.svg' %}" alt="Dealwright" class="block h-7 w-auto">
+          </a>
+          {% block brand_tagline %}{% endblock %}
+        </header>
+        <div class="my-auto px-6 py-6 sm:px-9 sm:py-8 lg:px-12 lg:py-10">
+          <div class="mb-6 hidden items-center justify-between border-b border-dw-line pb-4 lg:flex">
+            <span class="text-[10px] font-extrabold uppercase tracking-[1px] text-dw-muted">Secure workspace</span>
+            <a href="{% url 'home' %}" class="text-[11.5px] font-bold text-dw-600 no-underline hover:underline">Back to Dealwright</a>
+          </div>
+          {% if messages %}
+            <ul class="mb-4 list-none">
+              {% for message in messages %}<li class="msg">{{ message }}</li>{% endfor %}
+            </ul>
+          {% endif %}
+          {% block auth_content %}{% endblock %}
+        </div>
+      </section>
+    </div>
   </main>
 </body>
 </html>
