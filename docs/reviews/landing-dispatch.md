@@ -1,7 +1,7 @@
 # Review dispatch — Post-Card-0 addition: public landing page
 
 **For:** fresh GLM-5.3 reviewer (read-only — run gates, edit nothing). Seed a fresh session with this file + repo root `/home/robbb/dealwright`.
-**Builder:** builder session 2026-09-29 (pi coding session, Robb-directed). **Scope:** commit `d54f79b` ("feat: public landing page at / for anonymous visitors") on `main`. Commit `7225005` (compose file rename) is mechanical — verify only that it is content-identical (`git show 7225005 --stat` → 100% rename) and skip deeper review.
+**Builder:** builder session 2026-09-29 (pi coding session, Robb-directed). **Scope:** commit `7ba641f` ("feat: public landing page at / for anonymous visitors") on `main`. Commit `fd0f771` (compose file rename) is mechanical — verify only that it is content-identical (`git show fd0f771 --stat` → 100% rename) and skip deeper review.
 
 ## Scope summary
 
@@ -61,7 +61,7 @@ Record the verdict below under **Verdict (reviewer)** and mirror the disposition
 
 ## Verdict (reviewer)
 
-### Pass 1 (scope: `d54f79b`) — CHANGES REQUIRED
+### Pass 1 (scope: `7ba641f`) — CHANGES REQUIRED
 
 ```
 Verdict: CHANGES REQUIRED
@@ -73,19 +73,19 @@ Rationale: All functional gates and checklist items pass and the page is faithfu
 All 8 checklist items passed; all 6 deviations adjudicated acceptable; gates 1–3, 5–8 passed.
 
 **Builder disposition (2026-09-29):**
-- Blocking finding → fixed in `86cac97` (`scripts/build_css.sh` from committed sources; utilities layer class-for-class identical; rebuild against HEAD now zero-diff; pytest 4/4, ruff, `manage.py check` re-run green).
+- Blocking finding → fixed in `3788cd9` (`scripts/build_css.sh` from committed sources; utilities layer class-for-class identical; rebuild against HEAD now zero-diff; pytest 4/4, ruff, `manage.py check` re-run green).
 - Minor: demo-card secondary link dropped → **accepted**, consistent with adjudicated deviation 3 (no public proposal surface; no `docs/` links in prod). No action.
 - Minor: "won deal pays for the year" implied-outcome copy → **actioned**: pre-launch checklist line added to `docs/backlog.md` (marketing copy review before launch). Copy unchanged now (mockup baseline, figure-free).
 - Minor: staticfiles UserWarning → **accepted**, pre-existing since Card 0 (no `collectstatic` in dev/test trees). No action.
-- Fresh reviewer pass 2 on `86cac97` follows below.
+- Fresh reviewer pass 2 on `3788cd9` follows below.
 
-### Pass 2 (scope: `86cac97`, fix verification) — APPROVED
+### Pass 2 (scope: `3788cd9`, fix verification) — APPROVED
 
 ```
 Verdict: APPROVED
 Blocking findings: none
 Minor findings: none new — pass-1 minors carry recorded dispositions (two accepted/no-action, one actioned in docs/backlog.md pre-launch checklist); staticfiles UserWarning remains as accepted pre-existing noise
-Rationale: Gate 4 now passes byte-exactly (rebuild of scripts/build_css.sh against HEAD is zero-diff), the fix commit 86cac97 contains only the CSS artifact rebuild with a byte-identical utilities layer, and all other gates (pytest 4/4, ruff, manage.py check, amber utilities + footer disclaimer in committed artifacts) hold on HEAD with dispositions consistent between card and backlog.
+Rationale: Gate 4 now passes byte-exactly (rebuild of scripts/build_css.sh against HEAD is zero-diff), the fix commit 3788cd9 contains only the CSS artifact rebuild with a byte-identical utilities layer, and all other gates (pytest 4/4, ruff, manage.py check, amber utilities + footer disclaimer in committed artifacts) hold on HEAD with dispositions consistent between card and backlog.
 ```
 
 Reviewer independently verified: fix commit touches only the CSS artifact; utilities layer byte-identical (13,266 B both blobs); rebuild against HEAD zero-diff; pytest 4/4 with expected test IDs; ruff and `manage.py check` clean; amber token values and footer estimate disclaimer present in committed artifacts; card↔backlog dispositions consistent.
@@ -96,9 +96,9 @@ Reviewer independently verified: fix commit touches only the CSS artifact; utili
 
 # Rebuild — landing v2 (Robb's mockup rewrite, 2026-09-29) — pass 1
 
-**Scope:** commits `71ea1f6` (Robb's v2 mockup — the spec baseline, his own rewrite) and `a75e11c` (landing.html rebuild + brand SVGs to static/brand/ + smoke-test update). **For:** fresh GLM-5.3 reviewer (read-only, run gates). Seed with repo root `/home/robbb/dealwright`.
+**Scope:** commits `885ada5` (Robb's v2 mockup — the spec baseline, his own rewrite) and `bce84ad` (landing.html rebuild + brand SVGs to static/brand/ + smoke-test update). **For:** fresh GLM-5.3 reviewer (read-only, run gates). Seed with repo root `/home/robbb/dealwright`.
 
-**Spec baseline:** `docs/mockups/landing-mockup.html` **at `71ea1f6`** (Robb's v2 — NOT the v1 reviewed in passes 1–2 above; v1 sections — old/new comparison, textarea demo, ₱0.52 stat — are intentionally gone). Theme rules: `AGENTS.md` design system + `docs/mockups/theme.html` (chip semantics; tokens only). Robb's directive: "update the landing page… refer in the landing page mockup. make it responsive to all media size."
+**Spec baseline:** `docs/mockups/landing-mockup.html` **at `885ada5`** (Robb's v2 — NOT the v1 reviewed in passes 1–2 above; v1 sections — old/new comparison, textarea demo, ₱0.52 stat — are intentionally gone). Theme rules: `AGENTS.md` design system + `docs/mockups/theme.html` (chip semantics; tokens only). Robb's directive: "update the landing page… refer in the landing page mockup. make it responsive to all media size."
 
 **Gates:**
 1. `.venv/bin/python -m pytest` — expect **25 passed** (landing test updated for v2 headline + pricing markers)
@@ -132,7 +132,7 @@ All 7 gates green with evidence (25 passed, ruff/check clean, CSS byte-reproduci
 Verdict: APPROVED
 Blocking findings: none
 Minor findings: hero CTAs wrap instead of stacking full-width at ≤470px (mockup stacks); desktop workflow arrow between cards 1–2 absent vs mockup's three arrows; 760px mockup breakpoint maps to sm(640)/md(768) steps (640–768px band: plans 3-col, nav links from 768px) — all cosmetic, no estimate-discipline, chip-semantics, or token impact
-Rationale: All 7 gates pass with pasted evidence (pytest 25/25, ruff and manage.py check clean, byte-reproducible CSS rebuild, full live-smoke markers incl. Protected-preference ×2 and both brand SVGs, zero hardcoded hexes, every mockup breakpoint verified present in the committed CSS), the page is section-for-section faithful to the 71ea1f6 v2 mockup, and all 5 deviations are adjudicated acceptable with backlog backing.
+Rationale: All 7 gates pass with pasted evidence (pytest 25/25, ruff and manage.py check clean, byte-reproducible CSS rebuild, full live-smoke markers incl. Protected-preference ×2 and both brand SVGs, zero hardcoded hexes, every mockup breakpoint verified present in the committed CSS), the page is section-for-section faithful to the 885ada5 v2 mockup, and all 5 deviations are adjudicated acceptable with backlog backing.
 ```
 
 **Builder disposition (2026-09-29):** minors 1–2 → fixed in the follow-up commit (hero CTAs stack at ≤470px; 1→2 arrow restored at lg). Minor 3 → accepted (standard Tailwind steps; exact arbitrary variants used where the mockup demanded 420/470). **Landing v2: approved & closed.**
@@ -143,7 +143,7 @@ Rationale: All 7 gates pass with pasted evidence (pytest 25/25, ruff and manage.
 
 **Trigger:** Robb reviewed the live render (headless-Chromium screenshots at 390/768/1440, which the builder can now capture and view) and judged the hero pipeline cards too small and cluttered — the v2 mockup's 4-across print miniature with 8–9px type reads as noise on real screens; the ROI card's "Assumptions shown" chip overlapped its list.
 
-**Scope:** commit `4daccff` — hero pipeline only: outputs 2×2 at ≥440px (1-col below), type up one to two steps throughout the notes + output cards, padding/min-height fixes. Plus `docs/backlog.md` residual recording the mockup/live divergence. **Evidence screenshots (pre-fix):** `/tmp/dw-desktop.png`, `/tmp/dw-mobile.png`. **Post-fix:** `/tmp/dw-desktop2.png`, `/tmp/dw-mobile2.png` — reviewer should view these image files (read tool supports PNG).
+**Scope:** commit `7ccb7a5` — hero pipeline only: outputs 2×2 at ≥440px (1-col below), type up one to two steps throughout the notes + output cards, padding/min-height fixes. Plus `docs/backlog.md` residual recording the mockup/live divergence. **Evidence screenshots (pre-fix):** `/tmp/dw-desktop.png`, `/tmp/dw-mobile.png`. **Post-fix:** `/tmp/dw-desktop2.png`, `/tmp/dw-mobile2.png` — reviewer should view these image files (read tool supports PNG).
 
 **Gates:** same 7 as pass 1 (pytest 25, ruff, check, CSS reproducible, live smoke, template hygiene, responsive classes). **Checklist:** pass-1 checklist still holds; additionally confirm no regression outside the hero pipeline and that estimate/chip discipline survived the type-size changes.
 

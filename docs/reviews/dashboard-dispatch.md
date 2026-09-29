@@ -1,6 +1,6 @@
 # Dispatch — Dashboard shell (Robb-directed between cards, 2026-09-29)
 
-**Scope:** commit `9d65123` (+ Robb's landing-caption revert `c7cb388` committed adjacent — out of scope except noting it doesn't touch dashboard files). **For:** fresh GLM-5.3 reviewer (read-only, run gates). Seed with repo root `/home/robbb/dealwright`.
+**Scope:** commit `e8415ad` (+ Robb's landing-caption revert `cdddcd4` committed adjacent — out of scope except noting it doesn't touch dashboard files). **For:** fresh GLM-5.3 reviewer (read-only, run gates). Seed with repo root `/home/robbb/dealwright`.
 
 **What was built:** signed-in app shell + dashboard per `docs/mockups/dashboard-mockup.html` — `templates/app-base.html` (sidebar: Work/Setup sections, active state via `request.resolver_match.url_name`, who-block with logout), `templates/dashboard.html` (time-based greeting + first name + date, disabled CTAs, 5 stat cards, panels with empty states, estimate-discipline footer), `templates/home.html` removed, `core.views.home` renders the dashboard with greeting context, smoke test rewritten (`test_signed_in_users_get_dashboard`).
 
@@ -22,13 +22,13 @@
 ## Verdict (pass 1)
 ### Pass 1 verdict — APPROVED
 
-All 7 gates green with real output; discipline claims independently verified (all five demo figures absent from visible text; placeholders honest; only real routes referenced; chip semantics correct; c7cb388 isolated from dashboard files).
+All 7 gates green with real output; discipline claims independently verified (all five demo figures absent from visible text; placeholders honest; only real routes referenced; chip semantics correct; cdddcd4 isolated from dashboard files).
 
 ```
 Verdict: APPROVED
 Blocking findings: None.
 Minor findings: (1) smoke test omits "Integrations" from asserted sidebar items — disposition: acceptable, verified present in live render; suggest adding when Card 9 rewrites the test. (2) Demo-count absence asserted only for 62%/₱41k — disposition: acceptable, bare digits are unassertable against utility-class names in raw HTML; reviewer verified visible-text absence of all five demo figures independently.
-Rationale: All 7 gates pass with real output; the diff (9d65123) matches the dispatch description exactly; mockup demo numbers provably do not render; nav/CTA placeholders are honest (Coming soon, aria-disabled, no fabricated routes — both {% url %} targets resolve); zero hardcoded hex in the new templates; core/views.py contains greeting/date presentation only; the committed smoke test genuinely asserts the discipline claims; adjacent commit c7cb388 touches no dashboard files; all six mockup deviations adjudicated as product-discipline-positive. Card 9 remains the wiring card per plan.
+Rationale: All 7 gates pass with real output; the diff (e8415ad) matches the dispatch description exactly; mockup demo numbers provably do not render; nav/CTA placeholders are honest (Coming soon, aria-disabled, no fabricated routes — both {% url %} targets resolve); zero hardcoded hex in the new templates; core/views.py contains greeting/date presentation only; the committed smoke test genuinely asserts the discipline claims; adjacent commit cdddcd4 touches no dashboard files; all six mockup deviations adjudicated as product-discipline-positive. Card 9 remains the wiring card per plan.
 ```
 
 **Builder disposition (2026-09-29):** minor 1 → fixed immediately ("Integrations" added to the asserted sidebar items, tests green). Minor 2 → accepted (reviewer's visible-text verification recorded here). **Dashboard shell: approved & closed.** Card 9 wiring deferred per plan.
@@ -68,7 +68,7 @@ Fix commit verified exact (app-base + app.css only, all four expected changes); 
 Verdict: APPROVED
 Blocking findings: None.
 Minor findings: (1) Escape handler calls btn.focus() unconditionally — on mobile, pressing Escape anywhere pulls focus to the menu button; a hidden guard would scope it. Harmless — acceptable, suggest folding into a future UI card. (2) Robb's concurrent uncommitted edit (max-w-[1200px] removed from <main>) — app.css will need a rebuild when it lands. (3) Pass-2 minor e remains accepted.
-Rationale: Fix commit 7b83759 matches the pass-2 remediation exactly ... [full rationale in review transcript]
+Rationale: Fix commit 1550fdc matches the pass-2 remediation exactly ... [full rationale in review transcript]
 ```
 
 **Builder disposition (2026-09-29):** minor 1 → accepted (future UI card). Minor 2 → Robb's edit committed verbatim right after this verdict with CSS rebuilt (prunes `max-w-[1200px]`). **Mobile drawer: approved & closed.**
@@ -110,7 +110,7 @@ Rationale: All gates pass with real pasted output; all six pass-4 adjudications 
 ## Verdict (pass 5)
 ### Pass 5 verdict — APPROVED
 
-Feature commit `73cbeb9` matches scope exactly (who-block → `#dw-who` + `md:hidden`; badge removed; app.css correctly not in commit — rebuild was a no-op since `md:hidden` was already compiled). Stretch chain verified intact in source, compiled CSS, and live DOM; no-JS logout reachable at every width (noscript ID+important rules provably defeat the class rules); gates all green.
+Feature commit `ef08f38` matches scope exactly (who-block → `#dw-who` + `md:hidden`; badge removed; app.css correctly not in commit — rebuild was a no-op since `md:hidden` was already compiled). Stretch chain verified intact in source, compiled CSS, and live DOM; no-JS logout reachable at every width (noscript ID+important rules provably defeat the class rules); gates all green.
 
 ```
 Verdict: APPROVED

@@ -1,6 +1,6 @@
 # Dispatch — Card 4: provider skills & VA bench (Robb-directed order, 2026-09-29)
 
-**Scope:** commits `4ddf92e` (models), `e950270` (services/selectors/forms/views/urls), `648985a` (templates + wiring), `8d845ca` (tests). **For:** fresh GLM-5.3 reviewer (read-only, run gates). Seed with repo root `/home/robbb/dealwright`.
+**Scope:** commits `0282fa9` (models), `a8b8c45` (services/selectors/forms/views/urls), `4fc60b0` (templates + wiring), `d07529f` (tests). **For:** fresh GLM-5.3 reviewer (read-only, run gates). Seed with repo root `/home/robbb/dealwright`.
 
 **What was built:** the supply side of the pipeline — freelancer profile + VA roster + skills — as app `bench`:
 
@@ -54,7 +54,7 @@ fix and re-dispatch for a fresh pass.
 ```
 
 **Builder disposition (2026-09-29):**
-- **Blocking 1 → fixed** in `de0d82a`: `@require_POST` on `skill_delete`/`va_skill_add`/`skill_update`; tests assert GET → 405 with no state change (3 new tests). Suite now **77 passed**.
+- **Blocking 1 → fixed** in `e5fd21f`: `@require_POST` on `skill_delete`/`va_skill_add`/`skill_update`; tests assert GET → 405 with no state change (3 new tests). Suite now **77 passed**.
 - **Minor 1 → fixed** in same commit: `app_name = "bench"` + namespaced includes/reverses everywhere (templates, views, tests); sidebar active state now fires.
 - **Minor 2 → corrected:** bench test count was 48 at pass 1, **52 after the fix commit** (card prose updated here); `@transaction.atomic` claim narrowed to `add_capability` only (update/delete are single-statement writes — no correctness impact).
 - **Minor 3 → fixed:** new `bench/templatetags/dw_money.py` (`dw_symbol` filter — formatting only, no math); rate column renders the symbol from the stored `va.currency` (USD test included).
@@ -65,7 +65,7 @@ fix and re-dispatch for a fresh pass.
 
 # Pass 2 — fresh reviewer on the fix
 
-**Scope:** commit `de0d82a` only (bench/views.py, bench/urls.py, bench/templatetags/, bench/tests/test_views.py, templates/bench/*, templates/app-base.html). **For:** fresh GLM-5.3 reviewer (read-only, gates).
+**Scope:** commit `e5fd21f` only (bench/views.py, bench/urls.py, bench/templatetags/, bench/tests/test_views.py, templates/bench/*, templates/app-base.html). **For:** fresh GLM-5.3 reviewer (read-only, gates).
 
 **Gates:**
 1. `.venv/bin/python -m pytest` — expect **77 passed**
@@ -97,7 +97,7 @@ live hermetic smoke proves the blocking defect is fixed: all three mutation endp
 on GET with zero state change (including cross-tenant), POST delete still works, the bench
 namespace + sidebar active state fire, USD renders "$40" from the stored currency via a
 formatting-only filter, and the Active chip uses canonical teal tokens with no green-family or
-hardcoded values. Commit de0d82a is tightly scoped to the four fixes. Both carry-over minors are
+hardcoded values. Commit e5fd21f is tightly scoped to the four fixes. Both carry-over minors are
 recorded with dispositions and do not block.
 ```
 
@@ -107,10 +107,10 @@ recorded with dispositions and do not block.
 
 # Addendum — team restructure (Robb-directed, 2026-09-29, after card close)
 
-**Scope:** `9410110` (bench → team rename), `2b7fdfb` (design-log adjudications), `1e37c48` (design item A: slim member forms + Rates & availability card), `546acac` (review hardening). **Reviewed via in-session GLM-5.3 subagent passes (architectural design pass, then implementation pass) — both APPROVED; full transcripts in the builder session log, verdicts summarized here.**
+**Scope:** `6da8e2b` (bench → team rename), `a0dd712` (design-log adjudications), `5771163` (design item A: slim member forms + Rates & availability card), `55df0c7` (review hardening). **Reviewed via in-session GLM-5.3 subagent passes (architectural design pass, then implementation pass) — both APPROVED; full transcripts in the builder session log, verdicts summarized here.**
 
 **Architectural design pass — APPROVED.** Adjudications (recorded in `docs/design/design-log.md`, "Card 4 build decisions"): engagement fields stay in `VAProfile` (extraction triggers: per-client rates / rate history / per-proposal overrides); Card 5 must exclude engagement-incomplete members with an explicit reason (TDD anchor `test_incomplete_engagement_member_excluded_with_reason`); solo provider rate = shared abstract `EngagementTermsMixin` on ProviderProfile + VAProfile, small card before Card 5, bundled with provider-profile edit UI; Card 8 delivery source governed by `delivery_mode` (team-mode self-delivery would need a recorded Q9 supersession — not in MVP); delivery-cost math stays in `core/roi/`.
 
 **Item A implementation pass — APPROVED.** Gates: 78→79 passed, ruff/check/migrations clean. Verified: identity-only creation (pinned `full_clean` test), "Rates & availability" card on member detail (own endpoint, cross-tenant 404 proven), roster teal "Rates not set" replacing ₱0 (zero `₱0` occurrences while states coexist), no money math, POST-only mutation guarantees intact.
 
-**Builder disposition:** design minors 1–2 → fixed in `2b7fdfb` (design-log entry, backlog reference). Implementation minor 1 → fixed immediately in `546acac` (`@require_POST` on `member_engagement` + 405 test; suite **79 passed**). Minor 2 (currency picker PHP/USD at widget layer) → accepted, presentation-only per Q3. landing.html "bench" marketing copy → with Robb (backlog). **Team restructure: approved & closed.**
+**Builder disposition:** design minors 1–2 → fixed in `a0dd712` (design-log entry, backlog reference). Implementation minor 1 → fixed immediately in `55df0c7` (`@require_POST` on `member_engagement` + 405 test; suite **79 passed**). Minor 2 (currency picker PHP/USD at widget layer) → accepted, presentation-only per Q3. landing.html "bench" marketing copy → with Robb (backlog). **Team restructure: approved & closed.**

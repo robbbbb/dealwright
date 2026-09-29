@@ -1,7 +1,7 @@
 # Review dispatch — Card 0: Scaffold
 
 **For:** fresh GLM-5.3 reviewer (read-only — run gates, edit nothing). Seed a fresh session with this file + repo root `/home/robbb/dealwright`.
-**Builder:** builder session 2026-09-28 (GLM-5.3 Flash). **Scope:** everything between commit `d1376c8` (effective baseline in this repo — the originally cited `895d0e6` is from the design-stage repo and does not resolve here; corrected at verdict recording per reviewer finding) and the review-request commit `b8ff974` on `main`; adjudicated against HEAD with documented supersessions (`docs/reviews/landing-dispatch.md` APPROVED; `config/` flatten `854c700`; mechanical compose rename `7225005`).
+**Builder:** builder session 2026-09-28 (GLM-5.3 Flash). **Scope:** everything between commit `d1376c8` (effective baseline in this repo — the originally cited `895d0e6` is from the design-stage repo and does not resolve here; corrected at verdict recording per reviewer finding) and the review-request commit `4c11df5` on `main`; adjudicated against HEAD with documented supersessions (`docs/reviews/landing-dispatch.md` APPROVED; `config/` flatten `99818b0`; mechanical compose rename `fd0f771`).
 
 ## Spec baseline
 
@@ -58,19 +58,19 @@ Record the verdict below under **Verdict (reviewer)** and mirror the disposition
 
 ## Verdict (reviewer)
 
-### Card 0 review (run 2026-09-29, fresh GLM-5.3 reviewer subagent at HEAD `63ef3f3`) — APPROVED
+### Card 0 review (run 2026-09-29, fresh GLM-5.3 reviewer subagent at HEAD `2408223`) — APPROVED
 
 All 7 gates passed with real output (incl. live end-to-end login→logout flow on a throwaway DB); all 7 checklist items PASS; all 7 listed deviations + the uvicorn deferral adjudicated acceptable. Full evidence in the reviewer session log; highlights: `uv sync --frozen` exit 0 with lockfile untouched; pytest exactly the 4 superseded test IDs; migrate clean; byte-size match on the landing-pass-2-verified CSS artifact; secret scan clean (`POSTGRES_PASSWORD: dealwright` is the documented local-only compose placeholder).
 
 ```
 Verdict: APPROVED
 Blocking findings: none
-Minor findings: (1) commit subjects transposed between 5be13dc and 66affc8 — reword before first push; (2) dispatch card cites baseline 895d0e6 which is absent from repo history (effective baseline d1376c8) — fix line when recording verdict; (3) production.py mixes strict _prod_env and .env-reading base env for ALLOWED_HOSTS/CSRF — harmonize opportunistically; (4) uvicorn docs/code mismatch deferral to Card 11 acceptable — add "(planned, not yet in Dockerfile)" qualifier until then; (5) staticfiles UserWarning in tests — pre-existing, accepted; Postgres-backed test run + compose --build still to be closed on Robb's machine per backlog
+Minor findings: (1) commit subjects transposed between b34cdb8 and ee4a107 — reword before first push; (2) dispatch card cites baseline 895d0e6 which is absent from repo history (effective baseline d1376c8) — fix line when recording verdict; (3) production.py mixes strict _prod_env and .env-reading base env for ALLOWED_HOSTS/CSRF — harmonize opportunistically; (4) uvicorn docs/code mismatch deferral to Card 11 acceptable — add "(planned, not yet in Dockerfile)" qualifier until then; (5) staticfiles UserWarning in tests — pre-existing, accepted; Postgres-backed test run + compose --build still to be closed on Robb's machine per backlog
 Rationale: All 7 gates pass with real output at HEAD under the documented supersessions; scaffold matches spec baseline (env-driven split settings, working allauth email login, verbatim Q12 tokens, registries committed, Dockerfile/railway/compose from day one, both TDD anchors); all 7 deviations and the uvicorn deferral are recorded, verified, and acceptable.
 ```
 
 **Builder dispositions (2026-09-29):**
-1. Transposed commit subjects `5be13dc`/`66affc8` → **deferred to pre-push**: history reword is safe only while unpushed; the concurrency incident note (backlog) says another session may be live, so reword rides the already-open "Remote push pending" item, recorded there. No rewrite now.
+1. Transposed commit subjects `b34cdb8`/`ee4a107` → **deferred to pre-push**: history reword is safe only while unpushed; the concurrency incident note (backlog) says another session may be live, so reword rides the already-open "Remote push pending" item, recorded there. No rewrite now.
 2. Baseline hash → **actioned now**: scope line corrected above.
 3. `production.py` env mixing → **actioned now**: backlog hygiene line added (opportunistic fix).
 4. uvicorn qualifier → **actioned now**: "(planned, not yet in Dockerfile)" added to the system-design ladder line.
