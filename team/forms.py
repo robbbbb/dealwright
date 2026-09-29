@@ -4,15 +4,31 @@ from django import forms
 
 from .models import SkillLevel, VAProfile
 
+_SELECT_CLASS = (
+    "w-full rounded-[9px] border border-dw-line bg-white px-2.5 py-2 text-[13.5px]"
+)
 
-class VAForm(forms.ModelForm):
-    """Create/update a team member. All fields map 1:1 to update_va_profile."""
+
+class TeamMemberForm(forms.ModelForm):
+    """Identity fields only — adding a member needs a name, nothing else."""
+
+    class Meta:
+        model = VAProfile
+        fields = ["display_name", "is_active", "notes"]
+        widgets = {"notes": forms.Textarea(attrs={"rows": 3})}
+
+
+class EngagementForm(forms.ModelForm):
+    """Rates & availability — per-member commercial terms (Card 5 hard filters).
+
+    Kept in VAProfile per design pass 2026-09-29; shown on the detail page,
+    never required at member creation (Card 5 excludes incomplete members
+    with an explicit reason instead of filtering on silent defaults).
+    """
 
     class Meta:
         model = VAProfile
         fields = [
-            "display_name",
-            "is_active",
             "rate_basis",
             "rate_per_hour",
             "project_rate",
@@ -21,17 +37,14 @@ class VAForm(forms.ModelForm):
             "timezone",
             "languages",
             "industry_experience",
-            "notes",
         ]
         widgets = {
-            "rate_basis": forms.Select(
-                attrs={
-                    "class": "w-full rounded-[9px] border border-dw-line bg-white "
-                    "px-2.5 py-2 text-[13.5px]"
-                }
+            "rate_basis": forms.Select(attrs={"class": _SELECT_CLASS}),
+            "currency": forms.Select(
+                attrs={"class": _SELECT_CLASS},
+                choices=[("PHP", "PHP"), ("USD", "USD")],
             ),
             "project_rate": forms.NumberInput(attrs={"step": "0.01"}),
-            "notes": forms.Textarea(attrs={"rows": 3}),
         }
         help_texts = {
             "rate_basis": "Which rate matching uses — never converted across bases.",
@@ -40,7 +53,7 @@ class VAForm(forms.ModelForm):
 
 
 class SkillForm(forms.Form):
-    """Add/update a capability on the freelancer profile or a team VA."""
+    """Add/update a capability on the freelancer profile or a team member."""
 
     skill = forms.CharField(
         max_length=120,

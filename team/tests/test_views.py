@@ -39,6 +39,7 @@ def test_other_users_team_member_is_404(client, user) -> None:
 
 
 def test_team_page_lists_vas_and_my_skills(client, user, va) -> None:
+    create_va_profile(owner=user, display_name="Kim")  # identity-only
     add_capability(holder=va, skill="Email marketing")
     _login(client, user)
 
@@ -48,7 +49,9 @@ def test_team_page_lists_vas_and_my_skills(client, user, va) -> None:
     assert response.status_code == 200
     assert "My skills" in content
     assert "Maria" in content
-    assert "₱250" in content
+    assert "Kim" in content
+    assert "Rates not set" in content  # identity-only member, honest state
+    assert "₱250" in content  # engagement-complete member shows the real rate
     assert "Email marketing" in content
 
 
@@ -83,33 +86,28 @@ def test_add_my_skill_without_name_rerenders_with_error(client, user) -> None:
 
 def test_add_team_member(client, user) -> None:
     _login(client, user)
-    payload = {
-        "display_name": "Jen",
-        "is_active": "on",
-        "rate_basis": "project",
-        "rate_per_hour": "0",
-        "project_rate": "25000",
-        "currency": "PHP",
-        "availability_hours_per_week": "20",
-        "timezone": "Asia/Manila",
-        "languages": "English",
-        "industry_experience": "e-commerce",
-        "notes": "",
-    }
-
-    response = client.post(reverse("team:member_add"), payload)
+    response = client.post(
+        reverse("team:member_add"),
+        {"display_name": "Jen", "is_active": "on", "notes": ""},
+    )
 
     assert response.status_code == 302
     va = VAProfile.objects.get(display_name="Jen")
-    assert va.project_rate == 25000
+    assert va.engagement_incomplete  # identity-only: terms come later
+    assert va.rate_basis == "hourly"
     assert response.url == reverse("team:member_detail", args=[va.pk])
+
+
+def test_identity_only_member_passes_full_clean(user) -> None:
+    """Design pass 2026-09-29: identity-only creation must not trip the
+    project-basis rule; completeness is a Card 5 concern, not a save blocker."""
+    va = VAProfile.objects.create(owner=user, display_name="Kim")
+    va.full_clean()  # must not raise
 
 
 def test_edit_team_member_rate(client, user, va) -> None:
     _login(client, user)
     payload = {
-        "display_name": "Maria",
-        "is_active": "on",
         "rate_basis": "hourly",
         "rate_per_hour": "275",
         "currency": "PHP",
@@ -117,10 +115,9 @@ def test_edit_team_member_rate(client, user, va) -> None:
         "timezone": "Asia/Manila",
         "languages": "English, Tagalog",
         "industry_experience": "",
-        "notes": "",
     }
 
-    response = client.post(reverse("team:member_detail", args=[va.pk]), payload)
+    response = client.post(reverse("team:member_engagement", args=[va.pk]), payload)
 
     assert response.status_code == 302
     va.refresh_from_db()

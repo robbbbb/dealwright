@@ -14,7 +14,7 @@
 <div class="flex flex-col gap-5">
 
   <section class="card">
-    <h2 class="mb-3 text-[14.5px] font-extrabold text-dw-ink">Profile</h2>
+    <h2 class="mb-3 text-[14.5px] font-extrabold text-dw-ink">Member</h2>
     <form method="post" class="m-0">
       {% csrf_token %}
       {% include "team/_form_fields.html" %}
@@ -23,8 +23,18 @@
   </section>
 
   <section class="card">
+    <h2 class="mb-1 text-[14.5px] font-extrabold text-dw-ink">Rates &amp; availability</h2>
+    <p class="mb-4 text-[12px] text-dw-muted">Matching skips members whose terms aren't set yet — fill these in before quoting work.</p>
+    <form method="post" action="{% url 'team:member_engagement' va.pk %}" class="m-0">
+      {% csrf_token %}
+      {% include "team/_form_fields.html" with form=engagement_form %}
+      <button type="submit" class="btn-primary">Save rates &amp; availability</button>
+    </form>
+  </section>
+
+  <section class="card">
     <h2 class="mb-1 text-[14.5px] font-extrabold text-dw-ink">Skills</h2>
-    <p class="mb-4 text-[12px] text-dw-muted">Proficiency is self-reported — the Tasks line is what proposals quote.</p>
+    <p class="mb-4 text-[12px] text-dw-muted">The Tasks line is what proposals quote ("Advanced: Klaviyo flows, campaign copy").</p>
 
     {% if skills %}
     <div class="mb-5 overflow-hidden rounded-xl border border-dw-line bg-white">

@@ -10,6 +10,7 @@ urlpatterns = [
     path("", views.team_home, name="team_home"),
     path("add/", views.member_add, name="member_add"),
     path("<int:pk>/", views.member_detail, name="member_detail"),
+    path("<int:pk>/engagement/", views.member_engagement, name="member_engagement"),
     path("<int:pk>/skills/add/", views.member_skill_add, name="member_skill_add"),
     path("skills/<int:cap_pk>/update/", views.skill_update, name="skill_update"),
     path("skills/<int:cap_pk>/delete/", views.skill_delete, name="skill_delete"),

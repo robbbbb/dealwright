@@ -80,7 +80,9 @@
           <tr class="border-b border-dw-line last:border-b-0">
             <td class="px-4 py-2.5 font-bold text-dw-ink"><a class="text-dw-700 no-underline hover:underline" href="{% url 'team:member_detail' va.pk %}">{{ va.display_name }}</a></td>
             <td class="px-4 py-2.5">
-              {% if va.rate_basis == "project" %}
+              {% if va.engagement_incomplete %}
+                <span class="inline-flex items-center rounded-full bg-dw-teal-bg px-2 py-px text-[9.5px] font-bold text-dw-teal">Rates not set</span>
+              {% elif va.rate_basis == "project" %}
                 {{ va.currency|dw_symbol }}{{ va.project_rate }} <span class="text-[11px] text-dw-muted">/ project</span>
               {% else %}
                 {{ va.currency|dw_symbol }}{{ va.rate_per_hour }} <span class="text-[11px] text-dw-muted">/ hr</span>

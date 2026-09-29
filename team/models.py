@@ -190,6 +190,14 @@ class VAProfile(models.Model):
     def __str__(self) -> str:
         return self.display_name
 
+    @property
+    def engagement_incomplete(self) -> bool:
+        """Commercial terms still at defaults — Card 5 excludes these members
+        (with an explicit reason) and the roster shows 'Rates not set'."""
+        if self.rate_basis == "project":
+            return self.project_rate is None
+        return not self.rate_per_hour
+
     def clean(self) -> None:
         """Shape integrity (services call full_clean before save; admin too)."""
         super().clean()

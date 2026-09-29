@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
 from . import selectors, services
-from .forms import SkillForm, VAForm
+from .forms import EngagementForm, SkillForm, TeamMemberForm
 
 
 @login_required
@@ -29,7 +29,7 @@ def team_home(request: HttpRequest) -> HttpResponse:
             "my_skills": selectors.list_holder_capabilities(profile),
             "skill_form": skill_form,
             "vas": selectors.list_vas(request.user),
-            "va_form": VAForm(),
+            "member_form": TeamMemberForm(),
         },
     )
 
@@ -37,13 +37,13 @@ def team_home(request: HttpRequest) -> HttpResponse:
 @login_required
 def member_add(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
-        form = VAForm(request.POST)
+        form = TeamMemberForm(request.POST)
         if form.is_valid():
             va = services.create_va_profile(owner=request.user, **form.cleaned_data)
             messages.success(request, f"{va.display_name} added to your team.")
             return redirect("team:member_detail", pk=va.pk)
     else:
-        form = VAForm()
+        form = TeamMemberForm()
     return render(request, "team/member_add.html", {"form": form})
 
 
@@ -52,24 +52,40 @@ def member_detail(request: HttpRequest, pk: int) -> HttpResponse:
     va = selectors.get_va_for_owner(request.user, pk)
     if va is None:
         raise Http404("No such team member.")
-    if request.method == "POST":  # edit the VA's own fields
-        form = VAForm(request.POST, instance=va)
+    if request.method == "POST":  # identity fields
+        form = TeamMemberForm(request.POST, instance=va)
         if form.is_valid():
             services.update_va_profile(va=va, **form.cleaned_data)
             messages.success(request, "Team member updated.")
             return redirect("team:member_detail", pk=va.pk)
     else:
-        form = VAForm(instance=va)
+        form = TeamMemberForm(instance=va)
     return render(
         request,
         "team/member_detail.html",
         {
             "va": va,
             "form": form,
+            "engagement_form": EngagementForm(instance=va),
             "skills": selectors.list_holder_capabilities(va),
             "skill_form": SkillForm(),
         },
     )
+
+
+@login_required
+def member_engagement(request: HttpRequest, pk: int) -> HttpResponse:
+    """Rates & availability card — the Card 5 hard-filter inputs."""
+    va = selectors.get_va_for_owner(request.user, pk)
+    if va is None:
+        raise Http404("No such team member.")
+    form = EngagementForm(request.POST, instance=va)
+    if form.is_valid():
+        services.update_va_profile(va=va, **form.cleaned_data)
+        messages.success(request, "Rates & availability saved.")
+    else:
+        messages.error(request, "Please fix the engagement form.")
+    return redirect("team:member_detail", pk=va.pk)
 
 
 @login_required
