@@ -72,3 +72,15 @@ Rationale: Fix commit 7b83759 matches the pass-2 remediation exactly ... [full r
 ```
 
 **Builder disposition (2026-09-29):** minor 1 → accepted (future UI card). Minor 2 → Robb's edit committed verbatim right after this verdict with CSS rebuilt (prunes `max-w-[1200px]`). **Mobile drawer: approved & closed.**
+
+---
+
+# Pass 4 — avatar account menu (Robb request, 2026-09-29)
+
+**Scope:** desktop logout moves out of the sidebar into an avatar dropdown (dashboard.html: `dw-user-btn` + `dw-user-menu` with name/email/Log out); below md the drawer keeps its logout and the desktop avatar degrades to a static badge. Sidebar who-block logout is `md:hidden`. The two menus share one generic JS handler (open-one-closes-other, Escape w/ focus return, outside-click); noscript hides both buttons and forces the who-block logout visible (no-JS users can always sign out at every width). Tests: dashboard smoke asserts user-menu markers + both logout surfaces; MFA flow logout-count 1 → 2. **For:** fresh GLM-5.3 reviewer (gates only).
+
+**Visual evidence (builder-verified):** desktop menu open `/tmp/dw-usermenu-open.png`, mobile drawer with logout `/tmp/dw-drawer-final.png`. DOM checks may substitute per precedent.
+
+**Gates:** pass-1 set + adjudicate: generic handler has no business logic; noscript coverage (drawer open, buttons hidden, who-logout forced) leaves no-JS logout reachable at every width; `{% url %}` targets resolve; zero hex; CSS reproducible.
+
+## Verdict (pass 4)
