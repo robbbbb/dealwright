@@ -3,258 +3,336 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dealwright — Turn discovery calls into signed deals</title>
+  <title>Dealwright — From discovery call to defensible proposal</title>
   <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
 </head>
 <body class="bg-white text-[15px] leading-relaxed text-dw-body antialiased">
 
-<nav class="sticky top-0 z-10 border-b border-dw-line bg-white/95 backdrop-blur">
-  <div class="mx-auto flex max-w-[1080px] items-center gap-6 px-6 py-3.5">
-    <a href="{% url 'home' %}" class="flex items-center gap-2.5 text-[18px] font-extrabold tracking-tight text-dw-ink no-underline">
-      <span class="inline-flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-dw-gold text-[12px] font-light tracking-[1px] text-white">DW</span>Dealwright
+<nav class="sticky top-0 z-20 border-b border-dw-line bg-white/95 backdrop-blur">
+  <div class="mx-auto flex min-h-[66px] w-full max-w-[1180px] items-center gap-6 px-4 sm:px-6">
+    <a href="{% url 'home' %}" class="block shrink-0">
+      <img src="{% static 'brand/logo-horizontal.svg' %}" alt="Dealwright" class="block h-8 w-auto max-[470px]:h-7">
     </a>
-    <div class="ml-auto hidden gap-6 text-[13.5px] font-semibold md:flex">
+    <div class="ml-auto hidden items-center gap-[26px] text-[13px] font-semibold md:flex">
       <a href="#how" class="hover:text-dw-600">How it works</a>
       <a href="#features" class="hover:text-dw-600">Features</a>
       <a href="#pricing" class="hover:text-dw-600">Pricing</a>
       <a href="#faq" class="hover:text-dw-600">FAQ</a>
     </div>
-    <a href="{% url 'account_login' %}" class="inline-block rounded-[10px] border-[1.5px] border-dw-700 bg-white px-5 py-2.5 text-[13.5px] font-bold text-dw-700 hover:bg-dw-50">Log in</a>
-    <a href="{% url 'account_signup' %}" class="inline-block rounded-[10px] bg-dw-700 px-5 py-2.5 text-[13.5px] font-bold text-white hover:bg-dw-800">Start free</a>
+    <div class="ml-auto flex items-center gap-2.5 md:ml-0">
+      <a href="{% url 'account_login' %}" class="hidden min-h-[44px] items-center rounded-[10px] border-[1.5px] border-dw-700 bg-white px-5 text-[13.5px] font-bold text-dw-700 no-underline hover:bg-dw-50 sm:inline-flex">Log in</a>
+      <a href="{% url 'account_signup' %}" class="inline-flex min-h-[44px] items-center rounded-[10px] bg-dw-700 px-5 text-[13.5px] font-bold text-white no-underline hover:bg-dw-800">Start free</a>
+    </div>
   </div>
 </nav>
 
-<header class="bg-linear-to-br from-dw-800 to-dw-900 text-white">
-  <div class="mx-auto grid max-w-[1080px] items-center gap-10 px-6 py-[72px] md:grid-cols-2">
+<header class="overflow-hidden bg-linear-to-br from-dw-800 to-dw-900 text-white">
+  <div class="mx-auto grid w-full max-w-[1180px] items-center gap-12 px-4 py-14 sm:px-6 sm:py-[68px] lg:grid-cols-[.9fr_1.25fr] lg:gap-[55px] lg:py-[76px]">
     <div>
-      <span class="mb-4 inline-block rounded-full border border-white/35 bg-white/10 px-4 py-[5px] text-[11.5px] uppercase tracking-[1px]">For freelancers · VAs · agencies</span>
-      <h1 class="mb-3.5 text-[34px] leading-tight tracking-[-0.02em] md:text-[40px]">Turn discovery calls into <em class="not-italic text-dw-100">signed deals</em>.</h1>
-      <p class="mb-6 max-w-[600px] text-[16px] opacity-90">Paste what the client said. Dealwright extracts the facts, computes transparent ROI, recommends the right services, matches your assistant — and writes the client-ready proposal.</p>
-      <div class="flex flex-wrap gap-3">
-        <a href="{% url 'account_signup' %}" class="inline-block rounded-[10px] bg-dw-700 px-7 py-3 text-[14.5px] font-bold text-white hover:bg-dw-800">Start 14-day free trial</a>
-        <a href="{% url 'account_signup' %}" class="inline-block rounded-[10px] border-[1.5px] border-white/50 bg-white/15 px-7 py-3 text-[14.5px] font-bold text-white hover:bg-white/25">See a real proposal →</a>
+      <span class="inline-flex items-center rounded-full border border-white/35 bg-white/10 px-3.5 py-[5px] text-[10.5px] uppercase tracking-[.9px]">For freelancers · VAs · agencies</span>
+      <h1 class="mt-4 max-w-[560px] text-[33px] font-extrabold leading-[1.06] tracking-[-.04em] sm:text-[38px] lg:text-[48px]">From messy call notes to a proposal that proves its numbers.</h1>
+      <p class="mt-4 max-w-[555px] text-[16px] text-white/85">Extract the facts. Show the assumptions. Compute honest ROI. Match the right delivery. Send a client-ready proposal in minutes.</p>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <a href="{% url 'account_signup' %}" class="inline-flex min-h-[44px] items-center rounded-[10px] bg-dw-700 px-5 text-[13.5px] font-bold text-white no-underline hover:bg-dw-800">Start 14-day free trial</a>
+        <a href="{% url 'account_signup' %}" class="inline-flex min-h-[44px] items-center rounded-[10px] border-[1.5px] border-white/55 bg-white/10 px-5 text-[13.5px] font-bold text-white no-underline hover:bg-white/20">View example proposal</a>
       </div>
-      <p class="mt-4 text-[12px] opacity-70">No card required · Every number traceable · Estimates labelled as estimates, always</p>
+      <p class="mt-3.5 text-[11.5px] text-white/70">No card required · Every figure traceable · Estimates clearly labelled</p>
     </div>
-    <div class="w-full rounded-2xl bg-white p-5 text-dw-body shadow-2xl md:max-w-[440px] md:justify-self-end">
-      <div class="mb-2 text-[11px] font-extrabold uppercase tracking-[0.8px] text-dw-700">📋 Paste what your client said</div>
-      <textarea readonly aria-label="Sample discovery notes" class="h-[158px] w-full resize-none rounded-[10px] border-[1.5px] border-dw-line bg-dw-canvas p-3 text-[12px] leading-relaxed text-dw-body focus:outline-none">LF: FEMALE PERSONAL ASSISTANT 😂
-Role: be my human checklist + reminder app
-• Manage and organize my schedule
-• Keep track of appointments, deadlines
-• Send reminders and follow-ups
-• Do small errands or coordinate for me
-• Make calls, inquiries, bookings, reservations
-• Be my "one call away" person
-• Basically: help make my life less chaotic</textarea>
-      <a href="{% url 'account_signup' %}" class="mt-2.5 block rounded-[10px] bg-dw-700 py-3 text-center text-[13.5px] font-bold text-white no-underline hover:bg-dw-800">Craft my proposal →</a>
-      <div class="mt-3 flex flex-wrap gap-1.5 border-t border-dashed border-dw-line pt-3">
-        <span class="rounded-full bg-dw-100 px-2.5 py-[3px] text-[10.5px] font-bold text-dw-800">✓ 8 tasks extracted</span>
-        <span class="rounded-full bg-dw-100 px-2.5 py-[3px] text-[10.5px] font-bold text-dw-800">✓ Delegation ROI mode</span>
-        <span class="rounded-full bg-dw-amber-bg px-2.5 py-[3px] text-[10.5px] font-bold text-dw-amber">7 follow-up questions</span>
-        <span class="rounded-full bg-dw-100 px-2.5 py-[3px] text-[10.5px] font-bold text-dw-800">≈ ₱8,700/mo est</span>
+
+    <div class="relative pt-6" aria-label="Discovery notes become traceable proposal outputs">
+      <div class="absolute inset-x-0 top-0 hidden border-t border-white/40 pt-1 text-center text-[10px] text-white/80 md:left-[38%] md:right-[6%] md:block">Dealwright turns notes into a client-ready proposal</div>
+      <div class="grid grid-cols-1 items-center gap-2.5 md:grid-cols-[1.15fr_28px_1.85fr]">
+        <article class="overflow-hidden rounded-xl border border-dw-950/10 bg-white text-dw-body shadow-xl">
+          <div class="flex items-center gap-1.5 border-b border-dw-line px-3 py-2.5 text-[10.5px] font-bold text-dw-ink"><span class="h-[7px] w-[7px] rounded-full bg-dw-teal"></span>Discovery call notes</div>
+          <div class="flex bg-dw-canvas text-[9px] text-dw-muted"><span class="flex-1 bg-white p-1.5 text-center font-bold text-dw-ink">Transcript</span><span class="flex-1 p-1.5 text-center">Notes</span></div>
+          <div class="px-3 pb-1.5 pt-2.5 text-[9px] leading-snug">
+            <div class="mb-1.5 grid grid-cols-[30px_1fr] gap-1.5"><span class="text-[8px] text-dw-teal">00:12</span><span>We're getting 200–300 leads a month, but follow-up is messy.</span></div>
+            <div class="mb-1.5 grid grid-cols-[30px_1fr] gap-1.5"><span class="text-[8px] text-dw-teal">01:48</span><span>I think we can spend around ₱8–10k per month.</span></div>
+            <div class="mb-1.5 grid grid-cols-[30px_1fr] gap-1.5"><span class="text-[8px] text-dw-teal">03:21</span><span>We also need someone to handle client onboarding.</span></div>
+            <div class="mb-1.5 grid grid-cols-[30px_1fr] gap-1.5"><span class="text-[8px] text-dw-teal">04:05</span><span class="rounded-md bg-dw-red-bg p-1.5 text-dw-red">We'd prefer a female assistant for the role.</span></div>
+          </div>
+          <div class="flex flex-wrap gap-1 px-3 pb-3">
+            <span class="inline-flex items-center rounded-full bg-dw-teal-bg px-[7px] py-[3px] text-[8px] font-bold leading-tight text-dw-teal">“200–300 leads”</span>
+            <span class="inline-flex items-center rounded-full bg-dw-teal-bg px-[7px] py-[3px] text-[8px] font-bold leading-tight text-dw-teal">“around ₱8–10k”</span>
+            <span class="inline-flex items-center rounded-full bg-dw-red-bg px-[7px] py-[3px] text-[8px] font-bold leading-tight text-dw-red">Protected preference excluded</span>
+          </div>
+        </article>
+        <div class="text-center text-[30px] text-dw-100 rotate-90 md:rotate-0">→</div>
+        <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
+          <article class="min-h-[190px] rounded-xl border border-dw-950/10 bg-white p-2.5 text-dw-body shadow-xl">
+            <div class="flex items-center gap-1.5 text-[10px] font-extrabold text-dw-ink"><span class="flex h-5 w-5 items-center justify-center rounded-md bg-dw-50 text-dw-700">✓</span>Facts</div>
+            <ul class="mt-2.5 list-none text-[8.5px]">
+              <li class="relative mb-1.5 pl-3"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>200–300 leads/month</li>
+              <li class="relative mb-1.5 pl-3"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Needs follow-up support</li>
+              <li class="relative mb-1.5 pl-3"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Client onboarding required</li>
+              <li class="relative pl-3"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Protected preference excluded</li>
+            </ul>
+            <span class="inline-flex items-center rounded-full bg-dw-teal-bg px-[7px] py-[3px] text-[8px] font-bold text-dw-teal">Source 00:12 · +4 more</span>
+          </article>
+          <article class="min-h-[190px] rounded-xl border border-dw-950/10 bg-white p-2.5 text-dw-body shadow-xl">
+            <div class="flex items-center gap-1.5 text-[10px] font-extrabold text-dw-ink"><span class="flex h-5 w-5 items-center justify-center rounded-md bg-dw-50 text-dw-700">₱</span>ROI estimate</div>
+            <div class="my-2.5 rounded-md bg-dw-amber-bg p-2"><strong class="text-[17px] text-dw-ink">₱8,700</strong> <small class="text-[7px] font-bold text-dw-amber">/mo estimate</small></div>
+            <ul class="mt-2.5 list-none text-[8.5px]">
+              <li class="relative mb-1.5 pl-3"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>40 hours/month</li>
+              <li class="relative mb-1.5 pl-3"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>₱250/hour average</li>
+              <li class="relative pl-3"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Estimated 3.2× ROI</li>
+            </ul>
+            <span class="inline-flex items-center rounded-full bg-dw-amber-bg px-[7px] py-[3px] text-[8px] font-bold text-dw-amber">Assumptions shown</span>
+          </article>
+          <article class="min-h-[190px] rounded-xl border border-dw-950/10 bg-white p-2.5 text-dw-body shadow-xl">
+            <div class="flex items-center gap-1.5 text-[10px] font-extrabold text-dw-ink"><span class="flex h-5 w-5 items-center justify-center rounded-md bg-dw-50 text-dw-700">◇</span>Delivery fit</div>
+            <ul class="mt-2.5 list-none text-[8.5px]">
+              <li class="relative mb-1.5 pl-3"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Virtual assistant</li>
+              <li class="relative mb-1.5 pl-3"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Lead management</li>
+              <li class="relative mb-1.5 pl-3"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Client onboarding</li>
+              <li class="relative pl-3"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Data handling</li>
+            </ul>
+            <span class="inline-flex items-center rounded-full bg-dw-100 px-[7px] py-[3px] text-[8px] font-bold text-dw-800">Matched from catalog</span>
+          </article>
+          <article class="min-h-[190px] rounded-xl border border-dw-950/10 bg-white p-2.5 text-dw-body shadow-xl">
+            <div class="flex items-center gap-1.5 text-[10px] font-extrabold text-dw-ink"><span class="flex h-5 w-5 items-center justify-center rounded-md bg-dw-50 text-dw-700">▤</span>Proposal</div>
+            <div class="mt-2.5 rounded-md border border-dw-line p-2"><b class="text-[8px] text-dw-ink">Client Proposal</b><div class="mt-1.5 h-1 rounded-sm bg-dw-line"></div><div class="mt-1 h-1 rounded-sm bg-dw-line"></div><div class="mt-1 h-1 w-[62%] rounded-sm bg-dw-line"></div></div>
+            <ul class="mt-2.5 list-none text-[8.5px]">
+              <li class="relative mb-1.5 pl-3"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Ready to send</li>
+              <li class="relative mb-1.5 pl-3"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Figures traceable</li>
+              <li class="relative pl-3"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Assumptions included</li>
+            </ul>
+            <span class="inline-flex items-center rounded-full bg-dw-100 px-[7px] py-[3px] text-[8px] font-bold text-dw-800">Client-ready</span>
+          </article>
+        </div>
       </div>
-      <p class="mt-2.5 text-center text-[10.5px] text-dw-muted">Sample data — in the app this runs live in ~15 s.</p>
     </div>
   </div>
 </header>
 
-<div class="relative z-10 mx-auto -mt-10 grid max-w-[860px] gap-5 rounded-2xl border border-dw-line bg-white p-6 shadow-lg sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-dw-line">
-  <div class="text-center sm:px-4"><div class="text-[22px] font-extrabold text-dw-700">₱0.52</div><div class="text-[12px] text-dw-muted">AI cost per proposal generated</div></div>
-  <div class="text-center sm:px-4"><div class="text-[22px] font-extrabold text-dw-700">~15 min</div><div class="text-[12px] text-dw-muted">From call notes to sendable proposal</div></div>
-  <div class="text-center sm:px-4"><div class="text-[22px] font-extrabold text-dw-700">1 client</div><div class="text-[12px] text-dw-muted">Won deal pays for the year</div></div>
+<div class="relative z-10 mx-auto -mt-9 w-full max-w-[900px] px-4 sm:px-6">
+  <div class="grid grid-cols-1 gap-0 rounded-[14px] border border-dw-line bg-white shadow-lg sm:grid-cols-3 sm:divide-x sm:divide-dw-line">
+    <div class="flex items-center justify-start gap-3 p-4 sm:justify-center sm:px-5">
+      <span class="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-dw-50 font-extrabold text-dw-700">◷</span>
+      <div><b class="block text-[14px] text-dw-700">~15 min</b><span class="block text-[10px] text-dw-muted">to a sendable proposal</span></div>
+    </div>
+    <div class="flex items-center justify-start gap-3 border-t border-dw-line p-4 sm:justify-center sm:border-t-0 sm:px-5">
+      <span class="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-dw-50 font-extrabold text-dw-700">▤</span>
+      <div><b class="block text-[14px] text-dw-700">Every peso traceable</b><span class="block text-[10px] text-dw-muted">from call to calculation</span></div>
+    </div>
+    <div class="flex items-center justify-start gap-3 border-t border-dw-line p-4 sm:justify-center sm:border-t-0 sm:px-5">
+      <span class="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-dw-50 font-extrabold text-dw-700">◇</span>
+      <div><b class="block text-[14px] text-dw-700">Solo or team-ready</b><span class="block text-[10px] text-dw-muted">built for how you work</span></div>
+    </div>
+  </div>
 </div>
 
-<section class="py-16">
-  <div class="mx-auto max-w-[1080px] px-6">
-    <h2 class="text-center text-[26px] font-extrabold tracking-[-0.01em] text-dw-ink">The old way costs you deals</h2>
-    <p class="mx-auto mb-9 mt-2 max-w-[560px] text-center text-[14.5px] text-dw-muted">Proposal tools format what you already wrote. Dealwright decides what to write — and proves every number.</p>
-    <div class="grid gap-5 md:grid-cols-2">
-      <div class="rounded-2xl border border-dw-line bg-dw-canvas p-6">
-        <h3 class="mb-2.5 text-[15px] font-bold text-dw-ink">ChatGPT + spreadsheet + template</h3>
-        <ul class="list-none text-[13.5px]">
-          <li class="relative py-1 pl-6"><span class="absolute left-0 font-extrabold text-dw-muted">✗</span>Numbers you retype and can't defend</li>
-          <li class="relative py-1 pl-6"><span class="absolute left-0 font-extrabold text-dw-muted">✗</span>Savings claims the client correctly doubts</li>
-          <li class="relative py-1 pl-6"><span class="absolute left-0 font-extrabold text-dw-muted">✗</span>Forget which VA has which verified skill</li>
-          <li class="relative py-1 pl-6"><span class="absolute left-0 font-extrabold text-dw-muted">✗</span>Hours per proposal — so you send fewer</li>
-        </ul>
+<main>
+  <section id="how" class="py-14 sm:py-16 lg:py-20">
+    <div class="mx-auto w-full max-w-[1180px] px-4 sm:px-6">
+      <div class="mx-auto mb-10 max-w-[650px] text-center">
+        <h2 class="text-[26px] font-extrabold leading-tight tracking-[-.025em] text-dw-ink sm:text-[32px]">One input. Four decisions already made.</h2>
+        <p class="mt-2 text-[14.5px] text-dw-muted">Paste your notes and Dealwright handles the rest — from raw facts to a client-ready proposal.</p>
       </div>
-      <div class="rounded-2xl border-2 border-dw-600 bg-dw-50 p-6">
-        <h3 class="mb-2.5 text-[15px] font-bold text-dw-ink">Dealwright</h3>
-        <ul class="list-none text-[13.5px]">
-          <li class="relative py-1 pl-6"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Facts extracted from the call, each traceable to a quote</li>
-          <li class="relative py-1 pl-6"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>ROI computed in code, assumptions shown to the client</li>
-          <li class="relative py-1 pl-6"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Rule-based match from your bench, verified ≠ claimed</li>
-          <li class="relative py-1 pl-6"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Minutes per proposal — so you pitch everyone</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="how" class="bg-dw-canvas py-16">
-  <div class="mx-auto max-w-[1080px] px-6">
-    <h2 class="text-center text-[26px] font-extrabold tracking-[-0.01em] text-dw-ink">How it works</h2>
-    <p class="mx-auto mb-9 mt-2 max-w-[560px] text-center text-[14.5px] text-dw-muted">One messy paragraph from a client in. A polished, honest proposal out.</p>
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <div class="rounded-2xl border border-dw-line bg-white p-[22px]">
-        <div class="mb-3 flex h-[30px] w-[30px] items-center justify-center rounded-[9px] bg-dw-700 font-extrabold text-white">1</div>
-        <b class="mb-1 block text-[14.5px] text-dw-ink">Paste the call</b>
-        <span class="text-[13px] text-dw-muted">Raw notes, a Facebook want-list, a transcript — Dealwright reads it like an analyst.</span>
-      </div>
-      <div class="rounded-2xl border border-dw-line bg-white p-[22px]">
-        <div class="mb-3 flex h-[30px] w-[30px] items-center justify-center rounded-[9px] bg-dw-700 font-extrabold text-white">2</div>
-        <b class="mb-1 block text-[14.5px] text-dw-ink">Confirm facts &amp; assumptions</b>
-        <span class="text-[13px] text-dw-muted">Every extracted fact shows its source. Missing info becomes follow-up questions, never guesses.</span>
-      </div>
-      <div class="rounded-2xl border border-dw-line bg-white p-[22px]">
-        <div class="mb-3 flex h-[30px] w-[30px] items-center justify-center rounded-[9px] bg-dw-700 font-extrabold text-white">3</div>
-        <b class="mb-1 block text-[14.5px] text-dw-ink">Get the numbers &amp; the match</b>
-        <span class="text-[13px] text-dw-muted">Deterministic ROI with editable assumptions. Services priced from your catalog. Your best-matched assistant with reasons.</span>
-      </div>
-      <div class="rounded-2xl border border-dw-line bg-white p-[22px]">
-        <div class="mb-3 flex h-[30px] w-[30px] items-center justify-center rounded-[9px] bg-dw-700 font-extrabold text-white">4</div>
-        <b class="mb-1 block text-[14.5px] text-dw-ink">Send the proposal</b>
-        <span class="text-[13px] text-dw-muted">AI writes the story — never the figures. You review, tweak, export the PDF. Then track the outcome.</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="features" class="py-16">
-  <div class="mx-auto max-w-[1080px] px-6">
-    <h2 class="text-center text-[26px] font-extrabold tracking-[-0.01em] text-dw-ink">Built so you can defend every peso</h2>
-    <p class="mx-auto mb-9 mt-2 max-w-[560px] text-center text-[14.5px] text-dw-muted">The AI writes words. The math is Python. The prices come from your catalog. That's the whole discipline.</p>
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <div class="rounded-2xl border border-dw-line bg-white p-5">
-        <div class="mb-2 text-[22px]">📐</div>
-        <b class="mb-1 block text-[14.5px] text-dw-ink">Deterministic ROI engine</b>
-        <span class="text-[13px] text-dw-muted">Automation and delegation modes, three scenarios, payback math — computed in code, not hallucinated.</span>
-        <span class="mt-2.5 inline-block rounded-[5px] bg-dw-amber-bg px-[7px] py-[2px] text-[10.5px] font-bold tracking-[0.5px] text-dw-amber">ESTIMATES ONLY</span>
-      </div>
-      <div class="rounded-2xl border border-dw-line bg-white p-5">
-        <div class="mb-2 text-[22px]">🛡</div>
-        <b class="mb-1 block text-[14.5px] text-dw-ink">Generation guardrails</b>
-        <span class="text-[13px] text-dw-muted">The AI can't invent prices, savings, or skills. Banned-phrase filter kills "guaranteed" before your client sees it.</span>
-      </div>
-      <div class="rounded-2xl border border-dw-line bg-white p-5">
-        <div class="mb-2 text-[22px]">✅</div>
-        <b class="mb-1 block text-[14.5px] text-dw-ink">Verified skill bench</b>
-        <span class="text-[13px] text-dw-muted">Every VA skill carries evidence: assessments, completed projects, portfolios. Claimed is never shown as proven.</span>
-      </div>
-      <div class="rounded-2xl border border-dw-line bg-white p-5">
-        <div class="mb-2 text-[22px]">🧩</div>
-        <b class="mb-1 block text-[14.5px] text-dw-ink">Your catalog, your prices</b>
-        <span class="text-[13px] text-dw-muted">Ships with 26 seed services across 8 categories — edit to your own offers. Prices never come from the AI.</span>
-      </div>
-      <div class="rounded-2xl border border-dw-line bg-white p-5">
-        <div class="mb-2 text-[22px]">👤</div>
-        <b class="mb-1 block text-[14.5px] text-dw-ink">Solo or team, same app</b>
-        <span class="text-[13px] text-dw-muted">Solo VA? Proposals present you. Agency? They present the matched bench. The app knows the difference.</span>
-      </div>
-      <div class="rounded-2xl border border-dw-line bg-white p-5">
-        <div class="mb-2 text-[22px]">📄</div>
-        <b class="mb-1 block text-[14.5px] text-dw-ink">Proposal + PDF + tracking</b>
-        <span class="text-[13px] text-dw-muted">Editable web proposal, clean PDF export, status tracking from sent to signed — feeding better assumptions over time.</span>
+      <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+        <article class="relative rounded-[14px] border border-dw-line bg-white p-[18px]">
+          <div class="grid grid-cols-[30px_1fr] gap-2.5">
+            <span class="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-dw-700 text-[12px] font-extrabold text-white">1</span>
+            <div><h3 class="text-[14px] font-bold text-dw-ink">Extract the facts</h3><p class="text-[10.5px] leading-snug text-dw-muted">Finds and structures what matters from the call.</p></div>
+          </div>
+          <div class="mt-3.5 min-h-[170px] rounded-[9px] border border-dw-line bg-dw-canvas p-3">
+            <b class="mb-2 block text-[10px] text-dw-ink">Extracted facts (6)</b>
+            <div class="flex items-center gap-2 border-b border-dw-line py-1.5 text-[9px]"><span class="font-extrabold text-dw-600">✓</span>200–300 leads per month<small class="ml-auto rounded bg-white px-1 py-0.5 text-[7.5px] text-dw-muted">00:12</small></div>
+            <div class="flex items-center gap-2 border-b border-dw-line py-1.5 text-[9px]"><span class="font-extrabold text-dw-600">✓</span>Needs follow-up support<small class="ml-auto rounded bg-white px-1 py-0.5 text-[7.5px] text-dw-muted">01:48</small></div>
+            <div class="flex items-center gap-2 border-b border-dw-line py-1.5 text-[9px]"><span class="font-extrabold text-dw-600">✓</span>Client onboarding required<small class="ml-auto rounded bg-white px-1 py-0.5 text-[7.5px] text-dw-muted">03:21</small></div>
+            <div class="flex items-center gap-2 py-1.5 text-[9px]"><span class="font-extrabold text-dw-600">✓</span>Budget around ₱8–10k<small class="ml-auto rounded bg-white px-1 py-0.5 text-[7.5px] text-dw-muted">04:05</small></div>
+          </div>
+        </article>
+        <article class="relative rounded-[14px] border border-dw-line bg-white p-[18px]">
+          <span class="absolute -right-[19px] top-[48%] hidden text-[22px] font-extrabold text-dw-600 lg:block">→</span>
+          <div class="grid grid-cols-[30px_1fr] gap-2.5">
+            <span class="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-dw-700 text-[12px] font-extrabold text-white">2</span>
+            <div><h3 class="text-[14px] font-bold text-dw-ink">Calculate the ROI</h3><p class="text-[10.5px] leading-snug text-dw-muted">Computes from your catalog, with clear assumptions.</p></div>
+          </div>
+          <div class="mt-3.5 min-h-[170px] rounded-[9px] border border-dw-line bg-dw-canvas p-3">
+            <b class="mb-2 block text-[10px] text-dw-ink">ROI estimate</b>
+            <div class="flex items-center justify-between rounded-[7px] bg-dw-amber-bg p-2"><strong class="text-[18px] text-dw-ink">₱8,700<small class="text-[10px]">/mo</small></strong><span class="inline-flex items-center rounded-full bg-white px-[7px] py-[3px] text-[8px] font-bold text-dw-amber">estimate</span></div>
+            <div class="flex items-center justify-between border-b border-dw-line px-0.5 py-1.5 text-[8.5px]"><span>Estimated hours</span><b>40 hrs/mo</b></div>
+            <div class="flex items-center justify-between border-b border-dw-line px-0.5 py-1.5 text-[8.5px]"><span>Your rate</span><b>₱250/hr</b></div>
+            <div class="flex items-center justify-between px-0.5 py-1.5 text-[8.5px]"><span>Estimated ROI</span><em class="font-extrabold not-italic text-dw-700">3.2×</em></div>
+            <div class="mt-2 rounded-md border border-dw-700 py-1.5 text-center text-[8px] font-bold text-dw-700">View assumptions →</div>
+          </div>
+        </article>
+        <article class="relative rounded-[14px] border border-dw-line bg-white p-[18px]">
+          <span class="absolute -right-[19px] top-[48%] hidden text-[22px] font-extrabold text-dw-600 lg:block">→</span>
+          <div class="grid grid-cols-[30px_1fr] gap-2.5">
+            <span class="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-dw-700 text-[12px] font-extrabold text-white">3</span>
+            <div><h3 class="text-[14px] font-bold text-dw-ink">Match the delivery</h3><p class="text-[10.5px] leading-snug text-dw-muted">Gets the right services and team fit from your catalog.</p></div>
+          </div>
+          <div class="mt-3.5 min-h-[170px] rounded-[9px] border border-dw-line bg-dw-canvas p-3">
+            <b class="mb-2 block text-[10px] text-dw-ink">Recommended package</b>
+            <div class="flex items-center gap-2 border-b border-dw-line py-1.5 text-[9px]"><span class="font-extrabold text-dw-600">✓</span>Virtual assistant<small class="ml-auto rounded bg-white px-1 py-0.5 text-[7.5px] text-dw-muted">40 hrs/mo</small></div>
+            <div class="flex items-center gap-2 border-b border-dw-line py-1.5 text-[9px]"><span class="font-extrabold text-dw-600">✓</span>Lead management<small class="ml-auto rounded bg-white px-1 py-0.5 text-[7.5px] text-dw-muted">Included</small></div>
+            <div class="flex items-center gap-2 border-b border-dw-line py-1.5 text-[9px]"><span class="font-extrabold text-dw-600">✓</span>Client onboarding<small class="ml-auto rounded bg-white px-1 py-0.5 text-[7.5px] text-dw-muted">Included</small></div>
+            <div class="flex items-center gap-2 py-1.5 text-[9px]"><span>□</span>Data handling (NDA)<small class="ml-auto rounded bg-white px-1 py-0.5 text-[7.5px] text-dw-muted">Required</small></div>
+            <div class="mt-2 rounded-md border border-dw-700 py-1.5 text-center text-[8px] font-bold text-dw-700">View service details</div>
+          </div>
+        </article>
+        <article class="relative rounded-[14px] border border-dw-line bg-white p-[18px]">
+          <div class="grid grid-cols-[30px_1fr] gap-2.5">
+            <span class="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-dw-700 text-[12px] font-extrabold text-white">4</span>
+            <div><h3 class="text-[14px] font-bold text-dw-ink">Write the proposal</h3><p class="text-[10.5px] leading-snug text-dw-muted">Drafts a clear proposal you can review and send.</p></div>
+          </div>
+          <div class="mt-3.5 min-h-[170px] rounded-[9px] border border-dw-line bg-dw-canvas p-3">
+            <b class="mb-2 block text-[10px] text-dw-ink">Proposal preview</b>
+            <div class="grid grid-cols-1 gap-2 min-[420px]:grid-cols-[1fr_.8fr]">
+              <div class="rounded-[7px] border border-dw-line bg-white p-2"><b class="text-[8px] text-dw-ink">Client Proposal</b><div class="mt-1 h-1 rounded-sm bg-dw-line"></div><div class="mt-1 h-1 rounded-sm bg-dw-line"></div><div class="mt-1 h-1 w-[62%] rounded-sm bg-dw-line"></div><div class="mt-1 h-1 rounded-sm bg-dw-line"></div></div>
+              <div class="rounded-[7px] border border-dw-line bg-white p-2 text-[7.5px]"><div class="mb-[7px]"><span class="font-extrabold text-dw-600">✓</span> Figures from catalog</div><div class="mb-[7px]"><span class="font-extrabold text-dw-600">✓</span> Assumptions included</div><div><span class="font-extrabold text-dw-600">✓</span> Ready to send</div></div>
+            </div>
+            <div class="mt-2 rounded-md border border-dw-700 py-1.5 text-center text-[8px] font-bold text-dw-700">Export PDF</div>
+          </div>
+        </article>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="pricing" class="bg-dw-canvas py-16">
-  <div class="mx-auto max-w-[1080px] px-6">
-    <h2 class="text-center text-[26px] font-extrabold tracking-[-0.01em] text-dw-ink">Win one client and it's paid for the year</h2>
-    <p class="mx-auto mb-9 mt-2 max-w-[560px] text-center text-[14.5px] text-dw-muted">Priced for Filipino freelancers and agencies. Annual billing saves 2 months.</p>
-    <div class="grid items-stretch gap-4 md:grid-cols-3">
-      <div class="flex flex-col rounded-2xl border border-dw-line bg-white p-6">
-        <div class="text-[12px] font-extrabold uppercase tracking-[1px] text-dw-700">Starter</div>
-        <div class="mt-2 text-[30px] font-extrabold text-dw-ink">₱399<span class="text-[13px] font-bold text-dw-muted">/mo</span></div>
-        <div class="mb-4 text-[12px] text-dw-muted">for the solo VA starting out</div>
-        <ul class="mb-5 flex-1 list-none text-[13px]">
-          <li class="relative py-1 pl-[22px]"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>10 proposals / month</li>
-          <li class="relative py-1 pl-[22px]"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>1 seat · 5 bench profiles</li>
-          <li class="relative py-1 pl-[22px]"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>ROI engine + full catalog</li>
-          <li class="relative py-1 pl-[22px]"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>PDF export</li>
-        </ul>
-        <a href="{% url 'account_signup' %}" class="mt-auto block rounded-[10px] border-[1.5px] border-dw-700 bg-white px-5 py-2.5 text-center text-[13.5px] font-bold text-dw-700 no-underline hover:bg-dw-50">Start free trial</a>
+  <section id="features" class="bg-dw-canvas py-14 sm:py-16 lg:py-20">
+    <div class="mx-auto grid w-full max-w-[1180px] items-center gap-8 px-4 sm:px-6 lg:grid-cols-[1.1fr_.9fr] lg:gap-[70px]">
+      <div class="relative min-h-[390px] sm:min-h-[430px] lg:min-h-[480px]" aria-label="Client proposal preview">
+        <div class="absolute inset-x-6 top-8 bottom-0 -rotate-[4deg] rounded-[5px] border border-dw-line bg-white shadow-lg"></div>
+        <article class="absolute inset-x-3 top-0 bottom-5 rounded-[5px] border border-dw-line bg-white p-6 shadow-xl sm:inset-x-5 lg:inset-x-12 lg:p-9">
+          <span class="float-right text-right text-[8px] text-dw-muted">May 10, 2026<br>CONFIDENTIAL</span>
+          <div class="flex items-center gap-2 text-[11px] font-extrabold text-dw-ink"><span class="flex h-[25px] w-[25px] items-center justify-center rounded-[7px] bg-dw-gold text-[8px] font-light text-white">DW</span>Dealwright</div>
+          <h3 class="mt-7 text-[22px] font-bold text-dw-ink sm:text-[27px]">Client Proposal</h3>
+          <p class="text-[11px] text-dw-muted">Virtual Assistant Support · Prepared for Acme Co.</p>
+          <div class="mt-7 grid grid-cols-1 gap-6 min-[470px]:grid-cols-[1.2fr_.8fr]">
+            <div><b class="text-[11px] text-dw-ink">Executive summary</b><p class="mt-2 text-[9px] leading-relaxed text-dw-muted">Dedicated support to manage lead follow-up and client onboarding, with a focus on measurable outcomes and responsible data handling.</p></div>
+            <aside class="rounded-[9px] border border-dw-100 bg-dw-50 p-3.5">
+              <small class="text-[8px] text-dw-muted">Investment (monthly)</small>
+              <strong class="block text-[22px] text-dw-ink">₱8,700 <span class="inline-flex items-center rounded-full bg-dw-amber-bg px-[7px] py-[3px] align-middle text-[8px] font-bold text-dw-amber">estimate</span></strong>
+              <dl class="mt-2.5 text-[8px]"><div class="flex justify-between py-0.5"><dt class="text-dw-muted">Estimated hours</dt><dd class="font-bold text-dw-ink">40 hrs</dd></div><div class="flex justify-between py-0.5"><dt class="text-dw-muted">Rate</dt><dd class="font-bold text-dw-ink">₱250/hr</dd></div><div class="flex justify-between py-0.5"><dt class="text-dw-muted">Estimated ROI</dt><dd class="font-bold text-dw-ink">3.2×</dd></div></dl>
+            </aside>
+          </div>
+        </article>
       </div>
-      <div class="relative flex flex-col rounded-2xl border-2 border-dw-600 bg-white p-6 shadow-xl shadow-dw-700/15">
-        <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-dw-700 px-3.5 py-1 text-[11px] font-extrabold tracking-[0.5px] text-white">MOST CHOSEN</span>
-        <div class="text-[12px] font-extrabold uppercase tracking-[1px] text-dw-700">Professional</div>
-        <div class="mt-2 text-[30px] font-extrabold text-dw-ink">₱899<span class="text-[13px] font-bold text-dw-muted">/mo</span></div>
-        <div class="mb-4 text-[12px] text-dw-muted">for the serious freelancer</div>
-        <ul class="mb-5 flex-1 list-none text-[13px]">
-          <li class="relative py-1 pl-[22px]"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>40 proposals / month</li>
-          <li class="relative py-1 pl-[22px]"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Your branding, your logo</li>
-          <li class="relative py-1 pl-[22px]"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Custom service catalog</li>
-          <li class="relative py-1 pl-[22px]"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>n8n &amp; email integrations</li>
-          <li class="relative py-1 pl-[22px]"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Proposal tracking</li>
-        </ul>
-        <a href="{% url 'account_signup' %}" class="mt-auto block rounded-[10px] bg-dw-700 px-5 py-2.5 text-center text-[13.5px] font-bold text-white no-underline hover:bg-dw-800">Start free trial</a>
-      </div>
-      <div class="flex flex-col rounded-2xl border border-dw-line bg-white p-6">
-        <div class="text-[12px] font-extrabold uppercase tracking-[1px] text-dw-700">Agency</div>
-        <div class="mt-2 text-[30px] font-extrabold text-dw-ink">₱1,990<span class="text-[13px] font-bold text-dw-muted">/mo</span></div>
-        <div class="mb-4 text-[12px] text-dw-muted">for teams with a bench</div>
-        <ul class="mb-5 flex-1 list-none text-[13px]">
-          <li class="relative py-1 pl-[22px]"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Unlimited proposals (fair use)</li>
-          <li class="relative py-1 pl-[22px]"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>5 seats · unlimited bench</li>
-          <li class="relative py-1 pl-[22px]"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Full white-label</li>
-          <li class="relative py-1 pl-[22px]"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Client workspaces</li>
-          <li class="relative py-1 pl-[22px]"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Priority support</li>
-        </ul>
-        <a href="{% url 'account_signup' %}" class="mt-auto block rounded-[10px] border-[1.5px] border-dw-700 bg-white px-5 py-2.5 text-center text-[13.5px] font-bold text-dw-700 no-underline hover:bg-dw-50">Talk to us</a>
+      <div>
+        <h2 class="text-[26px] font-extrabold leading-[1.15] tracking-[-.025em] text-dw-ink sm:text-[34px]">Why clients trust the proposal</h2>
+        <p class="mb-6 mt-3 text-[14.5px] text-dw-muted">Every figure is backed by a source. No black boxes. No vague estimates.</p>
+        <div class="mb-3 grid grid-cols-[40px_1fr] gap-3 rounded-xl border border-dw-line bg-white p-4">
+          <span class="flex h-10 w-10 items-center justify-center rounded-[11px] bg-dw-50 font-extrabold text-dw-700">▦</span>
+          <div><b class="block text-[13px] text-dw-ink">Assumptions are visible</b><span class="mt-0.5 block text-[11.5px] text-dw-muted">Clients can see what each number is based on — from call quotes to your catalog.</span></div>
+        </div>
+        <div class="mb-3 grid grid-cols-[40px_1fr] gap-3 rounded-xl border border-dw-line bg-white p-4">
+          <span class="flex h-10 w-10 items-center justify-center rounded-[11px] bg-dw-50 font-extrabold text-dw-700">▤</span>
+          <div><b class="block text-[13px] text-dw-ink">Prices come from your catalog</b><span class="mt-0.5 block text-[11.5px] text-dw-muted">The AI uses your defined services, rates, and delivery rules. No made-up numbers.</span></div>
+        </div>
+        <div class="grid grid-cols-[40px_1fr] gap-3 rounded-xl border border-dw-line bg-white p-4">
+          <span class="flex h-10 w-10 items-center justify-center rounded-[11px] bg-dw-50 font-extrabold text-dw-700">✎</span>
+          <div><b class="block text-[13px] text-dw-ink">AI writes the story — not the figures</b><span class="mt-0.5 block text-[11.5px] text-dw-muted">You get a tailored narrative while every number remains grounded in your data.</span></div>
+        </div>
       </div>
     </div>
-    <div class="mt-6 rounded-xl border border-dw-gold/40 bg-dw-gold-100 px-4 py-3 text-center text-[13px] text-dw-ink">🎁 <b>Founding 20:</b> first twenty members lock ₱299/mo for 12 months — in exchange for sharing your proposal outcomes (anonymized) so the assumptions engine gets smarter for everyone.</div>
-  </div>
-</section>
+  </section>
 
-<section id="faq" class="py-16">
-  <div class="mx-auto max-w-[1080px] px-6">
-    <h2 class="text-center text-[26px] font-extrabold tracking-[-0.01em] text-dw-ink">Fair questions</h2>
-    <p class="mx-auto mb-9 mt-2 max-w-[560px] text-center text-[14.5px] text-dw-muted">Straight answers, the same way we write proposals.</p>
-    <div class="mx-auto max-w-[720px]">
-      <div class="mb-2.5 rounded-xl border border-dw-line bg-white px-[18px] py-4">
-        <b class="mb-1 block text-[14px] text-dw-ink">Does the AI make up the savings numbers?</b>
-        <span class="text-[13.5px]">No — and that's the point. All money math runs in Python from assumptions you and the client can see and edit. The AI only restates the client's goals and explains the results in plain language. Every figure in its writing traces back to a stored field.</span>
-      </div>
-      <div class="mb-2.5 rounded-xl border border-dw-line bg-white px-[18px] py-4">
-        <b class="mb-1 block text-[14px] text-dw-ink">Do you guarantee savings or results?</b>
-        <span class="text-[13.5px]">Never. Every figure is labelled an estimate with its assumptions shown. If a value can't be honestly quantified — like "consistent posting" — it's presented as a benefit, not a number.</span>
-      </div>
-      <div class="mb-2.5 rounded-xl border border-dw-line bg-white px-[18px] py-4">
-        <b class="mb-1 block text-[14px] text-dw-ink">I'm a solo VA, not an agency. Does this still fit?</b>
-        <span class="text-[13.5px]">It's built for you first. In solo mode, proposals present your own verified skills and rates, and the matching engine checks whether <i>you</i> should take a deal — with honest gaps and what to do about them.</span>
-      </div>
-      <div class="mb-2.5 rounded-xl border border-dw-line bg-white px-[18px] py-4">
-        <b class="mb-1 block text-[14px] text-dw-ink">Who owns my client data?</b>
-        <span class="text-[13.5px]">You do. Your clients, notes, and proposals are yours, exportable. We keep daily backups, and we never train on your data.</span>
-      </div>
-      <div class="mb-2.5 rounded-xl border border-dw-line bg-white px-[18px] py-4">
-        <b class="mb-1 block text-[14px] text-dw-ink">Can I cancel anytime?</b>
-        <span class="text-[13.5px]">Yes. Monthly plans cancel in a click; your data stays exportable for 90 days.</span>
-      </div>
+  <section class="bg-dw-950 text-white">
+    <div class="mx-auto flex w-full max-w-[1180px] flex-col items-start gap-6 px-4 py-11 sm:px-6 sm:flex-row sm:items-center sm:justify-between">
+      <div><h2 class="text-[24px] font-extrabold tracking-[-.02em] sm:text-[28px]">Turn the next discovery call into a defensible proposal.</h2><p class="mt-1.5 text-[13px] text-white/65">Try Dealwright free for 14 days. No card required.</p></div>
+      <a href="{% url 'account_signup' %}" class="inline-flex min-h-[44px] shrink-0 items-center rounded-[10px] bg-dw-700 px-5 text-[13.5px] font-bold text-white no-underline hover:bg-dw-600">Start free trial →</a>
     </div>
-  </div>
-</section>
+  </section>
 
-<footer class="bg-dw-950 py-9 text-[12.5px] text-white/60">
-  <div class="mx-auto max-w-[1080px] px-6">
-    <div class="flex flex-wrap items-center gap-[30px]">
-      <a href="{% url 'home' %}" class="flex items-center gap-2 text-[15px] font-extrabold tracking-tight text-white no-underline">
-        <span class="inline-flex h-6 w-6 items-center justify-center rounded-md bg-dw-gold text-[9.5px] font-light tracking-[0.8px]">DW</span>Dealwright
+  <section id="pricing" class="bg-dw-canvas py-14 sm:py-16 lg:py-20">
+    <div class="mx-auto w-full max-w-[1180px] px-4 sm:px-6">
+      <div class="mx-auto mb-10 max-w-[650px] text-center">
+        <h2 class="text-[26px] font-extrabold leading-tight tracking-[-.025em] text-dw-ink sm:text-[32px]">Win one client and it’s paid for the year</h2>
+        <p class="mt-2 text-[14.5px] text-dw-muted">Priced for Filipino freelancers and agencies. Annual billing saves two months.</p>
+      </div>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <article class="flex flex-col rounded-2xl border border-dw-line bg-white p-[27px]">
+          <span class="text-[11px] font-extrabold uppercase tracking-[1px] text-dw-700">Starter</span>
+          <div class="mt-1.5 text-[31px] font-extrabold text-dw-ink">₱399<span class="text-[12px] font-semibold text-dw-muted">/mo</span></div>
+          <p class="mb-4 mt-1 text-[11.5px] text-dw-muted">for the solo VA starting out</p>
+          <ul class="mb-5 flex-1 list-none text-[12.5px]">
+            <li class="relative py-1.5 pl-5"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>10 proposals / month</li>
+            <li class="relative py-1.5 pl-5"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>1 seat · 5 bench profiles</li>
+            <li class="relative py-1.5 pl-5"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>ROI engine + full catalog</li>
+            <li class="relative py-1.5 pl-5"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>PDF export</li>
+          </ul>
+          <a href="{% url 'account_signup' %}" class="inline-flex min-h-[44px] items-center justify-center rounded-[10px] border-[1.5px] border-dw-700 bg-white px-5 text-[13.5px] font-bold text-dw-700 no-underline hover:bg-dw-50">Start free trial</a>
+        </article>
+        <article class="relative flex flex-col rounded-2xl border-2 border-dw-600 bg-white p-[27px] shadow-dw-700/15 shadow-xl">
+          <span class="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-dw-700 px-3.5 py-1 text-[10px] font-extrabold text-white">MOST CHOSEN</span>
+          <span class="text-[11px] font-extrabold uppercase tracking-[1px] text-dw-700">Professional</span>
+          <div class="mt-1.5 text-[31px] font-extrabold text-dw-ink">₱899<span class="text-[12px] font-semibold text-dw-muted">/mo</span></div>
+          <p class="mb-4 mt-1 text-[11.5px] text-dw-muted">for the serious freelancer</p>
+          <ul class="mb-5 flex-1 list-none text-[12.5px]">
+            <li class="relative py-1.5 pl-5"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>40 proposals / month</li>
+            <li class="relative py-1.5 pl-5"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Your branding, your logo</li>
+            <li class="relative py-1.5 pl-5"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Custom service catalog</li>
+            <li class="relative py-1.5 pl-5"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>n8n &amp; email integrations</li>
+            <li class="relative py-1.5 pl-5"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Proposal tracking</li>
+          </ul>
+          <a href="{% url 'account_signup' %}" class="inline-flex min-h-[44px] items-center justify-center rounded-[10px] bg-dw-700 px-5 text-[13.5px] font-bold text-white no-underline hover:bg-dw-800">Start free trial</a>
+        </article>
+        <article class="flex flex-col rounded-2xl border border-dw-line bg-white p-[27px]">
+          <span class="text-[11px] font-extrabold uppercase tracking-[1px] text-dw-700">Agency</span>
+          <div class="mt-1.5 text-[31px] font-extrabold text-dw-ink">₱1,990<span class="text-[12px] font-semibold text-dw-muted">/mo</span></div>
+          <p class="mb-4 mt-1 text-[11.5px] text-dw-muted">for teams with a bench</p>
+          <ul class="mb-5 flex-1 list-none text-[12.5px]">
+            <li class="relative py-1.5 pl-5"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Unlimited proposals (fair use)</li>
+            <li class="relative py-1.5 pl-5"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>5 seats · unlimited bench</li>
+            <li class="relative py-1.5 pl-5"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Full white-label</li>
+            <li class="relative py-1.5 pl-5"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Client workspaces</li>
+            <li class="relative py-1.5 pl-5"><span class="absolute left-0 font-extrabold text-dw-600">✓</span>Priority support</li>
+          </ul>
+          <a href="{% url 'account_signup' %}" class="inline-flex min-h-[44px] items-center justify-center rounded-[10px] border-[1.5px] border-dw-700 bg-white px-5 text-[13.5px] font-bold text-dw-700 no-underline hover:bg-dw-50">Talk to us</a>
+        </article>
+      </div>
+      <div class="mt-6 rounded-xl border border-dw-gold/40 bg-dw-gold-100 p-3.5 text-center text-[12.5px] text-dw-ink"><b>Founding 20:</b> the first twenty members lock ₱299/month for 12 months in exchange for sharing anonymized proposal outcomes.</div>
+    </div>
+  </section>
+
+  <section id="faq" class="py-14 sm:py-16 lg:py-20">
+    <div class="mx-auto w-full max-w-[800px] px-4 sm:px-6">
+      <div class="mx-auto mb-10 max-w-[650px] text-center">
+        <h2 class="text-[26px] font-extrabold leading-tight tracking-[-.025em] text-dw-ink sm:text-[32px]">Fair questions</h2>
+        <p class="mt-2 text-[14.5px] text-dw-muted">Straight answers, the same way we write proposals.</p>
+      </div>
+      <details class="mb-2.5 rounded-xl border border-dw-line bg-white px-4 py-3.5" open>
+        <summary class="cursor-pointer text-[13.5px] font-bold text-dw-ink">Does the AI make up the savings numbers?</summary>
+        <p class="mt-2 text-[13px] text-dw-body">No. All money math runs in code from assumptions you and the client can see and edit. The AI explains the results; every figure traces back to a stored field.</p>
+      </details>
+      <details class="mb-2.5 rounded-xl border border-dw-line bg-white px-4 py-3.5">
+        <summary class="cursor-pointer text-[13.5px] font-bold text-dw-ink">Do you guarantee savings or results?</summary>
+        <p class="mt-2 text-[13px] text-dw-body">Never. Every figure is labelled as an estimate with its assumptions shown.</p>
+      </details>
+      <details class="mb-2.5 rounded-xl border border-dw-line bg-white px-4 py-3.5">
+        <summary class="cursor-pointer text-[13.5px] font-bold text-dw-ink">I’m a solo VA, not an agency. Does this still fit?</summary>
+        <p class="mt-2 text-[13px] text-dw-body">Yes. Solo mode presents your own verified skills and rates while checking your fit and identifying honest gaps.</p>
+      </details>
+      <details class="mb-2.5 rounded-xl border border-dw-line bg-white px-4 py-3.5">
+        <summary class="cursor-pointer text-[13.5px] font-bold text-dw-ink">Who owns my client data?</summary>
+        <p class="mt-2 text-[13px] text-dw-body">You do. Your clients, notes, and proposals remain yours and are exportable.</p>
+      </details>
+      <details class="rounded-xl border border-dw-line bg-white px-4 py-3.5">
+        <summary class="cursor-pointer text-[13.5px] font-bold text-dw-ink">Can I cancel anytime?</summary>
+        <p class="mt-2 text-[13px] text-dw-body">Yes. Monthly plans can be cancelled at any time.</p>
+      </details>
+    </div>
+  </section>
+</main>
+
+<footer class="bg-dw-950 py-[34px] text-[12px] text-dw-100/70">
+  <div class="mx-auto w-full max-w-[1180px] px-4 sm:px-6">
+    <div class="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+      <a href="{% url 'home' %}" class="block shrink-0">
+        <img src="{% static 'brand/logo-horizontal-light.svg' %}" alt="Dealwright" class="block h-auto w-[118px]">
       </a>
-      <div class="ml-auto">
-        <a href="#pricing" class="mr-4 hover:text-white">Pricing</a>
-        <a href="#faq" class="mr-4 hover:text-white">FAQ</a>
-        <a href="#" class="mr-4 hover:text-white">Privacy</a>
-        <a href="#" class="mr-4 hover:text-white">Terms</a>
+      <div class="flex flex-wrap gap-[19px] sm:ml-auto">
+        <a href="#pricing" class="hover:text-white">Pricing</a>
+        <a href="#faq" class="hover:text-white">FAQ</a>
+        <a href="#" class="hover:text-white">Privacy</a>
+        <a href="#" class="hover:text-white">Terms</a>
         <a href="{% url 'account_login' %}" class="hover:text-white">Sign in</a>
       </div>
     </div>
-    <div class="mt-3.5 text-[11px] text-white/50">All savings and revenue figures produced by Dealwright are estimates derived from stated assumptions — not guarantees of outcomes. © 2026 Dealwright.</div>
+    <p class="mt-3.5 text-[10.5px] text-dw-100/55">All savings and revenue figures produced by Dealwright are estimates derived from stated assumptions — not guarantees of outcomes. © 2026 Dealwright.</p>
   </div>
 </footer>
 

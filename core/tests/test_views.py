@@ -15,10 +15,11 @@ def test_landing_renders_for_anonymous(client: Client) -> None:
     response = client.get(reverse("home"))
     assert response.status_code == 200
     content = response.content.decode()
-    assert "Turn discovery calls into" in content
+    assert "From messy call notes" in content  # v2 mockup headline (Robb, 2026-09-29)
     assert reverse("account_signup") in content
     assert reverse("account_login") in content
     assert "estimates" in content.lower()  # estimate discipline on every public surface
+    assert "₱399" in content and "₱1,990" in content  # Q10 pricing tiers
 
 
 @pytest.mark.django_db
