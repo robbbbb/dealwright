@@ -1,9 +1,9 @@
-"""Shared fixtures for bench tests."""
+"""Shared fixtures for team tests."""
 
 import pytest
 from django.contrib.auth import get_user_model
 
-from bench.models import ProviderProfile, VAProfile
+from team.models import ProviderProfile, VAProfile
 
 User = get_user_model()
 
@@ -25,5 +25,5 @@ def provider_profile(user) -> ProviderProfile:
 
 @pytest.fixture
 def va(user) -> VAProfile:
-    """One bench member, hourly ₱250 — the Maria of the test suite."""
+    """One team member, hourly ₱250 — the Maria of the test suite."""
     return VAProfile.objects.create(owner=user, display_name="Maria", rate_per_hour=250)

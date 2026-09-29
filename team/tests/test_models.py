@@ -1,4 +1,4 @@
-"""Bench model tests — claim-triple rules, holder integrity, rate bases, schema.
+"""Team model tests — claim-triple rules, holder integrity, rate bases, schema.
 
 Through public APIs only: model full_clean() for shape rules, DB constraints
 exercised via ORM create inside atomic blocks. No services (Card 4 step order).
@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 
-from bench.models import Capability, ProviderProfile, SkillLevel, VAProfile
+from team.models import Capability, ProviderProfile, SkillLevel, VAProfile
 
 User = get_user_model()
 
@@ -108,11 +108,11 @@ class TestHolderIntegrity:
         assert Capability.objects.count() == 2
 
 
-# --- VA bench: rate bases and numeric guards ----------------------------------------
+# --- member rates and numeric guards ----------------------------------------
 
 
 @pytest.mark.django_db
-class TestVARates:
+class TestMemberRates:
     def test_project_basis_requires_project_rate(self, user) -> None:
         va = VAProfile(
             owner=user,
@@ -164,11 +164,11 @@ class TestVARates:
         assert va.is_active is True
 
 
-# --- bench roster rules ---------------------------------------------------------------
+# --- team roster rules ---------------------------------------------------------------
 
 
 @pytest.mark.django_db
-class TestBenchRoster:
+class TestTeamRoster:
     def test_display_name_unique_per_owner(self, va) -> None:
         with pytest.raises(IntegrityError), transaction.atomic():
             VAProfile.objects.create(owner=va.owner, display_name="Maria")

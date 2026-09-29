@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     "allauth.mfa",  # TOTP + recovery codes; templates per docs/mockups/auth-mockup.html
     # Dealwright
     "core",
-    "bench",  # Card 4: provider profile (solo|team) + VA bench + shared Capability
+    "team",  # Card 4: provider profile (solo|team) + team roster + shared Capability
 ]
 
 MIDDLEWARE = [
@@ -127,7 +127,7 @@ if env("GOOGLE_OAUTH_CLIENT_ID") and env("GOOGLE_OAUTH_SECRET"):
         "AUTH_PARAMS": {"access_type": "online"},
     }
 
-# PH-anchored product (PHP pricing, PH VA bench).
+# PH-anchored product (PHP pricing, PH VA market).
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Manila"
 USE_I18N = True

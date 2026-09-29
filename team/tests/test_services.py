@@ -1,10 +1,10 @@
-"""Service-layer tests for bench — write paths through public APIs."""
+"""Service-layer tests for team — write paths through public APIs."""
 
 import pytest
 from django.core.exceptions import ValidationError
 
-from bench.models import Capability, ProviderProfile, SkillLevel, VAProfile
-from bench.services import (
+from team.models import Capability, ProviderProfile, SkillLevel, VAProfile
+from team.services import (
     add_capability,
     create_va_profile,
     delete_capability,
@@ -69,7 +69,7 @@ class TestCapabilityService:
         assert cap.va_profile is None
         assert list(profile.capabilities.all()) == [cap]
 
-    def test_add_to_bench_va(self, user) -> None:
+    def test_add_to_team_va(self, user) -> None:
         va = create_va_profile(owner=user, display_name="Maria")
 
         cap = add_capability(holder=va, skill="n8n workflows")
@@ -122,7 +122,7 @@ class TestCapabilityService:
 
 
 @pytest.mark.django_db
-def test_va_with_project_rate_visible_in_bench(user) -> None:
+def test_va_with_project_rate_visible_in_team(user) -> None:
     va = create_va_profile(
         owner=user, display_name="Jen", rate_basis="project", project_rate=25000
     )

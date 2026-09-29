@@ -1,0 +1,17 @@
+{% extends "app-base.html" %}
+{% block title %}Add team member — Dealwright{% endblock %}
+{% block app_content %}
+<div class="mx-auto max-w-[560px]">
+  <a href="{% url 'team:team_home' %}" class="text-[12px] font-bold text-dw-700 no-underline hover:underline">← Back to team</a>
+  <h1 class="mt-2 mb-1 text-[21px] font-extrabold leading-tight text-dw-ink">Add team member</h1>
+  <p class="mb-4 text-[12px] text-dw-muted">Hourly members join the monthly-ops shortlist; per-project members join one-time builds.</p>
+
+  <div class="card">
+    <form method="post" class="m-0">
+      {% csrf_token %}
+      {% include "team/_form_fields.html" %}
+      <button type="submit" class="btn-primary">Add to team</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

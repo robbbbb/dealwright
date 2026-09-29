@@ -1,4 +1,4 @@
-"""Bench selectors — all reads live here; views never filter querysets inline."""
+"""Team selectors — all reads live here; views never filter querysets inline."""
 
 from typing import Any
 
@@ -8,12 +8,12 @@ from .models import Capability, ProviderProfile, VAProfile
 
 
 def list_vas(owner: Any) -> QuerySet[VAProfile]:
-    """The owner's whole bench (active and inactive; UI shows status)."""
+    """The owner's whole team (active and inactive; UI shows status)."""
     return VAProfile.objects.filter(owner=owner).prefetch_related("capabilities")
 
 
 def get_va_for_owner(owner: Any, va_id: int) -> VAProfile | None:
-    """Ownership-checked bench member lookup — None means not found for this owner."""
+    """Ownership-checked team member lookup — None means not found for this owner."""
     return VAProfile.objects.filter(owner=owner, pk=va_id).first()
 
 

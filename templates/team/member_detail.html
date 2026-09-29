@@ -1,7 +1,7 @@
 {% extends "app-base.html" %}
-{% block title %}{{ va.display_name }} — bench — Dealwright{% endblock %}
+{% block title %}{{ va.display_name }} — team — Dealwright{% endblock %}
 {% block app_content %}
-<a href="{% url 'bench:bench_home' %}" class="text-[12px] font-bold text-dw-700 no-underline hover:underline">← Back to bench</a>
+<a href="{% url 'team:team_home' %}" class="text-[12px] font-bold text-dw-700 no-underline hover:underline">← Back to team</a>
 <h1 class="mt-2 mb-4 flex items-center gap-2 text-[21px] font-extrabold leading-tight text-dw-ink">
   {{ va.display_name }}
   {% if va.is_active %}
@@ -17,7 +17,7 @@
     <h2 class="mb-3 text-[14.5px] font-extrabold text-dw-ink">Profile</h2>
     <form method="post" class="m-0">
       {% csrf_token %}
-      {% include "bench/_form_fields.html" %}
+      {% include "team/_form_fields.html" %}
       <button type="submit" class="btn-primary">Save changes</button>
     </form>
   </section>
@@ -41,10 +41,10 @@
           {% for cap in skills %}
           <tr class="border-b border-dw-line last:border-b-0">
             <td class="px-4 py-2.5 font-bold text-dw-ink">{{ cap.skill }}</td>
-            <td class="px-4 py-2.5">{% include "bench/_level_chip.html" %}</td>
+            <td class="px-4 py-2.5">{% include "team/_level_chip.html" %}</td>
             <td class="px-4 py-2.5 text-[12px] text-dw-muted">{{ cap.tasks|default:"—" }}</td>
             <td class="px-4 py-2.5">
-              <form method="post" action="{% url 'bench:skill_delete' cap.pk %}" class="m-0">
+              <form method="post" action="{% url 'team:skill_delete' cap.pk %}" class="m-0">
                 {% csrf_token %}
                 <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[11.5px] font-bold text-dw-red hover:underline">Remove</button>
               </form>
@@ -58,7 +58,7 @@
     <p class="mb-4 text-[12.5px] text-dw-muted">No skills recorded for {{ va.display_name }} yet.</p>
     {% endif %}
 
-    <form method="post" action="{% url 'bench:va_skill_add' va.pk %}" class="m-0">
+    <form method="post" action="{% url 'team:member_skill_add' va.pk %}" class="m-0">
       {% csrf_token %}
       <div class="grid gap-3 md:grid-cols-[1fr_150px_1fr_auto] md:items-start">
         <div class="dw-field">{{ skill_form.skill.label_tag }}{{ skill_form.skill }}{{ skill_form.skill.errors }}</div>

@@ -1,4 +1,4 @@
-"""Bench & skills views — thin: parse request → validate with form → service → render."""
+"""Team & skills views — thin: parse request → validate with form → service → render."""
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -11,8 +11,8 @@ from .forms import SkillForm, VAForm
 
 
 @login_required
-def bench_home(request: HttpRequest) -> HttpResponse:
-    """/bench/ — my skills (solo side) + the bench roster."""
+def team_home(request: HttpRequest) -> HttpResponse:
+    """/team/ — my skills (solo side) + the team roster."""
     profile = services.get_provider_profile(request.user)
     skill_form = SkillForm()
     if request.method == "POST":  # add one of my skills
@@ -20,10 +20,10 @@ def bench_home(request: HttpRequest) -> HttpResponse:
         if skill_form.is_valid():
             services.add_capability(holder=profile, **skill_form.cleaned_data)
             messages.success(request, "Skill added.")
-            return redirect("bench:bench_home")
+            return redirect("team:team_home")
     return render(
         request,
-        "bench/bench.html",
+        "team/team.html",
         {
             "profile": profile,
             "my_skills": selectors.list_holder_capabilities(profile),
@@ -35,34 +35,34 @@ def bench_home(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
-def va_add(request: HttpRequest) -> HttpResponse:
+def member_add(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         form = VAForm(request.POST)
         if form.is_valid():
             va = services.create_va_profile(owner=request.user, **form.cleaned_data)
-            messages.success(request, f"{va.display_name} added to your bench.")
-            return redirect("bench:va_detail", pk=va.pk)
+            messages.success(request, f"{va.display_name} added to your team.")
+            return redirect("team:member_detail", pk=va.pk)
     else:
         form = VAForm()
-    return render(request, "bench/va_add.html", {"form": form})
+    return render(request, "team/member_add.html", {"form": form})
 
 
 @login_required
-def va_detail(request: HttpRequest, pk: int) -> HttpResponse:
+def member_detail(request: HttpRequest, pk: int) -> HttpResponse:
     va = selectors.get_va_for_owner(request.user, pk)
     if va is None:
-        raise Http404("No such bench member.")
+        raise Http404("No such team member.")
     if request.method == "POST":  # edit the VA's own fields
         form = VAForm(request.POST, instance=va)
         if form.is_valid():
             services.update_va_profile(va=va, **form.cleaned_data)
-            messages.success(request, "Bench member updated.")
-            return redirect("bench:va_detail", pk=va.pk)
+            messages.success(request, "Team member updated.")
+            return redirect("team:member_detail", pk=va.pk)
     else:
         form = VAForm(instance=va)
     return render(
         request,
-        "bench/va_detail.html",
+        "team/member_detail.html",
         {
             "va": va,
             "form": form,
@@ -74,23 +74,23 @@ def va_detail(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 @require_POST  # mutations are never GET-reachable (CSRF surface — review pass 1)
-def va_skill_add(request: HttpRequest, pk: int) -> HttpResponse:
+def member_skill_add(request: HttpRequest, pk: int) -> HttpResponse:
     va = selectors.get_va_for_owner(request.user, pk)
     if va is None:
-        raise Http404("No such bench member.")
+        raise Http404("No such team member.")
     form = SkillForm(request.POST)
     if form.is_valid():
         services.add_capability(holder=va, **form.cleaned_data)
         messages.success(request, f"Skill added to {va.display_name}.")
     else:
         messages.error(request, _first_error(form))
-    return redirect("bench:va_detail", pk=va.pk)
+    return redirect("team:member_detail", pk=va.pk)
 
 
 def _redirect_target_for(capability) -> HttpResponse:  # type: ignore[no-untyped-def]
     if capability.va_profile_id is not None:
-        return redirect("bench:va_detail", pk=capability.va_profile_id)
-    return redirect("bench:bench_home")
+        return redirect("team:member_detail", pk=capability.va_profile_id)
+    return redirect("team:team_home")
 
 
 @login_required

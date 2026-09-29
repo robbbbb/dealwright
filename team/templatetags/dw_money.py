@@ -1,4 +1,4 @@
-"""Formatting-only template tags for bench (styleguide: tags format, never compute)."""
+"""Formatting-only template tags for team (styleguide: tags format, never compute)."""
 
 from django import template
 

@@ -1,4 +1,4 @@
-"""Bench services — every write goes through here, full_clean() before save.
+"""Team services — every write goes through here, full_clean() before save.
 
 Styleguide: plain functions, keyword-only args, services validate meaning;
 constraints must hold from any entry path (app, admin, shell).
@@ -28,7 +28,7 @@ def get_provider_profile(user: Any) -> ProviderProfile:
 
 
 def create_va_profile(*, owner: Any, **fields: Any) -> VAProfile:
-    """Add a bench member from validated VAForm data."""
+    """Add a team member from validated VAForm data."""
     va = VAProfile(owner=owner, **fields)
     va.full_clean()
     va.save()

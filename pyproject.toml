@@ -28,7 +28,7 @@ package = false
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings.testing"
-testpaths = ["core", "bench"]
+testpaths = ["core", "team"]
 python_files = ["test_*.py"]
 
 [tool.ruff]

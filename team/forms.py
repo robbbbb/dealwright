@@ -1,4 +1,4 @@
-"""Bench forms — input validation only; writes go through services."""
+"""Team forms — input validation only; writes go through services."""
 
 from django import forms
 
@@ -6,7 +6,7 @@ from .models import SkillLevel, VAProfile
 
 
 class VAForm(forms.ModelForm):
-    """Create/update a bench member. All fields map 1:1 to update_va_profile."""
+    """Create/update a team member. All fields map 1:1 to update_va_profile."""
 
     class Meta:
         model = VAProfile
@@ -40,7 +40,7 @@ class VAForm(forms.ModelForm):
 
 
 class SkillForm(forms.Form):
-    """Add/update a capability on the freelancer profile or a bench VA."""
+    """Add/update a capability on the freelancer profile or a team VA."""
 
     skill = forms.CharField(
         max_length=120,

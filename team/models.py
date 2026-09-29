@@ -1,4 +1,4 @@
-"""Card 4 — supply-side models: provider profile (freelancer|team), VA bench, Capability.
+"""Card 4 — supply-side models: provider profile (freelancer|team), Team roster, Capability.
 
 Design refs: mvp-build-plan.md Card 4; design-log Q9 (provider personas), D4
 (advanced > intermediate > beginner weighting feeds Card 5 matching). Tenancy rule:
@@ -30,7 +30,7 @@ class DeliveryMode(models.TextChoices):
 
 
 class RateBasis(models.TextChoices):
-    """How a bench member charges. Never convert between bases — matching compares
+    """How a team member charges. Never convert between bases — matching compares
     like with like only (hourly vs hourly); project rates surface on the one-time
     (setup) side of proposals, exactly like catalog setup prices."""
 
@@ -73,7 +73,7 @@ class ProviderProfile(models.Model):
         default=DeliveryMode.SOLO,
         help_text=(
             "Freelancer = deal self-qualification; Team = small crew combining "
-            "skills, ranked bench shortlists."
+            "skills, ranked team shortlists."
         ),
     )
     branding_name = models.CharField(
@@ -106,7 +106,7 @@ class ProviderProfile(models.Model):
 
 
 class VAProfile(models.Model):
-    """One bench member of a team-mode provider. Rate/availability/timezone/language
+    """One team member of a team-mode provider. Rate/availability/timezone/language
     are the Card 5 hard filters; industry experience is soft context only."""
 
     owner = models.ForeignKey(  # type: ignore[var-annotated]
@@ -118,7 +118,7 @@ class VAProfile(models.Model):
     is_active = models.BooleanField(
         "active",
         default=True,
-        help_text="Inactive members stay on the bench record but never match.",
+        help_text="Inactive members stay on the team record but never match.",
     )
     rate_basis = models.CharField(
         "rate basis",
@@ -195,12 +195,12 @@ class VAProfile(models.Model):
         super().clean()
         if self.rate_basis == RateBasis.PROJECT and self.project_rate is None:
             raise ValidationError(
-                {"project_rate": "Per-project bench members need a project rate."}
+                {"project_rate": "Per-project team members need a project rate."}
             )
 
 
 class Capability(models.Model):
-    """A skill attached to exactly one holder: the freelancer or a bench VA.
+    """A skill attached to exactly one holder: the freelancer or a team VA.
 
     ``level`` is self-reported proficiency; ``tasks`` says what the holder actually
     does with the skill — the concrete line proposals show, e.g.
