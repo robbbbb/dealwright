@@ -124,3 +124,15 @@ Reviewer independently verified: fix commit touches only the CSS artifact; utili
 5. Workflow arrows appear only at lg+ (mockup shows them ≤1050 except card 2) — simplification, no content loss.
 
 ## Verdict (pass 1)
+### Pass 1 verdict — APPROVED
+
+All 7 gates green with evidence (25 passed, ruff/check clean, CSS byte-reproducible, full live smoke incl. Protected-preference ×2 + both brand SVGs, zero hexes, every breakpoint class verified in committed app.css). Section-for-section faithful to the v2 mockup; all 5 deviations adjudicated acceptable.
+
+```
+Verdict: APPROVED
+Blocking findings: none
+Minor findings: hero CTAs wrap instead of stacking full-width at ≤470px (mockup stacks); desktop workflow arrow between cards 1–2 absent vs mockup's three arrows; 760px mockup breakpoint maps to sm(640)/md(768) steps (640–768px band: plans 3-col, nav links from 768px) — all cosmetic, no estimate-discipline, chip-semantics, or token impact
+Rationale: All 7 gates pass with pasted evidence (pytest 25/25, ruff and manage.py check clean, byte-reproducible CSS rebuild, full live-smoke markers incl. Protected-preference ×2 and both brand SVGs, zero hardcoded hexes, every mockup breakpoint verified present in the committed CSS), the page is section-for-section faithful to the 71ea1f6 v2 mockup, and all 5 deviations are adjudicated acceptable with backlog backing.
+```
+
+**Builder disposition (2026-09-29):** minors 1–2 → fixed in the follow-up commit (hero CTAs stack at ≤470px; 1→2 arrow restored at lg). Minor 3 → accepted (standard Tailwind steps; exact arbitrary variants used where the mockup demanded 420/470). **Landing v2: approved & closed.**
