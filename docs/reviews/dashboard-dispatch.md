@@ -108,3 +108,15 @@ Rationale: All gates pass with real pasted output; all six pass-4 adjudications 
 **Visual evidence (builder-verified):** desktop `/tmp/dw-who-desktop.png` (sidebar ends at Settings, avatar top-right), mobile drawer `/tmp/dw-who-mobile.png` (who-block + logout present). DOM checks may substitute.
 
 ## Verdict (pass 5)
+### Pass 5 verdict — APPROVED
+
+Feature commit `73cbeb9` matches scope exactly (who-block → `#dw-who` + `md:hidden`; badge removed; app.css correctly not in commit — rebuild was a no-op since `md:hidden` was already compiled). Stretch chain verified intact in source, compiled CSS, and live DOM; no-JS logout reachable at every width (noscript ID+important rules provably defeat the class rules); gates all green.
+
+```
+Verdict: APPROVED
+Blocking findings: None.
+Minor findings: (1) md:hidden on #dw-who-logout form itself is now redundant (parent already md:hidden) — one-token cleanup for a future card, zero behavioral impact. (2) app.css absent from commit — correct, recorded to preempt confusion. (3) Screenshots exist; DOM checks substituted (model limitation). (4) Robb's landing-mockup glyph edit still pending (re-flagged).
+Rationale: All gates pass with real pasted output ... Robb's de-duplication directive is implemented as specified on both breakpoints.
+```
+
+**Builder disposition (2026-09-29):** minor 1 → accepted (future-card cleanup). Minors 2–3 → noted. Minor 4 → with Robb. **Pass 5: approved & closed.**
