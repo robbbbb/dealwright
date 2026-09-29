@@ -96,3 +96,15 @@ Rationale: All gates pass with real pasted output; all six pass-4 adjudications 
 ```
 
 **Builder disposition (2026-09-29):** minor 1 → accepted (future UI card). Minor 2 → accepted. Minor 3 → offered to Robb: committing the mockup glyph flip syncs it with the live page (already shipped) and partially closes the backlog mockup-sync residual. Minor 4 → noted. **Avatar account menu: approved & closed.**
+
+---
+
+# Pass 5 — identity de-duplication (Robb request, 2026-09-29)
+
+**Scope:** sidebar who-block (`#dw-who`) hidden at md+ (avatar menu covers identity+logout on desktop; it remains the mobile drawer's footer); the mobile static avatar badge removed from the greeting row. Noscript extended: `#dw-who` forced visible so no-JS desktop keeps a logout path. **For:** fresh GLM-5.3 reviewer (gates only).
+
+**Gates:** pass-1 set + confirm: who-block has md:hidden + id dw-who; badge div gone; noscript includes #dw-who rule; stretch chain still intact (drawer md:flex-1 → nav md:flex-1, who-block still drawer's last child); logout count == 2 in HTML (drawer form + avatar-menu form); no hex.
+
+**Visual evidence (builder-verified):** desktop `/tmp/dw-who-desktop.png` (sidebar ends at Settings, avatar top-right), mobile drawer `/tmp/dw-who-mobile.png` (who-block + logout present). DOM checks may substitute.
+
+## Verdict (pass 5)
