@@ -150,3 +150,15 @@ Rationale: All 7 gates pass with pasted evidence (pytest 25/25, ruff and manage.
 **Deviation to adjudicate:** outputs grid no longer matches the v2 mockup (mockup: 4-across micro; live: 2×2 legible). Mockup sync recorded as backlog residual — treat live page as canonical for the hero.
 
 ## Verdict (pass 2)
+### Pass 2 verdict — APPROVED
+
+All 7 gates green with pasted evidence. Reviewer substituted same-viewport CDP geometry probes for screenshot viewing (its model cannot render images): outputs confirmed 2×2 at 1440/768px, full-width stack at 390px, min type 9px, 0px chip overlap, all non-hero sections intact.
+
+```
+Verdict: APPROVED
+Blocking findings: none
+Minor findings: (1) reviewer could not render the provided PNGs (model limitation) — visual claims verified instead by same-viewport CDP geometry probes; (2) timestamps/chips sit exactly at the 9px floor of the stated 9–11.5px range — meets spec, borderline on smallest text, note for any future legibility pass
+Rationale: All 7 gates pass with pasted evidence (pytest 25/25, ruff and manage.py check clean, byte-reproducible CSS rebuild with zero diff, full live smoke incl. Protected-preference ×2 and logo 200, zero hardcoded hex, min-[440px]:grid-cols-2 present in template and compiled CSS with no md:grid-cols-4 remaining), runtime measurement confirms Robb's complaint is resolved (2×2 legible grid, 0px overlap) with no regression outside the hero, and the mockup-divergence residual is properly recorded in docs/backlog.md.
+```
+
+**Builder disposition (2026-09-29):** minor 1 → accepted (builder's session performed the visual half; reviewer performed the measurable half — loop closed with both). Minor 2 → accepted; noted for a future legibility pass if Robb wants the timestamps/chips larger. Mockup sync → stays in backlog until Robb touches `landing-mockup.html` next. **Pass 2: approved & closed.**
