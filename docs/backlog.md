@@ -82,7 +82,10 @@ Live call transcription · automated interviews · marketplace payments · publi
 
 ## Card 4 residuals (2026-09-29, approved & closed)
 
-- **`bench:skill_update` has no UI affordance** — endpoint is POST-only and tested, but no template posts to it yet (skill rows show level/tasks read-only + Remove). Add an inline edit form (level/tasks) in a future bench UI pass. Status: open.
+- **`team:skill_update` has no UI affordance** — endpoint is POST-only and tested, but no template posts to it yet (skill rows show level/tasks read-only + Remove). Add an inline edit form (level/tasks) in a future bench UI pass. Status: open.
 - **`docs/mockups/landing-mockup.html` uncommitted working-tree edit** (Robb's glyph change, carried through passes 4–5 of dashboard review and card 4 pass 1–2) — commit or discard before Card 1 starts. Owner: Robb. Status: open (Robb).
 - **Post-deploy migration rule** — `bench.0001` was regenerated twice pre-commit (nothing deployed; dev DB reset via `migrate bench zero`). After first Railway deploy: migrations are append-only, never regenerated. Status: standing rule (noted in design log).
 - **Green chip slot intentionally empty** — proficiency ladder is self-reported; the green "Verified" chip remains reserved for future real verification (design log, Card 4 decisions). Status: by design.
+
+- **Provider "My delivery terms" card (pre-Card 5, design-pass item C):** abstract `EngagementTermsMixin` on ProviderProfile + VAProfile; provider-profile edit UI (delivery_mode toggle, branding_name, persona) which Card 8 needs. Status: open (sequenced before Card 5).
+- **landing.html marketing copy still says "bench"** ("5 bench profiles" / "unlimited bench") while in-app vocabulary is now team. Owner: Robb (marketing wording). Status: open (Robb).
