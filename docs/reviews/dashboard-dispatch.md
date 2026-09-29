@@ -84,3 +84,15 @@ Rationale: Fix commit 7b83759 matches the pass-2 remediation exactly ... [full r
 **Gates:** pass-1 set + adjudicate: generic handler has no business logic; noscript coverage (drawer open, buttons hidden, who-logout forced) leaves no-JS logout reachable at every width; `{% url %}` targets resolve; zero hex; CSS reproducible.
 
 ## Verdict (pass 4)
+### Pass 4 verdict — APPROVED
+
+All gates green; commit matches scope exactly (5 files); all six adjudications verified against live DOM. Generalized handler confirmed pure presentation (open-one-closes-other, aria, Escape/focus, outside-click); no-JS logout reachable at every width; logout count genuinely 2; stretch chain unbroken.
+
+```
+Verdict: APPROVED
+Blocking findings: None.
+Minor findings: (1) Desktop no-JS: the .relative.hidden.md:block avatar wrapper stays in flow as an empty box — cosmetic; noscript collapse = future UI card polish. (2) count("Log out") == 2 assertions are markup-coupled — accepted at smoke tier per precedent. (3) Robb's uncommitted landing-mockup edit (□→✓ glyph) — flagged so it isn't lost. (4) Positive: generalized handler incidentally fixes pass-3 minor 1 (Escape no longer focuses a never-open menu's button).
+Rationale: All gates pass with real pasted output; all six pass-4 adjudications verified against the live-rendered DOM and template source — logout placement per directive on both breakpoints, generalized handler correct, no-JS logout reachable at every width, logout count genuinely 2, zero hardcoded hex, CSS byte-reproducible, stretch chain unbroken.
+```
+
+**Builder disposition (2026-09-29):** minor 1 → accepted (future UI card). Minor 2 → accepted. Minor 3 → offered to Robb: committing the mockup glyph flip syncs it with the live page (already shipped) and partially closes the backlog mockup-sync residual. Minor 4 → noted. **Avatar account menu: approved & closed.**
