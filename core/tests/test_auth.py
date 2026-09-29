@@ -161,6 +161,8 @@ def test_verified_email_required_template(client: Client) -> None:
     assert "Check your inbox" in content
     assert user.email in content
     assert reverse("resend_confirmation") in content
+    # The rendered form posts the user's address in a hidden field (review fix).
+    assert f'name="email" value="{user.email}"' in content
 
 
 @pytest.mark.django_db
@@ -172,10 +174,16 @@ def test_resend_confirmation_sends_and_is_anti_enumeration(client: Client) -> No
     response = client.post(url, {"email": "ghost@example.com"})
     assert response.status_code == 302
     assert not mail.outbox
-    # Known address: same response, mail sent.
-    response = client.post(url, {"email": "rob@example.com"})
+    # Known address, exact rendered-form payload (csrf + hidden email): mail sent.
+    response = client.post(url, {"email": user.email})
     assert response.status_code == 302
     assert len(mail.outbox) == 1
+    # Logged-in fallback: posting the bare rendered form (no email field) still
+    # resolves the address from the session user.
+    client.force_login(user)
+    response = client.post(url, {})
+    assert response.status_code == 302
+    assert len(mail.outbox) == 2
     # GET is not an entry point.
     assert client.get(url).status_code == 302
 

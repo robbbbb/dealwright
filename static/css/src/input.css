@@ -31,6 +31,7 @@
   --color-dw-red-bg: #FBE9E9;
   --color-dw-teal: #0E7490;       /* info (theme.html) */
   --color-dw-teal-bg: #E0F2F7;
+  --color-dw-teal-line: #C7E7F0;  /* info-banner border (auth mockup) */
   --color-dw-amber-line: #F0E2BE; /* warn-banner border (auth mockup) */
 }
 
@@ -73,7 +74,7 @@
   .dw-banner { border-radius: 9px; padding: 9px 12px; font-size: 12px; margin-bottom: 12px; }
   .dw-banner-ok { background: var(--color-dw-50); color: var(--color-dw-800); border: 1px solid var(--color-dw-100); }
   .dw-banner-warn { background: var(--color-dw-amber-bg); color: var(--color-dw-amber); border: 1px solid var(--color-dw-amber-line); }
-  .dw-banner-info { background: var(--color-dw-teal-bg); color: var(--color-dw-teal); border: 1px solid #C7E7F0; }
+  .dw-banner-info { background: var(--color-dw-teal-bg); color: var(--color-dw-teal); border: 1px solid var(--color-dw-teal-line); }
   .dw-or { display: flex; align-items: center; gap: 10px; color: var(--color-dw-muted); font-size: 11px; margin: 13px 0; }
   .dw-or::before, .dw-or::after { content: ""; flex: 1; height: 1px; background: var(--color-dw-line); }
   .dw-btn-google {

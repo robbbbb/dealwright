@@ -21,11 +21,16 @@ def resend_confirmation(request: HttpRequest) -> HttpResponse:
     """Re-send a verification email (auth mockup, frame 3).
 
     The response is identical whether or not the address exists (anti-enumeration,
-    Q13); the actual send is capped per address in the service.
+    Q13); the actual send is capped per address in the service. The rendered form
+    (verified_email_required.html) posts the signed-in user's address in a hidden
+    field; the view falls back to it for authenticated users.
     """
     if request.method != "POST":
         return redirect("account_login")
-    form = ResendConfirmationForm(request.POST)
+    data = request.POST.copy()
+    if not data.get("email") and request.user.is_authenticated:
+        data["email"] = request.user.email
+    form = ResendConfirmationForm(data)
     if form.is_valid():
         services.resend_confirmation_email(request, form.cleaned_data["email"])
         messages.info(

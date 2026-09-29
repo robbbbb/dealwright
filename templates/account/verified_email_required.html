@@ -12,6 +12,7 @@
   </div>
   <form method="post" action="{% url 'resend_confirmation' %}">
     {% csrf_token %}
+    <input type="hidden" name="email" value="{{ request.user.email }}">
     <button type="submit" class="btn-primary">Resend confirmation</button>
   </form>
   <p class="dw-swap"><a href="{% url 'home' %}">← Back to your workspace</a></p>
