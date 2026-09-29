@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "allauth.mfa",  # TOTP + recovery codes; templates per docs/mockups/auth-mockup.html
     # Dealwright
     "core",
+    "bench",  # Card 4: provider profile (solo|team) + VA bench + shared Capability
 ]
 
 MIDDLEWARE = [
