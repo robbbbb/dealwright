@@ -91,3 +91,36 @@ Rationale: Gate 4 now passes byte-exactly (rebuild of scripts/build_css.sh again
 Reviewer independently verified: fix commit touches only the CSS artifact; utilities layer byte-identical (13,266 B both blobs); rebuild against HEAD zero-diff; pytest 4/4 with expected test IDs; ruff and `manage.py check` clean; amber token values and footer estimate disclaimer present in committed artifacts; card↔backlog dispositions consistent.
 
 **Final disposition: APPROVED — merge gate satisfied. Review loop closed 2026-09-29.**
+
+---
+
+# Rebuild — landing v2 (Robb's mockup rewrite, 2026-09-29) — pass 1
+
+**Scope:** commits `71ea1f6` (Robb's v2 mockup — the spec baseline, his own rewrite) and `a75e11c` (landing.html rebuild + brand SVGs to static/brand/ + smoke-test update). **For:** fresh GLM-5.3 reviewer (read-only, run gates). Seed with repo root `/home/robbb/dealwright`.
+
+**Spec baseline:** `docs/mockups/landing-mockup.html` **at `71ea1f6`** (Robb's v2 — NOT the v1 reviewed in passes 1–2 above; v1 sections — old/new comparison, textarea demo, ₱0.52 stat — are intentionally gone). Theme rules: `AGENTS.md` design system + `docs/mockups/theme.html` (chip semantics; tokens only). Robb's directive: "update the landing page… refer in the landing page mockup. make it responsive to all media size."
+
+**Gates:**
+1. `.venv/bin/python -m pytest` — expect **25 passed** (landing test updated for v2 headline + pricing markers)
+2. `.venv/bin/python -m ruff check .` — clean
+3. `.venv/bin/python manage.py check` — clean
+4. `bash scripts/build_css.sh` + `git diff --stat static/css/app.css` — reproducible
+5. Live smoke: `/` → 200 with "From messy call notes", "One input. Four decisions", "Why clients trust", "MOST CHOSEN", "Founding 20", "Fair questions", amber/red chip classes present, "Protected preference excluded" twice (note + chip); `/static/brand/logo-horizontal.svg` + `-light.svg` → 200
+6. Template hygiene: zero hardcoded hex in `templates/landing.html`; tokens only; no business logic
+7. Responsiveness audit: every mockup breakpoint (1050/760/470) has a Tailwind counterpart — nav links hidden <md; hero/pipeline/trust/plans stack; pipeline arrow rotates on mobile; outputs 2-col mobile; workflow arrows at lg+; 44px touch targets
+
+**Checklist:**
+- [ ] Section-for-section fidelity to the v2 mockup (nav, hero+pipeline, value strip, workflow, trust/paper, mid CTA, pricing+Founding-20, FAQ, footer disclaimer)
+- [ ] Chip semantics: amber = estimate only, red = protected-preference exclusion/errors, green = verified/client-ready, teal = source refs
+- [ ] Estimate discipline: ₱8,700 labelled estimate everywhere it appears; pricing figures are Dealwright's own (Q10); footer disclaimer present
+- [ ] No hardcoded hexes; brand SVGs served from static/brand/
+- [ ] Tests smoke-tier through public APIs, updated for v2 markers
+
+**Known deviations to adjudicate:**
+1. "View example proposal" CTA points to signup (no public proposal surface — same as v1 deviation 3).
+2. Privacy/Terms footer links remain `#` (pre-launch, unchanged from v1).
+3. Investment box on the proposal paper stays visible at ≤470px (mockup hides it) — it flows below the summary instead; estimate chip still present. Builder judges hiding the price worse than the mockup's space saving.
+4. "Win one client and it's paid for the year" headline retained (mockup-baseline; already on the pre-launch marketing-copy review line in backlog).
+5. Workflow arrows appear only at lg+ (mockup shows them ≤1050 except card 2) — simplification, no content loss.
+
+## Verdict (pass 1)
