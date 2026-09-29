@@ -20,3 +20,15 @@
 **Deviations from mockup to adjudicate:** counts omitted-vs-badge (no `cnt` pills), no "View all" links, CTAs disabled with tooltips, who-block shows name+email (no plan line), logout added (mockup lacks it), caption-free hero on landing per Robb's revert.
 
 ## Verdict (pass 1)
+### Pass 1 verdict — APPROVED
+
+All 7 gates green with real output; discipline claims independently verified (all five demo figures absent from visible text; placeholders honest; only real routes referenced; chip semantics correct; c7cb388 isolated from dashboard files).
+
+```
+Verdict: APPROVED
+Blocking findings: None.
+Minor findings: (1) smoke test omits "Integrations" from asserted sidebar items — disposition: acceptable, verified present in live render; suggest adding when Card 9 rewrites the test. (2) Demo-count absence asserted only for 62%/₱41k — disposition: acceptable, bare digits are unassertable against utility-class names in raw HTML; reviewer verified visible-text absence of all five demo figures independently.
+Rationale: All 7 gates pass with real output; the diff (9d65123) matches the dispatch description exactly; mockup demo numbers provably do not render; nav/CTA placeholders are honest (Coming soon, aria-disabled, no fabricated routes — both {% url %} targets resolve); zero hardcoded hex in the new templates; core/views.py contains greeting/date presentation only; the committed smoke test genuinely asserts the discipline claims; adjacent commit c7cb388 touches no dashboard files; all six mockup deviations adjudicated as product-discipline-positive. Card 9 remains the wiring card per plan.
+```
+
+**Builder disposition (2026-09-29):** minor 1 → fixed immediately ("Integrations" added to the asserted sidebar items, tests green). Minor 2 → accepted (reviewer's visible-text verification recorded here). **Dashboard shell: approved & closed.** Card 9 wiring deferred per plan.

@@ -39,7 +39,7 @@ def test_signed_in_users_get_dashboard(client: Client) -> None:
     # Sidebar sections per docs/mockups/dashboard-mockup.html
     for nav_item in (
         "Dashboard", "Clients", "Discovery sessions", "ROI estimates",
-        "Proposals", "Service catalog", "My skills", "Settings",
+        "Proposals", "Service catalog", "My skills", "Integrations", "Settings",
     ):
         assert nav_item in content, f"missing sidebar item: {nav_item}"
     # Stat labels render; counts are honest zeros — no mockup demo numbers
