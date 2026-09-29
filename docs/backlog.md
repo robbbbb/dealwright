@@ -73,3 +73,6 @@ Registry of deferred work and open items. Status lines updated as items move. De
 ## Out of scope (per handoff; do not build)
 
 Live call transcription · automated interviews · marketplace payments · public job board · mobile apps · complex AI ranking / autonomous hiring · multi-agent workflows · automatic proposal sending without human review · advanced analytics · billing/subscriptions in MVP.
+
+## Landing v2 pipeline-visual revision (2026-09-29, Robb visual feedback)
+- Robb reviewed the live render (headless-Chromium screenshots at 390/768/1440) and judged the hero pipeline cards too small and cluttered. Cause: the v2 mockup's 4-across print miniature with 8–9px type was implemented literally. Revised in the template: outputs 2×2 at ≥440px (single column below), miniature type raised to 9–11.5px, real card padding, fixed min-heights dropped. **The v2 mockup still shows the old 4-across micro layout** — update it next time it's touched, or treat the live page as canonical for the hero. Status: template fixed; mockup sync pending.
