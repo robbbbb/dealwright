@@ -6,6 +6,7 @@
   <title>{% block title %}Dealwright{% endblock %}</title>
   <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <noscript><style>#dw-drawer{display:flex !important;position:static !important}#dw-menu-btn{display:none !important}</style></noscript>
 </head>
 <body class="bg-dw-canvas text-[14px] leading-relaxed text-dw-body antialiased">
 <div class="flex min-h-screen flex-col md:flex-row">
@@ -20,8 +21,8 @@
       <img src="{% static 'brand/logo-horizontal-light.svg' %}" alt="Dealwright" class="block h-7 w-auto">
     </div>
 
-    <div id="dw-drawer" class="hidden flex-col max-md:absolute max-md:inset-x-0 max-md:top-full max-md:z-30 max-md:border-t max-md:border-white/10 max-md:bg-dw-900 max-md:pb-2 max-md:shadow-xl md:flex md:w-[228px] md:flex-col">
-      <div class="hidden items-center px-[18px] pb-2 pt-5 md:flex">
+    <div id="dw-drawer" class="hidden flex-col max-md:absolute max-md:inset-x-0 max-md:top-full max-md:z-30 max-md:border-t max-md:border-white/10 max-md:bg-dw-900 max-md:pb-2 max-md:shadow-xl md:flex md:flex-1 md:w-[228px] md:flex-col">
+      <div class="hidden items-center px-[18px] pb-2 pt-5 md:flex md:pb-3">
         <img src="{% static 'brand/logo-horizontal-light.svg' %}" alt="Dealwright" class="block h-7 w-auto">
       </div>
       <nav class="flex flex-col gap-1 px-2.5 pb-3 md:flex-1 md:pb-0" aria-label="App navigation">
@@ -59,7 +60,6 @@
 
 </div>
 
-<noscript><style>#dw-drawer{display:flex !important;position:static !important}</style></noscript>
 <script>
   (function () {
     var btn = document.getElementById("dw-menu-btn");
@@ -71,7 +71,7 @@
       btn.setAttribute("aria-expanded", String(open));
     }
     btn.addEventListener("click", function () { setOpen(drawer.classList.contains("hidden")); });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape") setOpen(false); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") { setOpen(false); btn.focus(); } });
     document.addEventListener("click", function (e) {
       if (drawer.classList.contains("hidden")) return;
       if (!drawer.contains(e.target) && !btn.contains(e.target)) setOpen(false);
