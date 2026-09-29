@@ -74,6 +74,7 @@ def member_detail(request: HttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
+@require_POST  # hardening per review: never rely on form validation to reject GET
 def member_engagement(request: HttpRequest, pk: int) -> HttpResponse:
     """Rates & availability card — the Card 5 hard-filter inputs."""
     va = selectors.get_va_for_owner(request.user, pk)

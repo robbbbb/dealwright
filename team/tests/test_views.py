@@ -240,3 +240,13 @@ def test_rate_renders_symbol_from_stored_currency(client, user) -> None:
 
     assert "$40" in content
     assert "₱40" not in content
+
+
+def test_member_engagement_via_get_is_405(client, user, va) -> None:
+    _login(client, user)
+
+    response = client.get(reverse("team:member_engagement", args=[va.pk]))
+
+    assert response.status_code == 405
+    va.refresh_from_db()
+    assert va.rate_per_hour == 250  # untouched
