@@ -82,5 +82,23 @@ fix and re-dispatch for a fresh pass.
 5. Pass-1 minors 2 (card prose) and 5 (Robb's working-tree file) dispositioned above — confirm handling.
 
 ## Verdict (reviewer pass 2)
+### Pass 2 verdict — APPROVED
 
-*(pending — fresh GLM-5.3 reviewer pass)*
+```
+Verdict: APPROVED
+Blocking findings: (none)
+Minor findings:
+  1. docs/mockups/landing-mockup.html still uncommitted in the working tree (Robb's own edit,
+     dispositioned per one-writer-per-file) — must be committed or discarded before Card 1 begins.
+  2. bench:skill_update endpoint has no UI affordance yet (no template posts to it); pre-existing,
+     now POST-only and tested — add a backlog line for the edit-level UI.
+Rationale: All four gates pass with real output (77 passed; ruff/check/migrations clean) and the
+live hermetic smoke proves the blocking defect is fixed: all three mutation endpoints return 405
+on GET with zero state change (including cross-tenant), POST delete still works, the bench
+namespace + sidebar active state fire, USD renders "$40" from the stored currency via a
+formatting-only filter, and the Active chip uses canonical teal tokens with no green-family or
+hardcoded values. Commit de0d82a is tightly scoped to the four fixes. Both carry-over minors are
+recorded with dispositions and do not block.
+```
+
+**Builder disposition (2026-09-29):** minors 1–2 → moved to `docs/backlog.md` ("Card 4 residuals") with owners: minor 1 = Robb (his working-tree file); minor 2 = future UI card. **Card 4: approved & closed.** Card 1 (core domain models) is next.

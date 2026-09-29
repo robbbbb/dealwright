@@ -79,3 +79,10 @@ Live call transcription · automated interviews · marketplace payments · publi
 
 ## Dashboard shell (2026-09-29, Robb-directed between cards)
 - App shell (`templates/app-base.html`) + dashboard (`templates/dashboard.html`) built from `docs/mockups/dashboard-mockup.html` with honest zeros and empty states (no fabricated data; smoke test asserts the mockup's demo figures never leak). Nav items + header CTAs are disabled placeholders until Cards 1/2/7 deliver routes; **Card 9 remains the wiring card** for real counters/lists — deps respected, no model work done. Sidebar plan line and the mockup's solo-mode footer sentence deferred until persona/billing exist. Review: `docs/reviews/dashboard-dispatch.md`.
+
+## Card 4 residuals (2026-09-29, approved & closed)
+
+- **`bench:skill_update` has no UI affordance** — endpoint is POST-only and tested, but no template posts to it yet (skill rows show level/tasks read-only + Remove). Add an inline edit form (level/tasks) in a future bench UI pass. Status: open.
+- **`docs/mockups/landing-mockup.html` uncommitted working-tree edit** (Robb's glyph change, carried through passes 4–5 of dashboard review and card 4 pass 1–2) — commit or discard before Card 1 starts. Owner: Robb. Status: open (Robb).
+- **Post-deploy migration rule** — `bench.0001` was regenerated twice pre-commit (nothing deployed; dev DB reset via `migrate bench zero`). After first Railway deploy: migrations are append-only, never regenerated. Status: standing rule (noted in design log).
+- **Green chip slot intentionally empty** — proficiency ladder is self-reported; the green "Verified" chip remains reserved for future real verification (design log, Card 4 decisions). Status: by design.
