@@ -1,13 +1,23 @@
-"""Testing settings — fast, hermetic; Postgres if DATABASE_URL is set, else in-memory sqlite."""
+"""Testing settings — fast, hermetic; Postgres only when opted in explicitly.
 
-import environ
+`base.py` read_env() copies .env values into os.environ, which would make every
+test run point at the local dev Postgres (and fail when it's down). Capture the
+parent-process DATABASE_URL BEFORE importing base: tests use sqlite unless
+DATABASE_URL was exported before Python started (e.g. `DATABASE_URL=... pytest`).
+"""
 
-from .base import *  # noqa: F403
+import os
+
+_PARENT_DATABASE_URL = os.environ.get("DATABASE_URL")
+
+from .base import *  # noqa: E402,F403
 
 DEBUG = False
 SECRET_KEY = "django-insecure-test-only"
 
-_test_env = environ.Env(DATABASE_URL=(str, "sqlite://"))
+_test_env = environ.Env(  # noqa: F405
+    DATABASE_URL=(str, _PARENT_DATABASE_URL or "sqlite://"),
+)
 DATABASES = {"default": _test_env.db("DATABASE_URL")}
 
 MAILERS = {
