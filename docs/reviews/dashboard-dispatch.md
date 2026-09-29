@@ -46,3 +46,17 @@ Rationale: All 7 gates pass with real output; the diff (9d65123) matches the dis
 **Adjudicate:** inline `<script>` + `<noscript>` fallback in the template (progressive-enhancement precedent: OTP boxes); drawer accessible name/aria pattern.
 
 ## Verdict (pass 2)
+### Pass 2 verdict — CHANGES REQUIRED
+
+Reviewer's pixel-diff of the builder's own desktop screenshots caught what the builder missed: the who-block lost its bottom pinning (drawer lacked `md:flex-1` as the aside's sole flex child), contradicting the card's "desktop unchanged" claim.
+
+```
+Verdict: CHANGES REQUIRED
+Blocking findings: (1) Desktop who-block regression: the card's scope claim "Desktop (md+) rendering unchanged" is false. #dw-drawer ... lacks md:flex-1, so the nav's md:flex-1 no longer stretches and the who-block (name/email/logout) sits directly under "Settings" instead of pinned to the sidebar bottom. ... Fix is small: stretch the drawer at md (e.g. md:flex-1 ...), rebuild CSS, re-verify desktop + mobile screenshots, then fresh review pass.
+Minor findings: (a) Desktop logo row dropped pass 1's md:pb-3 (4px nav offset) — fold into the same fix for exact parity. (b) No-JS: the hamburger button remains visible-but-inert ... consider hiding the button under noscript later. (c) <noscript><style> in <body> is technically non-conforming HTML though universally supported. (d) Escape-close does not return focus to the button — a11y polish. (e) New smoke assertions are markup-string-coupled ... acceptable.
+Rationale: Five of six gates pass ... but adjudication item 3 fails against the pass-2 spec baseline ... CHANGES REQUIRED despite otherwise-green gates.
+```
+
+**Builder disposition (2026-09-29):** blocking 1 → fixed (`md:flex-1` on drawer; desktop screenshot re-verified — who-block bottom-pinned, mobile drawer unchanged). Minors a–d → fixed in the same commit (md:pb-3 parity; hamburger hidden via noscript; noscript moved to `<head>`; Escape returns focus). Minor e → accepted (smoke tier, per card intent).
+
+## Pass 3 — fresh reviewer on the fix
