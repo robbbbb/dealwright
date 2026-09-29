@@ -102,3 +102,15 @@ recorded with dispositions and do not block.
 ```
 
 **Builder disposition (2026-09-29):** minors 1–2 → moved to `docs/backlog.md` ("Card 4 residuals") with owners: minor 1 = Robb (his working-tree file); minor 2 = future UI card. **Card 4: approved & closed.** Card 1 (core domain models) is next.
+
+---
+
+# Addendum — team restructure (Robb-directed, 2026-09-29, after card close)
+
+**Scope:** `9410110` (bench → team rename), `2b7fdfb` (design-log adjudications), `1e37c48` (design item A: slim member forms + Rates & availability card), `546acac` (review hardening). **Reviewed via in-session GLM-5.3 subagent passes (architectural design pass, then implementation pass) — both APPROVED; full transcripts in the builder session log, verdicts summarized here.**
+
+**Architectural design pass — APPROVED.** Adjudications (recorded in `docs/design/design-log.md`, "Card 4 build decisions"): engagement fields stay in `VAProfile` (extraction triggers: per-client rates / rate history / per-proposal overrides); Card 5 must exclude engagement-incomplete members with an explicit reason (TDD anchor `test_incomplete_engagement_member_excluded_with_reason`); solo provider rate = shared abstract `EngagementTermsMixin` on ProviderProfile + VAProfile, small card before Card 5, bundled with provider-profile edit UI; Card 8 delivery source governed by `delivery_mode` (team-mode self-delivery would need a recorded Q9 supersession — not in MVP); delivery-cost math stays in `core/roi/`.
+
+**Item A implementation pass — APPROVED.** Gates: 78→79 passed, ruff/check/migrations clean. Verified: identity-only creation (pinned `full_clean` test), "Rates & availability" card on member detail (own endpoint, cross-tenant 404 proven), roster teal "Rates not set" replacing ₱0 (zero `₱0` occurrences while states coexist), no money math, POST-only mutation guarantees intact.
+
+**Builder disposition:** design minors 1–2 → fixed in `2b7fdfb` (design-log entry, backlog reference). Implementation minor 1 → fixed immediately in `546acac` (`@require_POST` on `member_engagement` + 405 test; suite **79 passed**). Minor 2 (currency picker PHP/USD at widget layer) → accepted, presentation-only per Q3. landing.html "bench" marketing copy → with Robb (backlog). **Team restructure: approved & closed.**
