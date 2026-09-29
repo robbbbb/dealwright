@@ -1,0 +1,17 @@
+{# Social sign-in confirm — allauth socialaccount/login.html #}
+{% extends "auth-base.html" %}
+{% block title %}Sign in via {{ provider.name }} · Dealwright{% endblock %}
+{% block auth_content %}
+  {% if process == "connect" %}
+    <h1 class="dw-h1">Connect {{ provider.name }}</h1>
+    <p class="dw-sub">You're about to connect a {{ provider.name }} account to Dealwright.</p>
+  {% else %}
+    <h1 class="dw-h1">Sign in via {{ provider.name }}</h1>
+    <p class="dw-sub">Confirm to continue with your {{ provider.name }} account.</p>
+  {% endif %}
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn-primary">Continue</button>
+  </form>
+  <p class="dw-swap"><a href="{% url 'account_login' %}">Cancel</a></p>
+{% endblock %}

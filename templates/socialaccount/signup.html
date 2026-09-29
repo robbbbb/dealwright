@@ -1,0 +1,21 @@
+{# Social signup final step — allauth socialaccount/signup.html #}
+{% extends "auth-base.html" %}
+{% block title %}One step left · Dealwright{% endblock %}
+{% block auth_content %}
+  <h1 class="dw-h1">One step left</h1>
+  <p class="dw-sub">Using your {{ account.get_provider.name }} account — confirm your details</p>
+  {{ form.non_field_errors }}
+  <form method="post" action="{% url 'socialaccount_signup' %}">
+    {% csrf_token %}
+    {% if redirect_field_value %}<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">{% endif %}
+    {% for field in form %}
+      <div class="dw-field">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn-primary">Create account</button>
+  </form>
+  <p class="dw-swap"><a href="{% url 'account_login' %}">Use a password instead</a></p>
+{% endblock %}

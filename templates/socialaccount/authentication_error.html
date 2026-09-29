@@ -1,0 +1,10 @@
+{# Third-party login failure — allauth socialaccount/authentication_error.html #}
+{% extends "auth-base.html" %}
+{% block title %}Sign-in failed · Dealwright{% endblock %}
+{% block auth_content %}
+  <h1 class="dw-h1">Sign-in failed</h1>
+  <p class="dw-sub">The social sign-in could not be completed.</p>
+  <div class="dw-banner dw-banner-error">✕&nbsp; An error occurred while signing in with your third-party account. You can try again or use your email and password.</div>
+  <a class="dw-btn-white" href="{% url 'account_login' %}">Try again</a>
+  <p class="dw-swap"><a href="{% url 'account_signup' %}">Create an account</a></p>
+{% endblock %}

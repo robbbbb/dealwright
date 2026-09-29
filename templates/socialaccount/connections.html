@@ -1,0 +1,36 @@
+{# Connected third-party accounts — allauth socialaccount/connections.html #}
+{% extends "auth-base.html" %}
+{% load socialaccount %}
+{% block title %}Connected accounts · Dealwright{% endblock %}
+{% block auth_content %}
+  <h1 class="dw-h1">Connected accounts</h1>
+  <p class="dw-sub">Third-party accounts you can sign in with</p>
+  {% if form.accounts %}
+    <form method="post" action="{% url 'socialaccount_connections' %}">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <ul class="mb-4 list-none">
+        {% for acc in form.fields.account.choices %}
+          <li class="msg flex items-center gap-2">
+            <input type="checkbox" name="account" value="{{ acc.0.instance.pk }}" id="account_{{ acc.0.instance.pk }}">
+            <label for="account_{{ acc.0.instance.pk }}" class="mb-0 text-[13px] font-normal text-dw-body">
+              {{ acc.0.instance.get_provider_account }} <span class="text-[11px] font-semibold text-dw-muted">· {{ acc.0.instance.provider }}</span>
+            </label>
+          </li>
+        {% endfor %}
+      </ul>
+      <button type="submit" class="dw-btn-white">Remove selected</button>
+    </form>
+  {% else %}
+    <div class="dw-banner dw-banner-info">ℹ&nbsp; No third-party accounts connected yet.</div>
+  {% endif %}
+  {% get_providers as socialaccount_providers %}
+  {% if socialaccount_providers %}
+    <div class="dw-or">or</div>
+    {% for provider in socialaccount_providers %}
+      {% provider_login_url provider process="connect" as connect_url %}
+      <a class="dw-btn-white mb-2" href="{{ connect_url }}">Connect {{ provider.name }}</a>
+    {% endfor %}
+  {% endif %}
+  <p class="dw-swap"><a href="{% url 'account_email' %}">Email settings</a> · <a href="{% url 'home' %}">Back to your workspace</a></p>
+{% endblock %}

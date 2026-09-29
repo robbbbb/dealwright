@@ -51,8 +51,16 @@ def test_login_page_renders(client: Client) -> None:
 
 @pytest.mark.django_db
 def test_login_google_button_hidden_without_credentials(client: Client) -> None:
-    content = client.get(reverse("account_login")).content.decode()
-    assert "Continue with Google" not in content
+    """No Google button when the provider is unconfigured — hermetic vs .env."""
+    from allauth.socialaccount.providers import registry
+
+    saved = registry.provider_map.pop("google", None)
+    try:
+        content = client.get(reverse("account_login")).content.decode()
+        assert "Continue with Google" not in content
+    finally:
+        if saved is not None:
+            registry.provider_map["google"] = saved
 
 
 @pytest.mark.django_db
@@ -68,7 +76,14 @@ def test_login_rejects_bad_password(client: Client) -> None:
 
 @pytest.mark.django_db
 def test_google_available_false_without_provider() -> None:
-    assert google_available() is False
+    from allauth.socialaccount.providers import registry
+
+    saved = registry.provider_map.pop("google", None)
+    try:
+        assert google_available() is False
+    finally:
+        if saved is not None:
+            registry.provider_map["google"] = saved
 
 
 # ---------------------------------------------------------------- frame 2: signup
@@ -236,6 +251,21 @@ def test_password_reset_invalid_key(client: Client) -> None:
 
 
 # ---------------------------------------------------------------- frame 6: MFA authenticate
+
+
+@pytest.mark.django_db
+def test_social_cancelled_and_error_pages_on_brand(client: Client) -> None:
+    """Google-flow error surfaces share the auth theme (user-requested, 2026-09-29)."""
+    for url_name, marker, status in [
+        ("socialaccount_login_cancelled", "Login cancelled", 200),
+        ("socialaccount_login_error", "Sign-in failed", 401),  # allauth signals auth failure
+    ]:
+        response = client.get(reverse(url_name))
+        assert response.status_code == status
+        content = response.content.decode()
+        assert marker in content
+        assert "Dealwright" in content  # themed brand header, not allauth default
+        assert reverse("account_login") in content
 
 
 @pytest.mark.django_db

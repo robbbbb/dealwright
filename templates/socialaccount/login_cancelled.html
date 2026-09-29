@@ -1,0 +1,9 @@
+{# Google / OAuth login cancelled — allauth socialaccount/login_cancelled.html #}
+{% extends "auth-base.html" %}
+{% block title %}Login cancelled · Dealwright{% endblock %}
+{% block auth_content %}
+  <h1 class="dw-h1">Login cancelled</h1>
+  <p class="dw-sub">No worries — nothing was linked.</p>
+  <div class="dw-banner dw-banner-info">ℹ&nbsp; You cancelled the social sign-in before finishing. Your account is untouched.</div>
+  <a class="dw-btn-white" href="{% url 'account_login' %}">Back to log in</a>
+{% endblock %}

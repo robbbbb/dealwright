@@ -75,6 +75,7 @@
   .dw-banner-ok { background: var(--color-dw-50); color: var(--color-dw-800); border: 1px solid var(--color-dw-100); }
   .dw-banner-warn { background: var(--color-dw-amber-bg); color: var(--color-dw-amber); border: 1px solid var(--color-dw-amber-line); }
   .dw-banner-info { background: var(--color-dw-teal-bg); color: var(--color-dw-teal); border: 1px solid var(--color-dw-teal-line); }
+  .dw-banner-error { background: var(--color-dw-red-bg); color: var(--color-dw-red); border: 1px solid var(--color-dw-line); }
   .dw-or { display: flex; align-items: center; gap: 10px; color: var(--color-dw-muted); font-size: 11px; margin: 13px 0; }
   .dw-or::before, .dw-or::after { content: ""; flex: 1; height: 1px; background: var(--color-dw-line); }
   .dw-btn-google {
