@@ -11,7 +11,7 @@
       {{ form.non_field_errors }}
       <ul class="mb-4 list-none">
         {% for acc in form.fields.account.choices %}
-          <li class="msg flex items-center gap-2">
+          <li class="flex items-center gap-2 rounded-[9px] border border-dw-line px-3 py-2">
             <input type="checkbox" name="account" value="{{ acc.0.instance.pk }}" id="account_{{ acc.0.instance.pk }}">
             <label for="account_{{ acc.0.instance.pk }}" class="mb-0 text-[13px] font-normal text-dw-body">
               {{ acc.0.instance.get_provider_account }} <span class="text-[11px] font-semibold text-dw-muted">· {{ acc.0.instance.provider }}</span>
