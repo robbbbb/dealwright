@@ -32,3 +32,15 @@ Rationale: The card delivers exactly what mvp-build-plan Card 2 specifies — mo
 ```
 
 **Builder disposition (2026-09-29):** minors 1–2, 5–6 → fixed in the follow-up commit (0001 regenerated, no migration drift; both draft-marked rows flagged — 8 total per updated design-log entry; clean-before-save seeding; dead admin code removed). Minors 3–4 → backlog lines recorded (Card 3 units; Q3 i18n). **Card 2: approved & closed.**
+
+---
+
+# Pass 2 — ROI levers removed from Service (Robb decision, 2026-09-30)
+
+**Scope:** the refactor commit removing reduction/hours_saved/revenue_effect/qualitative_value fields, the RevenueEffect enum, the quantifier rule, and the 10 lever tests; migration regenerated pre-deploy; seed data kept verbatim minus lever keys. Design basis: design-log "Robb decision: catalog is price-only" + backlog Card 3 planning item. **For:** fresh GLM-5.3 reviewer (gates only).
+
+**Gates:** pytest (expect **101 passed** — 111 minus 10 removed lever tests), ruff, manage.py check, `makemigrations --check --dry-run` clean, seed still 25 services / 8 categories with every row passing full_clean, no ROI field names anywhere in catalog models/migration/seed (grep: reduction|hours_saved|revenue_effect|qualitative), admin still renders, pricing rule (custom_quote or ranges) and pair validation intact.
+
+**Adjudicate:** removal is complete and coherent (no dead references); the Card 3 dependency break is properly recorded (design-log + backlog + research doc §C supersession note); test count delta is exactly the removed lever tests.
+
+## Verdict (pass 2)
