@@ -56,3 +56,13 @@ Rationale: Pass 2 supersedes pass 1's quantifier-rule approval per Robb's record
 ```
 
 **Builder disposition (2026-09-30):** minor 1 → backlog line added (amend build-plan text at Card 3 planning). Minor 2 → Robb's edit, untouched. **Pass 2: approved & closed.**
+
+---
+
+# Pass 3 — retainer vocabulary (Robb decision, 2026-09-30)
+
+**Scope:** label-only change — verbose names "monthly price — low/high" → "retainer — low/high (monthly)", `price_summary()` → "retainer ₱…/mo", draft rule 2 annotated, design-log vocabulary entry (precedent: bench→team). Internal field names unchanged by design; migration regenerated pre-deploy. **For:** fresh GLM-5.3 reviewer (gates only).
+
+**Gates:** pytest (101 passed), ruff, manage.py check, no migration drift, seed 25/8 re-loads and validates, grep confirms no stray "monthly price" labels in catalog/ (code names excluded by design), price_summary renders retainer format.
+
+## Verdict (pass 3)
