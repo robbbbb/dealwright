@@ -198,3 +198,15 @@ Rationale: Pass 8 delivers exactly the dispatch scope — owner-scoped Service s
 ```
 
 **Builder disposition (2026-09-30):** minor 1 → applied (dead pk-based body deleted). Minor 2 → applied (TestSlugSemantics: freeze-on-rename, `-2` suffix, cross-owner same slug, wrong-category 404 — 4 tests). Minor 3 → trail note only (committed migration, behavior identical). Minor 4 → accepted (precedent). Minor 5 → Robb's, untouched. **Pass 8: approved & closed.** 136 passed after minors.
+
+---
+
+# Pass 9 — team slug URLs (Robb: "why did you not update the team?", 2026-09-30)
+
+**Scope:** the feature commit after 801605c. team/{models,selectors,urls,views}.py + templates/team/: VAProfile.slug (unique per owner) + Capability.slug (unique per owner across holders), frozen at creation; slugged routes; data-preserving migrations team/0004+0005; backlog item resolved; design-log entry. **For:** fresh GLM-5.3 reviewer (gates only).
+
+**Gates:** pytest **139 passed** (3 new slug tests), ruff, check, no drift; dev Postgres migrated (0 null slugs).
+
+**Adjudicate:** same rules as pass 8 (frozen slugs, owner-scoped 404s, canonical lookups); orphan-capability behavior preserved (DB check constraint, not slug generation); no int patterns remain anywhere in the app (team + catalog).
+
+## Verdict (pass 9)
