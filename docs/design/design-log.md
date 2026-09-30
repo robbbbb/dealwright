@@ -168,3 +168,6 @@ Full MVP card breakdown: `mvp-build-plan.md` — 12 cards (0–11), one per fres
 
 ## Vocabulary: catalog "monthly" = retainer (Robb, 2026-09-30)
 - The Service monthly price fields are labelled **retainer** (VA industry vocabulary, matches how providers sell reserved monthly capacity; precedent: bench→team rename). Internal code names stay `monthly_low/high` (stable, no churn); verbose names, admin labels, and `price_summary()` now say retainer (e.g. "setup ₱4,000–8,000 · retainer ₱1,500–3,000/mo"). Draft rule 2 annotated.
+
+## Q3 refinement: per-service currency on the catalog (Robb, 2026-09-30)
+- Robb serves clients worldwide → `Service.currency` (ISO 4217, default PHP, validated 3 uppercase letters) declares each row's currency. **Still no FX ever**: prices are per-currency declarations (one row per market when charging several currencies), never converted; `price_summary()` maps common codes to symbols (₱ $ € £ A$ C$ S$) with an honest code fallback. Mirrors `team.VAProfile.currency`. **Card 5 rule:** matching compares same-currency only (like rate_basis) — cross-currency comparisons surface as a flagged mismatch, never a converted number.

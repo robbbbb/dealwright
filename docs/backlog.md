@@ -92,7 +92,7 @@ Live call transcription · automated interviews · marketplace payments · publi
 
 ## Card 2 (catalog) review minors (2026-09-29)
 - Response-time lever (draft's hrs→minutes, e.g. speed-to-lead) has no catalog field; currently quantified via conversion uplift only. Card 3 must refine time-lever units when the engine consumes them.
-- `Service.price_summary()` hardcodes ₱ in display — fine for PH launch; derive from account currency when Q3 internationalization lands.
+- ~~`Service.price_summary()` hardcodes ₱~~ **Resolved 2026-09-30:** per-service `currency` field (Q3 no-FX declarations) + symbol map with code fallback.
 
 ## Card 3 planning (from Robb's price-only catalog decision, 2026-09-30)
 - ROI lever source must be decided before Card 3 starts: session data (WorkflowActivity) and/or a versioned benchmarks table (pricing-benefit-research.md §C). The mvp-build-plan's "Card 3 consumes Card 2 reduction ranges" is superseded (design-log 2026-09-30). Quantifier rule + its anchor test were removed with the fields.

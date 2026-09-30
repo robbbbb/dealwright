@@ -8,7 +8,7 @@ session data and/or a versioned benchmarks table, not from these rows.
 Design refs:
 - service-catalog-draft.md: two-part pricing, required VA skills feed
   matching, claims discipline (ranges not points), delivery estimate.
-- design-log Q8 (8 categories), Q3 (currency passthrough — no FX).
+- design-log Q8 (8 categories), Q3 (no FX — per-row currency declarations, 2026-09-30).
 - team app (Card 4): RequiredSkill reuses the team SkillLevel ladder so Card 5
   matches required levels against Capability levels on one scale.
 
@@ -20,11 +20,19 @@ Protected personal characteristics do not exist in this schema by design.
 
 from __future__ import annotations
 
+import re
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
 from team.models import SkillLevel
+
+_CURRENCY_RE = re.compile(r"[A-Z]{3}")
+_CURRENCY_SYMBOLS = {
+    "PHP": "₱", "USD": "$", "EUR": "€", "GBP": "£",
+    "AUD": "A$", "CAD": "C$", "SGD": "S$",
+}
 
 
 class Service(models.Model):
@@ -50,7 +58,16 @@ class Service(models.Model):
         help_text="Problems-solved tags, e.g. ['leads-lost', 'slow-response'].",
     )
 
-    # --- Pricing: setup + monthly retainer (ranges, never points; Q3: account currency) ---
+    # --- Pricing: setup + monthly retainer (ranges, never points; Q3: no FX) ---
+    currency = models.CharField(
+        "currency",
+        max_length=3,
+        default="PHP",
+        help_text=(
+            "ISO 4217 code. Prices are declared per currency and never converted (Q3) —"
+            " create one row per market if you charge in several currencies."
+        ),
+    )
     setup_low = models.DecimalField(
         "setup price — low", max_digits=10, decimal_places=2, null=True, blank=True
     )
@@ -128,6 +145,9 @@ class Service(models.Model):
         if not tags_ok:
             errors["problem_tags"] = ["Problem tags must be a list of strings."]
 
+        if not _CURRENCY_RE.fullmatch(self.currency or ""):
+            errors["currency"] = ["Use a 3-letter ISO 4217 code, e.g. PHP, USD, EUR."]
+
         if errors:
             raise ValidationError(errors)
 
@@ -135,13 +155,18 @@ class Service(models.Model):
     def has_quantified_lever(self) -> bool:
         return any(getattr(self, low_attr) is not None for _, low_attr, _ in self._RANGES[:3])
 
+    def currency_symbol(self) -> str:
+        """Display symbol; unknown codes fall back to the code itself (no invented glyphs)."""
+        return _CURRENCY_SYMBOLS.get(self.currency, f"{self.currency} ")
+
     def price_summary(self) -> str:
         """Range-not-points display for admin/lists; estimates always."""
         parts: list[str] = []
+        sym = self.currency_symbol()
         if self.setup_low is not None:
-            parts.append(f"setup ₱{self.setup_low:,.0f}–{self.setup_high:,.0f}")
+            parts.append(f"setup {sym}{self.setup_low:,.0f}–{self.setup_high:,.0f}")
         if self.monthly_low is not None:
-            parts.append(f"retainer ₱{self.monthly_low:,.0f}–{self.monthly_high:,.0f}/mo")
+            parts.append(f"retainer {sym}{self.monthly_low:,.0f}–{self.monthly_high:,.0f}/mo")
         return " · ".join(parts) if parts else "Custom quote"
 
 

@@ -75,6 +75,28 @@ class TestPricing:
         ).full_clean()
 
 
+class TestCurrency:
+    """Q3 no-FX: prices are declared per currency, never converted."""
+
+    def test_default_currency_is_php(self, db) -> None:
+        service = make_service(make_user())
+        assert service.currency == "PHP"
+
+    def test_usd_price_summary_uses_dollar_symbol(self, db) -> None:
+        service = make_service(make_user(), currency="USD")
+        assert service.price_summary() == "setup $8,000–15,000 · retainer $2,000–4,000/mo"
+
+    def test_unknown_currency_falls_back_to_code(self, db) -> None:
+        service = make_service(make_user(), currency="JPY")
+        assert service.price_summary().startswith("setup JPY ")
+
+    def test_invalid_currency_rejected(self, db) -> None:
+        with pytest.raises(ValidationError):
+            make_service(make_user("cu1"), currency="usd")
+        with pytest.raises(ValidationError):
+            make_service(make_user("cu2"), currency="DOLLARS")
+
+
 class TestTagsAndTenancy:
     def test_problem_tags_must_be_strings(self, db) -> None:
         owner = User.objects.create_user(username="pro")
