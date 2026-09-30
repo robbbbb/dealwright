@@ -14,13 +14,11 @@ def list_services(owner: Any) -> QuerySet[Service]:
     return Service.objects.filter(owner=owner).prefetch_related("required_skills__skill")
 
 
-def get_service_for_owner(owner: Any, service_id: int) -> Service | None:
-    """Ownership-checked service lookup — None means not found for this owner."""
-    return Service.objects.filter(owner=owner, pk=service_id).first()
+def get_service_for_owner(owner: Any, slug: str) -> Service | None:
+    """Ownership-checked service lookup by URL slug — None means not found."""
+    return Service.objects.filter(owner=owner, slug=slug).first()
 
 
-def get_required_skill_for_owner(owner: Any, skill_id: int) -> RequiredSkill | None:
-    """A required skill is addressable only through its service's owner (tenancy)."""
-    return RequiredSkill.objects.select_related("service").filter(
-        service__owner=owner, pk=skill_id
-    ).first()
+def get_required_skill_for_service(service: Service, slug: str) -> RequiredSkill | None:
+    """Tenancy is inherited through the service — slug lookup within it only."""
+    return RequiredSkill.objects.filter(service=service, slug=slug).first()

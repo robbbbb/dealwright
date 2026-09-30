@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
+from django.utils.text import slugify
 from django.views.decorators.http import require_POST
 
 from . import selectors, services
@@ -49,24 +50,62 @@ def service_create(request: HttpRequest) -> HttpResponse:
             fields = {k: v for k, v in form.cleaned_data.items() if k != "tags_text"}
             service = services.create_service(owner=request.user, **fields)
             messages.success(request, f"{service.name} added to your catalog.")
-            return redirect("catalog:service_edit", pk=service.pk)
+            return redirect(
+                "catalog:service_edit",
+                category=slugify(service.category),
+                service=service.slug,
+            )
     else:
         form = ServiceForm()
     return render(request, "catalog/service_form.html", {"form": form, "is_create": True})
 
 
-@login_required
-def service_edit(request: HttpRequest, pk: int) -> HttpResponse:
-    service = selectors.get_service_for_owner(request.user, pk)
-    if service is None:
+def _canonical_service(request: HttpRequest, category: str, service_slug: str):
+    """Slug lookup + tenancy + canonical category — anything else is a 404."""
+    service = selectors.get_service_for_owner(request.user, service_slug)
+    if service is None or slugify(service.category) != category:
         raise Http404("No such service.")
+    return service
+
+
+@login_required
+def service_edit(request: HttpRequest, category: str, service: str) -> HttpResponse:
+    svc = _canonical_service(request, category, service)
+    if request.method == "POST":
+        form = ServiceForm(request.POST, instance=svc)
+        if form.is_valid():
+            fields = {k: v for k, v in form.cleaned_data.items() if k != "tags_text"}
+            services.update_service(service=svc, **fields)
+            messages.success(request, "Service updated.")
+            return redirect(
+                "catalog:service_edit",
+                category=slugify(svc.category),
+                service=svc.slug,
+            )
+    else:
+        form = ServiceForm(instance=svc)
+    return render(
+        request,
+        "catalog/service_form.html",
+        {
+            "form": form,
+            "is_create": False,
+            "service": svc,
+            "required_skills": svc.required_skills.select_related("skill"),
+            "skill_form": RequiredSkillForm(request.user),
+        },
+    )
     if request.method == "POST":
         form = ServiceForm(request.POST, instance=service)
         if form.is_valid():
             fields = {k: v for k, v in form.cleaned_data.items() if k != "tags_text"}
             services.update_service(service=service, **fields)
             messages.success(request, "Service updated.")
-            return redirect("catalog:service_edit", pk=service.pk)
+            return redirect(
+                "catalog:service_edit",
+                category=slugify(service.category),
+                service=service.slug,
+            )
     else:
         form = ServiceForm(instance=service)
     return render(
@@ -84,41 +123,45 @@ def service_edit(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 @require_POST
-def service_delete(request: HttpRequest, pk: int) -> HttpResponse:
-    service = selectors.get_service_for_owner(request.user, pk)
-    if service is None:
-        raise Http404("No such service.")
-    services.delete_service(service=service)
-    messages.success(request, f"{service.name} removed from your catalog.")
+def service_delete(request: HttpRequest, category: str, service: str) -> HttpResponse:
+    svc = _canonical_service(request, category, service)
+    services.delete_service(service=svc)
+    messages.success(request, f"{svc.name} removed from your catalog.")
     return redirect("catalog:service_list")
 
 
 @login_required
 @require_POST
-def skill_add(request: HttpRequest, pk: int) -> HttpResponse:
-    service = selectors.get_service_for_owner(request.user, pk)
-    if service is None:
-        raise Http404("No such service.")
+def skill_add(request: HttpRequest, category: str, service: str) -> HttpResponse:
+    svc = _canonical_service(request, category, service)
     form = RequiredSkillForm(request.user, request.POST)
     if form.is_valid():
         services.add_required_skill(
-            service=service,
+            service=svc,
             skill=form.cleaned_data["skill"],
             min_level=form.cleaned_data["min_level"],
         )
         messages.success(request, "Required skill added.")
     else:
         messages.error(request, "Please add a skill name and level.")
-    return redirect("catalog:service_edit", pk=service.pk)
+    return _redirect_to_service(svc)
+
+
+def _redirect_to_service(svc) -> HttpResponse:  # type: ignore[no-untyped-def]
+    return redirect(
+        "catalog:service_edit", category=slugify(svc.category), service=svc.slug
+    )
 
 
 @login_required
 @require_POST
-def skill_delete(request: HttpRequest, skill_pk: int) -> HttpResponse:
-    required = selectors.get_required_skill_for_owner(request.user, skill_pk)
+def skill_delete(
+    request: HttpRequest, category: str, service: str, skill: str
+) -> HttpResponse:
+    svc = _canonical_service(request, category, service)
+    required = selectors.get_required_skill_for_service(svc, skill)
     if required is None:
         raise Http404("No such required skill.")
-    service_pk = required.service_id
     services.delete_required_skill(required=required)
     messages.success(request, "Required skill removed.")
-    return redirect("catalog:service_edit", pk=service_pk)
+    return _redirect_to_service(svc)

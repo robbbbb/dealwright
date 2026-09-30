@@ -182,3 +182,9 @@ Full MVP card breakdown: `mvp-build-plan.md` — 12 cards (0–11), one per fres
 ## seed_skills — starter registry vocabulary (2026-09-30)
 
 - `seed_skills <username>` mirrors the `seed_catalog` pattern: data in `team/seed_data.DEFAULT_SKILLS`, write path in `services.seed_default_skills` (get_or_create per name — idempotent, edit-safe). **The vocabulary is derived, not duplicated**: the sorted union of every skill the default catalog requires — one source of truth (catalog.seed_data), nothing invented. Test asserts seed_skills + seed_catalog share registry rows without duplicates (both seeds converge on the same vocabulary).
+
+## Slug URLs — sequential pks stop being addressable (Robb decision, 2026-09-30)
+
+- Catalog addressable routes are now slug-based: `/catalog/<category-slug>/<service-slug>/` (edit, delete, skills add/delete at `.../skills/<skill-slug>/delete/`). Robb flagged predictable int URLs as an enumeration surface; slugs (his pick over UUIDs) keep URLs readable while removing the counter.
+- Slugs are **frozen at creation** (`save()` generates when blank; renames never break links), unique per owner (services) / per service (required skills) with `-2` suffixes. The category slug in the path is validated against the record — mismatch is a 404, so URLs stay canonical. UUIDs were considered and set aside: they beat guessing but read badly; tenancy 404s (reviewer-probed every pass) remain the hard guard, slugs are defense in depth + readability.
+- Data-preserving migration (0004 backfill + 0005 NOT NULL); team-app routes get the same treatment later (backlog).

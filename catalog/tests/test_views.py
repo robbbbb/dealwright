@@ -10,6 +10,16 @@ from catalog import services
 from catalog.tests.conftest import VALID_SERVICE, make_user
 from team.models import Skill
 
+
+def _url(name: str, service, skill: str | None = None) -> str:
+    """Reverse a service-scoped route with canonical slugs."""
+    from django.utils.text import slugify
+
+    kwargs = {"category": slugify(service.category), "service": service.slug}
+    if skill is not None:
+        kwargs["skill"] = skill
+    return reverse(f"catalog:{name}", kwargs=kwargs)
+
 pytestmark = pytest.mark.django_db
 
 
@@ -108,7 +118,7 @@ class TestServiceEdit:
         pro = _client_for(client)
         service = services.create_service(owner=pro, **VALID_SERVICE)
         response = client.post(
-            reverse("catalog:service_edit", kwargs={"pk": service.pk}),
+            _url("service_edit", service),
             _service_data(name="Renamed"),
         )
         assert response.status_code == 302
@@ -120,14 +130,14 @@ class TestServiceEdit:
         other = make_user("other")
         service = services.create_service(owner=other, **VALID_SERVICE)
         assert (
-            client.get(reverse("catalog:service_edit", kwargs={"pk": service.pk})).status_code
+            client.get(_url("service_edit", service)).status_code
             == 404
         )
 
     def test_edit_page_lists_required_skills_and_add_form(self, client) -> None:
         pro = _client_for(client)
         service = services.create_service(owner=pro, **VALID_SERVICE)
-        response = client.get(reverse("catalog:service_edit", kwargs={"pk": service.pk}))
+        response = client.get(_url("service_edit", service))
         assert "Required skills" in response.content.decode()
 
 
@@ -135,15 +145,14 @@ class TestServiceDelete:
     def test_post_deletes_own(self, client) -> None:
         pro = _client_for(client)
         service = services.create_service(owner=pro, **VALID_SERVICE)
-        url = reverse("catalog:service_delete", kwargs={"pk": service.pk})
+        url = _url("service_delete", service)
         assert client.post(url).status_code == 302
         assert pro.services.count() == 0
 
     def test_get_rejected(self, client) -> None:
         pro = _client_for(client)
         service = services.create_service(owner=pro, **VALID_SERVICE)
-        assert client.get(reverse("catalog:service_delete",
-                                  kwargs={"pk": service.pk})).status_code == 405
+        assert client.get(_url("service_delete", service)).status_code == 405
 
 
 class TestRequiredSkills:
@@ -152,13 +161,13 @@ class TestRequiredSkills:
         service = services.create_service(owner=pro, **VALID_SERVICE)
         skill = Skill.objects.create(owner=pro, name="CRM management")
         client.post(
-            reverse("catalog:skill_add", kwargs={"pk": service.pk}),
+            _url("skill_add", service),
             {"skill": skill.pk, "min_level": "intermediate"},
         )
         assert service.required_skills.get().skill == skill
-        skill_pk = service.required_skills.get().pk
+        skill_slug = service.required_skills.get().slug
         assert (
-            client.post(reverse("catalog:skill_delete", kwargs={"skill_pk": skill_pk})).status_code
+            client.post(_url("skill_delete", service, skill_slug)).status_code
             == 302
         )
         assert service.required_skills.count() == 0
@@ -166,8 +175,7 @@ class TestRequiredSkills:
     def test_skill_add_get_rejected(self, client) -> None:
         pro = _client_for(client)
         service = services.create_service(owner=pro, **VALID_SERVICE)
-        assert client.get(reverse("catalog:skill_add",
-                                  kwargs={"pk": service.pk})).status_code == 405
+        assert client.get(_url("skill_add", service)).status_code == 405
 
     def test_cannot_touch_other_users_skill(self, client) -> None:
         _client_for(client, "mine")
@@ -175,9 +183,9 @@ class TestRequiredSkills:
         service = services.create_service(owner=other, **VALID_SERVICE)
         skill = Skill.objects.create(owner=other, name="Copywriting")
         services.add_required_skill(service=service, skill=skill, min_level="advanced")
-        skill_pk = service.required_skills.get().pk
+        skill_slug = service.required_skills.get().slug
         assert (
-            client.post(reverse("catalog:skill_delete", kwargs={"skill_pk": skill_pk})).status_code
+            client.post(_url("skill_delete", service, skill_slug)).status_code
             == 404
         )
 

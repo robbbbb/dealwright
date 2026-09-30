@@ -33,7 +33,7 @@
       <li class="flex items-center gap-3 border-b border-dw-line px-5 py-2.5 last:border-b-0 sm:px-6">
         <span class="font-bold text-dw-ink">{{ rs.skill }}</span>
         <span class="rounded-full bg-dw-100 px-2 py-px text-[10px] font-bold text-dw-800">≥ {{ rs.get_min_level_display }}</span>
-        <form method="post" action="{% url 'catalog:skill_delete' rs.pk %}" class="ml-auto">
+        <form method="post" action="{% url 'catalog:skill_delete' service.category|slugify service.slug rs.slug %}" class="ml-auto">
           {% csrf_token %}
           <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[11.5px] font-bold text-dw-red underline hover:opacity-70">Remove</button>
         </form>
@@ -42,7 +42,7 @@
     </ul>
     {% endif %}
 
-    <form method="post" action="{% url 'catalog:skill_add' service.pk %}" class="flex flex-col gap-2.5 px-5 py-4 sm:flex-row sm:items-center sm:px-6">
+    <form method="post" action="{% url 'catalog:skill_add' service.category|slugify service.slug %}" class="flex flex-col gap-2.5 px-5 py-4 sm:flex-row sm:items-center sm:px-6">
       {% csrf_token %}
       {{ skill_form.skill.label_tag }}{{ skill_form.skill }}
       {{ skill_form.min_level.label_tag }}{{ skill_form.min_level }}
@@ -51,7 +51,7 @@
   </section>
 
   <div class="mt-5 flex justify-end">
-    <form method="post" action="{% url 'catalog:service_delete' service.pk %}">
+    <form method="post" action="{% url 'catalog:service_delete' service.category|slugify service.slug %}">
       {% csrf_token %}
       <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[12px] font-bold text-dw-red underline hover:opacity-70">Remove this service from my catalog</button>
     </form>

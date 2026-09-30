@@ -25,6 +25,7 @@ import re
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.text import slugify
 
 from team.models import SkillLevel
 
@@ -80,6 +81,12 @@ class Service(models.Model):
     monthly_high = models.DecimalField(
         "retainer — high (monthly)", max_digits=10, decimal_places=2, null=True, blank=True
     )
+    slug = models.SlugField(
+        "slug",
+        max_length=140,
+        blank=True,  # generated once at creation; renames never break links
+        help_text="URL name — set at creation from the service name, unique per owner.",
+    )
     custom_quote = models.BooleanField(
         "custom quote",
         default=False,
@@ -103,6 +110,9 @@ class Service(models.Model):
             models.UniqueConstraint(
                 fields=["owner", "category", "name"], name="dw_service_unique_per_owner"
             ),
+            models.UniqueConstraint(
+                fields=["owner", "slug"], name="dw_service_slug_unique_per_owner"
+            ),
             models.CheckConstraint(
                 condition=models.Q(setup_low__isnull=True) | models.Q(setup_low__gte=0),
                 name="dw_service_setup_low_non_negative",
@@ -121,6 +131,22 @@ class Service(models.Model):
         ("retainer", "monthly_low", "monthly_high"),
         ("delivery days", "delivery_days_min", "delivery_days_max"),
     )
+
+    def save(self, *args: object, **kwargs: object) -> None:
+        if not self.slug:
+            self.slug = self._unique_slug(slugify(self.name) or "service")
+        super().save(*args, **kwargs)
+
+    def _unique_slug(self, base: str) -> str:
+        candidate, counter = base, 1
+        while (
+            Service.objects.filter(owner=self.owner, slug=candidate)
+            .exclude(pk=self.pk)
+            .exists()
+        ):
+            counter += 1
+            candidate = f"{base}-{counter}"
+        return candidate
 
     def clean(self) -> None:
         """Shape integrity — services and admin call full_clean before save."""
@@ -192,6 +218,12 @@ class RequiredSkill(models.Model):
         default=SkillLevel.BEGINNER,
         help_text="Draft's 'Verified only' maps to Advanced on the proficiency ladder.",
     )
+    slug = models.SlugField(
+        "slug",
+        max_length=140,
+        blank=True,  # generated once at creation from the skill name
+        help_text="URL name — set at creation from the skill name, unique per service.",
+    )
 
     class Meta:
         verbose_name = "required skill"
@@ -201,10 +233,27 @@ class RequiredSkill(models.Model):
             models.UniqueConstraint(
                 fields=["service", "skill"], name="dw_reqskill_unique_per_service"
             ),
+            models.UniqueConstraint(
+                fields=["service", "slug"], name="dw_reqskill_slug_unique_per_service"
+            ),
         ]
 
     def __str__(self) -> str:
         return f"{self.skill} ≥ {self.get_min_level_display()}"
+
+    def save(self, *args: object, **kwargs: object) -> None:
+        if not self.slug:
+            base = slugify(self.skill.name) or "skill"
+            candidate, counter = base, 1
+            while (
+                RequiredSkill.objects.filter(service=self.service, slug=candidate)
+                .exclude(pk=self.pk)
+                .exists()
+            ):
+                counter += 1
+                candidate = f"{base}-{counter}"
+            self.slug = candidate
+        super().save(*args, **kwargs)
 
     def clean(self) -> None:
         """Tenancy guard — a required skill must come from the service owner's registry."""

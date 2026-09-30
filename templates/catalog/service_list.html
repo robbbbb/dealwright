@@ -37,7 +37,7 @@
             {% for service in services %}
             <tr class="border-b border-dw-line align-top last:border-b-0 hover:bg-dw-canvas/60">
               <td class="px-6 py-3.5">
-                <a href="{% url 'catalog:service_edit' service.pk %}" class="font-bold text-dw-ink no-underline hover:text-dw-600">{{ service.name }}</a>
+                <a href="{% url 'catalog:service_edit' service.category|slugify service.slug %}" class="font-bold text-dw-ink no-underline hover:text-dw-600">{{ service.name }}</a>
                 {% if service.problem_tags %}<div class="mt-1 text-[10.5px] text-dw-muted">{{ service.problem_tags|join:" · " }}</div>{% endif %}
               </td>
               <td class="px-4 py-3.5 whitespace-nowrap font-bold text-dw-700">{{ service.price_summary }}</td>
@@ -48,7 +48,7 @@
                 </div>
               </td>
               <td class="px-6 py-3.5 text-right">
-                <form method="post" action="{% url 'catalog:service_delete' service.pk %}" class="inline">
+                <form method="post" action="{% url 'catalog:service_delete' service.category|slugify service.slug %}" class="inline">
                   {% csrf_token %}
                   <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[11.5px] font-bold text-dw-red underline hover:opacity-70">Remove</button>
                 </form>
@@ -62,7 +62,7 @@
       <ul class="md:hidden">
         {% for service in services %}
         <li class="border-b border-dw-line px-4 py-3.5 last:border-b-0">
-          <a href="{% url 'catalog:service_edit' service.pk %}" class="font-bold text-dw-ink no-underline">{{ service.name }}</a>
+          <a href="{% url 'catalog:service_edit' service.category|slugify service.slug %}" class="font-bold text-dw-ink no-underline">{{ service.name }}</a>
           <div class="mt-1 text-[12px] font-bold text-dw-700">{{ service.price_summary }}</div>
           {% if service.delivery_days_min is not None %}<div class="mt-0.5 text-[11px] text-dw-muted">Delivers in {% if service.delivery_days_min == service.delivery_days_max %}{{ service.delivery_days_min }}{% else %}{{ service.delivery_days_min }}–{{ service.delivery_days_max }}{% endif %} days</div>{% endif %}
           <div class="mt-1.5 flex flex-wrap gap-1">
