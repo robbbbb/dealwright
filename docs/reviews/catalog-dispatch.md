@@ -222,3 +222,15 @@ Rationale: Pass 9 delivers exactly the dispatch scope — the pass-8 slug decisi
 ```
 
 **Builder disposition (2026-09-30):** minor 1 → applied (dead checks deleted). Minor 2 → trail note (committed migration). Minor 3 → accepted (precedent). Minor 4 → Robb's, untouched. **Pass 9: approved & closed.** 139 passed after cleanup.
+
+---
+
+# Pass 10 — skill-list manager (Robb request, 2026-09-30)
+
+**Scope:** the feature commit after 766cc16. `Skill.slug` (unique per owner, frozen; migrations team/0006+0007); RegistrySkillForm + `team:skill_create` (POST, the free-text vocabulary surface); `team:skill_registry_delete` (POST, unreferenced-only with friendly guard over PROTECT); selectors.list_registry_skills with usage annotation; team.html Skill list card; my-skills add → SkillPickForm. **For:** fresh GLM-5.3 reviewer (gates only).
+
+**Gates:** pytest **147 passed** (8 new manager tests), ruff, check, no drift; DOM probe: card renders 23 usage chips, remove button only on unused rows, my-skills add is a dropdown, UI creation round-trips.
+
+**Adjudicate:** free text confined to vocabulary creation (single write path get_or_create_skill); removal guard at service level (friendly) over PROTECT (hard); tenancy on both new routes; slug rules identical to pass 8/9.
+
+## Verdict (pass 10)
