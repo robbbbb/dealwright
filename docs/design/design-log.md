@@ -147,3 +147,11 @@ Full MVP card breakdown: `mvp-build-plan.md` — 12 cards (0–11), one per fres
 - [Somewhere.com AI automation specialists](https://somewhere.com)
 - [Agentra enterprise AI ROI calculator](https://www.agentra.io)
 - [EngineerUp AI project ROI framework](https://www.engineerup.com)
+
+## Card 2 build decisions (2026-09-29, catalog app)
+- **ROI levers split by engine mode:** the plan's single "reduction range" became two nullable pairs — `reduction` % (automation lever, Card 3 automation mode) and `hours_saved` hrs/week (delegation lever) — because the draft's time levers genuinely carry both kinds; hours-only services are quantifiable and must not degrade to qualitative.
+- **Revenue effect = typed range:** `revenue_effect_type` (recover_leads_pct / conversion_uplift_pct / dso_days) + low/high, unit implied by type; mechanism-only money stories (e.g. "recovered slots × avg value") stay qualitative.
+- **Ladder mapping:** draft's "Verified only" (Django builds) seeds as `advanced` min level, per the Card 4 proficiency-ladder deviation; RequiredSkill reuses `team.SkillLevel` so Card 5 matches on one scale.
+- **Seed semantics:** natural key (owner, category, name); re-runs create only missing rows and never overwrite provider edits (Tier 0 discipline); a renamed row means the original comes back alongside the edit — documented in the test.
+- **Qualitative flag semantics:** flag = "appears in non-financial benefits" AND satisfies the quantifier rule; a service may carry both a quantified lever and the flag (e.g. batch scheduling: hours + audience growth).
+- Hours-per-client (onboarding) and hours-per-issue (newsletter) seeded into the hrs/week pair as draft-hypothesis approximations; Card 3 must refine units when consuming.
