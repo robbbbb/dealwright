@@ -20,3 +20,15 @@
 - Coverage tier: 32 tests across validation/constraints/seed/admin = 80–85% target for catalog management.
 
 ## Verdict (pass 1)
+### Pass 1 verdict — APPROVED
+
+All 7 gates green with pasted evidence (111 passed, ruff/check clean, migration idempotent, seed audit clean, no protected characteristics, money discipline holds, admin renders); TDD anchor verified in both directions; seed figures spot-checked against the draft with no drift on the three probes.
+
+```
+Verdict: APPROVED
+Blocking findings: none. All 7 gates pass with pasted evidence; quantifier rule, money discipline, tenancy, ladder reuse, seed idempotency/edit-safety, and hermeticity all verified against the spec baseline.
+Minor findings: (1) model/migration help_text drift inside the card; (2) qualitative-flag drift — client portal + podcast pipeline unflagged vs draft's "(qualitative)" markers; (3) response-time lever (hrs→minutes) unrepresented — Card 3 units; (4) price_summary hardcodes ₱ — Q3 i18n; (5) seed validates after insert; (6) dead admin overrides.
+Rationale: The card delivers exactly what mvp-build-plan Card 2 specifies — models with the quantifier rule as the TDD anchor, seed transcribed from the draft with correct figures on every spot-checked row, admin CRUD, idempotent/edit-safe seeding — at the mandated 80–85% tier, with all seven gates green on re-run by a fresh reviewer.
+```
+
+**Builder disposition (2026-09-29):** minors 1–2, 5–6 → fixed in the follow-up commit (0001 regenerated, no migration drift; both draft-marked rows flagged — 8 total per updated design-log entry; clean-before-save seeding; dead admin code removed). Minors 3–4 → backlog lines recorded (Card 3 units; Q3 i18n). **Card 2: approved & closed.**
