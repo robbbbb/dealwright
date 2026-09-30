@@ -17,4 +17,5 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     # Card 4: provider skills + team roster ("My skills & team" nav item).
     path("team/", include("team.urls")),
+    path("catalog/", include("catalog.urls")),
 ]

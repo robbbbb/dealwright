@@ -1,0 +1,94 @@
+{% extends "app-base.html" %}
+{% block title %}Service catalog — Dealwright{% endblock %}
+{% block app_content %}
+<div class="mx-auto max-w-[1100px]">
+
+  <header class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div class="max-w-2xl">
+      <p class="mb-1.5 text-[10.5px] font-extrabold uppercase tracking-[1.1px] text-dw-600">Setup</p>
+      <h1 class="text-[24px] font-extrabold leading-tight tracking-[-.35px] text-dw-ink">Service catalog</h1>
+      <p class="mt-2 text-[13px] leading-5 text-dw-muted">What you sell and what it costs. Prices are ranges you set — always labelled estimates, never converted across currencies.</p>
+    </div>
+    <div class="flex items-center gap-2.5">
+      <a href="{% url 'catalog:service_create' %}" class="inline-flex min-h-[38px] items-center rounded-[10px] bg-dw-700 px-4 text-[13px] font-bold text-white no-underline hover:bg-dw-800">＋ Add service</a>
+    </div>
+  </header>
+
+  {% if categories %}
+
+    <p class="mb-4 text-[12px] font-bold text-dw-muted">{{ service_count }} service{{ service_count|pluralize }} · {{ categories|length }} categor{{ categories|length|pluralize:"y,ies" }}</p>
+
+    {% for category, services in categories %}
+    <section aria-labelledby="cat-{{ forloop.counter }}" class="mb-4 overflow-hidden rounded-[14px] border border-dw-line bg-white shadow-[0_1px_2px_rgba(4,36,27,.03)]">
+      <h2 id="cat-{{ forloop.counter }}" class="border-b border-dw-line bg-dw-50 px-5 py-3 text-[13.5px] font-extrabold text-dw-ink sm:px-6">{{ category }}</h2>
+
+      <div class="hidden overflow-x-auto md:block">
+        <table class="w-full min-w-[760px] text-[13px]">
+          <thead>
+            <tr class="border-b border-dw-line text-left text-[10px] uppercase tracking-[.65px] text-dw-muted">
+              <th class="px-6 py-2.5 font-bold">Service</th>
+              <th class="px-4 py-2.5 font-bold">Pricing</th>
+              <th class="px-4 py-2.5 font-bold">Delivers</th>
+              <th class="px-4 py-2.5 font-bold">Required skills</th>
+              <th class="px-6 py-2.5 text-right font-bold"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for service in services %}
+            <tr class="border-b border-dw-line align-top last:border-b-0 hover:bg-dw-canvas/60">
+              <td class="px-6 py-3.5">
+                <a href="{% url 'catalog:service_edit' service.pk %}" class="font-bold text-dw-ink no-underline hover:text-dw-600">{{ service.name }}</a>
+                {% if service.problem_tags %}<div class="mt-1 text-[10.5px] text-dw-muted">{{ service.problem_tags|join:" · " }}</div>{% endif %}
+              </td>
+              <td class="px-4 py-3.5 whitespace-nowrap font-bold text-dw-700">{{ service.price_summary }}</td>
+              <td class="px-4 py-3.5 text-[12px] text-dw-muted">{% if service.delivery_days_min is None %}—{% elif service.delivery_days_min == service.delivery_days_max %}{{ service.delivery_days_min }} days{% else %}{{ service.delivery_days_min }}–{{ service.delivery_days_max }} days{% endif %}</td>
+              <td class="px-4 py-3.5">
+                <div class="flex flex-wrap gap-1">
+                  {% for rs in service.required_skills.all %}<span class="rounded-full bg-dw-teal-bg px-2 py-px text-[10px] font-bold text-dw-teal">{{ rs.skill }}</span>{% empty %}<span class="text-[11.5px] text-dw-muted">Any</span>{% endfor %}
+                </div>
+              </td>
+              <td class="px-6 py-3.5 text-right">
+                <form method="post" action="{% url 'catalog:service_delete' service.pk %}" class="inline">
+                  {% csrf_token %}
+                  <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[11.5px] font-bold text-dw-red underline hover:opacity-70">Remove</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <ul class="md:hidden">
+        {% for service in services %}
+        <li class="border-b border-dw-line px-4 py-3.5 last:border-b-0">
+          <a href="{% url 'catalog:service_edit' service.pk %}" class="font-bold text-dw-ink no-underline">{{ service.name }}</a>
+          <div class="mt-1 text-[12px] font-bold text-dw-700">{{ service.price_summary }}</div>
+          {% if service.delivery_days_min is not None %}<div class="mt-0.5 text-[11px] text-dw-muted">Delivers in {% if service.delivery_days_min == service.delivery_days_max %}{{ service.delivery_days_min }}{% else %}{{ service.delivery_days_min }}–{{ service.delivery_days_max }}{% endif %} days</div>{% endif %}
+          <div class="mt-1.5 flex flex-wrap gap-1">
+            {% for rs in service.required_skills.all %}<span class="rounded-full bg-dw-teal-bg px-2 py-px text-[10px] font-bold text-dw-teal">{{ rs.skill }}</span>{% endfor %}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endfor %}
+
+  {% else %}
+
+    <section class="rounded-[14px] border border-dw-line bg-white px-6 py-12 text-center shadow-[0_1px_2px_rgba(4,36,27,.03)]">
+      <h2 class="text-[16px] font-extrabold text-dw-ink">Your catalog is empty</h2>
+      <p class="mx-auto mt-2 max-w-md text-[13px] leading-5 text-dw-muted">Start from the default catalog — 25 services across 8 categories with draft pricing you can edit — or add your own service from scratch.</p>
+      <div class="mt-5 flex flex-col items-center justify-center gap-2.5 sm:flex-row">
+        <form method="post" action="{% url 'catalog:seed_defaults' %}">
+          {% csrf_token %}
+          <button type="submit" class="inline-flex min-h-[38px] items-center rounded-[10px] bg-dw-700 px-5 text-[13px] font-bold text-white hover:bg-dw-800">Load default catalog (25 services)</button>
+        </form>
+        <a href="{% url 'catalog:service_create' %}" class="inline-flex min-h-[38px] items-center rounded-[10px] border-[1.5px] border-dw-700 bg-white px-5 text-[13px] font-bold text-dw-700 no-underline hover:bg-dw-50">＋ Add my own</a>
+      </div>
+    </section>
+
+  {% endif %}
+
+</div>
+{% endblock %}

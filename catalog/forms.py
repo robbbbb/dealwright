@@ -1,0 +1,67 @@
+"""Catalog forms — input validation only; writes go through services."""
+
+from __future__ import annotations
+
+from django import forms
+
+from .models import RequiredSkill, Service
+
+_CURRENCY_CHOICES = [
+    ("PHP", "PHP ₱"), ("USD", "USD $"), ("EUR", "EUR €"), ("GBP", "GBP £"),
+    ("AUD", "AUD A$"), ("CAD", "CAD C$"), ("SGD", "SGD S$"),
+]
+
+
+class ServiceForm(forms.ModelForm):
+    """Provider-editable service fields; problem tags entered as comma-separated text."""
+
+    tags_text = forms.CharField(
+        max_length=400,
+        required=False,
+        label="Problem tags",
+        widget=forms.TextInput(attrs={"placeholder": "e.g. leads-lost, slow-response"}),
+        help_text="Comma-separated; used to match services to client problems.",
+    )
+
+    class Meta:
+        model = Service
+        fields = [
+            "category", "name", "currency",
+            "setup_low", "setup_high", "monthly_low", "monthly_high",
+            "custom_quote", "delivery_days_min", "delivery_days_max",
+        ]
+        widgets = {
+            "currency": forms.Select(attrs={}, choices=_CURRENCY_CHOICES),
+            "delivery_days_min": forms.NumberInput(attrs={"min": 0}),
+            "delivery_days_max": forms.NumberInput(attrs={"min": 0}),
+        }
+        help_texts = {
+            "currency": "Prices are declared per currency and never converted (Q3).",
+            "custom_quote": "Priced per engagement instead of from ranges.",
+        }
+
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        super().__init__(*args, **kwargs)
+        if self.instance.pk and self.instance.problem_tags:
+            self.fields["tags_text"].initial = ", ".join(self.instance.problem_tags)
+
+    def clean(self) -> dict[str, object]:
+        cleaned = super().clean()
+        tags_text = str(cleaned.get("tags_text") or "").strip()
+        cleaned["problem_tags"] = [t.strip() for t in tags_text.split(",") if t.strip()]
+        return cleaned
+
+
+class RequiredSkillForm(forms.Form):
+    """Add a required skill (with minimum level) to a service."""
+
+    skill = forms.CharField(
+        max_length=120,
+        label="Skill name",
+        widget=forms.TextInput(attrs={"placeholder": "e.g. CRM management"}),
+    )
+    min_level = forms.ChoiceField(
+        choices=RequiredSkill._meta.get_field("min_level").choices,
+        initial="beginner",
+        label="Minimum level",
+    )

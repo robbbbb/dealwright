@@ -1,0 +1,62 @@
+{% extends "app-base.html" %}
+{% block title %}{% if is_create %}Add service{% else %}{{ service.name }}{% endif %} — Dealwright{% endblock %}
+{% block app_content %}
+<div class="mx-auto max-w-[720px]">
+
+  <header class="mb-6">
+    <p class="mb-1.5 text-[10.5px] font-extrabold uppercase tracking-[1.1px] text-dw-600">Service catalog</p>
+    <h1 class="text-[24px] font-extrabold leading-tight tracking-[-.35px] text-dw-ink">{% if is_create %}Add a service{% else %}Edit service{% endif %}</h1>
+    <p class="mt-2 text-[13px] leading-5 text-dw-muted">Setup plus monthly retainer, declared per currency — never converted.</p>
+  </header>
+
+  <section class="mb-4 rounded-[14px] border border-dw-line bg-white p-5 shadow-[0_1px_2px_rgba(4,36,27,.03)] sm:p-6">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include "team/_form_fields.html" %}
+      <div class="mt-4 flex items-center justify-end gap-2.5">
+        <a href="{% url 'catalog:service_list' %}" class="inline-flex min-h-[38px] items-center rounded-[10px] px-4 text-[13px] font-bold text-dw-muted no-underline hover:text-dw-ink">Cancel</a>
+        <button type="submit" class="inline-flex min-h-[38px] items-center rounded-[10px] bg-dw-700 px-5 text-[13px] font-bold text-white hover:bg-dw-800">{% if is_create %}Add service{% else %}Save changes{% endif %}</button>
+      </div>
+    </form>
+  </section>
+
+  {% if not is_create %}
+  <section class="overflow-hidden rounded-[14px] border border-dw-line bg-white shadow-[0_1px_2px_rgba(4,36,27,.03)]">
+    <div class="border-b border-dw-line bg-dw-50 px-5 py-3.5 sm:px-6">
+      <h2 class="text-[14px] font-extrabold text-dw-ink">Required skills</h2>
+      <p class="mt-0.5 text-[11.5px] text-dw-muted">Minimum level a person needs to deliver this — matched against your skills and team in Card 5.</p>
+    </div>
+
+    {% if required_skills %}
+    <ul class="border-b border-dw-line">
+      {% for rs in required_skills %}
+      <li class="flex items-center gap-3 border-b border-dw-line px-5 py-2.5 last:border-b-0 sm:px-6">
+        <span class="font-bold text-dw-ink">{{ rs.skill }}</span>
+        <span class="rounded-full bg-dw-100 px-2 py-px text-[10px] font-bold text-dw-800">≥ {{ rs.get_min_level_display }}</span>
+        <form method="post" action="{% url 'catalog:skill_delete' rs.pk %}" class="ml-auto">
+          {% csrf_token %}
+          <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[11.5px] font-bold text-dw-red underline hover:opacity-70">Remove</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    <form method="post" action="{% url 'catalog:skill_add' service.pk %}" class="flex flex-col gap-2.5 px-5 py-4 sm:flex-row sm:items-center sm:px-6">
+      {% csrf_token %}
+      {{ skill_form.skill.label_tag }}{{ skill_form.skill }}
+      {{ skill_form.min_level.label_tag }}{{ skill_form.min_level }}
+      <button type="submit" class="min-h-[38px] shrink-0 cursor-pointer rounded-[10px] border-[1.5px] border-dw-700 bg-white px-4 text-[13px] font-bold text-dw-700 hover:bg-dw-50">Add</button>
+    </form>
+  </section>
+
+  <div class="mt-5 flex justify-end">
+    <form method="post" action="{% url 'catalog:service_delete' service.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[12px] font-bold text-dw-red underline hover:opacity-70">Remove this service from my catalog</button>
+    </form>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
