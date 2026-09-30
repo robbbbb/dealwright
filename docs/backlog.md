@@ -96,3 +96,4 @@ Live call transcription · automated interviews · marketplace payments · publi
 
 ## Card 3 planning (from Robb's price-only catalog decision, 2026-09-30)
 - ROI lever source must be decided before Card 3 starts: session data (WorkflowActivity) and/or a versioned benchmarks table (pricing-benefit-research.md §C). The mvp-build-plan's "Card 3 consumes Card 2 reduction ranges" is superseded (design-log 2026-09-30). Quantifier rule + its anchor test were removed with the fields.
+- Amend mvp-build-plan.md Card 2/3 text when Card 3 is planned (review pass-2 minor 1 — plan doc still describes the removed lever fields).

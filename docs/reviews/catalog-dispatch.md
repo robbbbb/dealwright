@@ -44,3 +44,15 @@ Rationale: The card delivers exactly what mvp-build-plan Card 2 specifies — mo
 **Adjudicate:** removal is complete and coherent (no dead references); the Card 3 dependency break is properly recorded (design-log + backlog + research doc §C supersession note); test count delta is exactly the removed lever tests.
 
 ## Verdict (pass 2)
+### Pass 2 verdict — APPROVED
+
+Removal complete and coherent: zero live lever references (docstring records only), migration regenerated with no drift, test delta exactly the 10 removed quantifier/lever tests, seed 25/8 all-valid with 76 skill rows, pricing rule + pair validation intact, decision trail present in all three required places.
+
+```
+Verdict: APPROVED
+Blocking findings: none. All 7 gates pass with pasted evidence; the removal is complete (zero live field references — only docstring records of the removal, which are permitted), the migration was regenerated with no drift, the test delta is exactly the 10 removed quantifier/lever tests (7 functions + 3 parametrize cases), seed still yields 25 services / 8 categories with all rows full_clean-valid and ≥1 RequiredSkill per service, and the pricing rule (custom_quote-or-ranges + pair ordering) survives intact per tests and direct probe. The decision trail is coherent: design-log entry with named Card 3 consequence, backlog planning item, research doc §C supersession note.
+Minor findings: (1) mvp-build-plan.md still carries the superseded Service/Card-3 text — amend when Card 3 is planned; (2) pre-existing uncommitted one-line dashboard.html edit (Robb's, untouched).
+Rationale: Pass 2 supersedes pass 1's quantifier-rule approval per Robb's recorded decision, and the refactor delivers exactly that: a price-only Service with owner/category/name/tags/price ranges/custom_quote/delivery/skills, lever fields and their rule fully excised, hermetic gates green on re-run by a fresh reviewer, and the Card 3 dependency break documented in all three required places.
+```
+
+**Builder disposition (2026-09-30):** minor 1 → backlog line added (amend build-plan text at Card 3 planning). Minor 2 → Robb's edit, untouched. **Pass 2: approved & closed.**
