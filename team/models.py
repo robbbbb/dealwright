@@ -11,6 +11,11 @@ ladder — beginner/intermediate/advanced — plus a free-text ``tasks`` descrip
 of what the holder actually does with the skill. Matching weights advanced
 highest. Green "verified" chip semantics stay reserved for future verification.
 
+Robb decision 2026-09-30 (design-log): skill NAMES are no longer free text —
+they live in a provider-owned Skill registry. Capability (team app) and
+RequiredSkill (catalog app) both reference it by FK, so Card 5 matches on exact
+joins instead of string heuristics. The proficiency ladder above is unchanged.
+
 Protected personal characteristics (gender, age, religion, ethnicity, …) do not
 exist in this schema by design; a test asserts their absence (Card 4 TDD).
 """
@@ -207,6 +212,37 @@ class VAProfile(models.Model):
             )
 
 
+class Skill(models.Model):
+    """One named skill in the provider's own vocabulary — the shared registry.
+
+    Both Capability (who has it, team app) and RequiredSkill (what a service
+    needs, catalog app) reference this table by FK. Registry rows are
+    load-bearing for matching: PROTECTed from deletion while referenced.
+    """
+
+    owner = models.ForeignKey(  # type: ignore[var-annotated]
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="skills",
+    )
+    name = models.CharField("name", max_length=120)
+    created_at = models.DateTimeField("created at", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "skill"
+        verbose_name_plural = "skills"
+        ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["owner", "name"],
+                name="dw_skill_unique_per_owner",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class Capability(models.Model):
     """A skill attached to exactly one holder: the freelancer or a team VA.
 
@@ -229,7 +265,13 @@ class Capability(models.Model):
         blank=True,
         related_name="capabilities",
     )
-    skill = models.CharField("skill", max_length=120, db_index=True)
+    skill = models.ForeignKey(  # type: ignore[var-annotated]
+        Skill,
+        on_delete=models.PROTECT,
+        related_name="capabilities",
+        verbose_name="skill",
+        help_text="Registry row — exact FK join feeds Card 5 matching.",
+    )
     level = models.CharField(
         "level",
         max_length=12,

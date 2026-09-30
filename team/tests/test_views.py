@@ -4,7 +4,7 @@ import pytest
 from django.urls import reverse
 
 from team.models import Capability, VAProfile
-from team.services import add_capability, create_va_profile
+from team.services import add_capability, create_va_profile, get_or_create_skill
 
 pytestmark = pytest.mark.django_db
 
@@ -38,9 +38,9 @@ def test_other_users_team_member_is_404(client, user) -> None:
 # --- team page -----------------------------------------------------------------------
 
 
-def test_team_page_lists_vas_and_my_skills(client, user, va) -> None:
+def test_team_page_lists_vas_and_my_skills(client, user, va, skill) -> None:
     create_va_profile(owner=user, display_name="Kim")  # identity-only
-    add_capability(holder=va, skill="Email marketing")
+    add_capability(holder=va, skill=skill)
     _login(client, user)
 
     response = client.get(reverse("team:team_home"))
@@ -57,7 +57,7 @@ def test_team_page_lists_vas_and_my_skills(client, user, va) -> None:
     assert "Email marketing" in content
 
 
-def test_add_my_skill_from_team_page(client, user) -> None:
+def test_add_my_skill_from_team_page(client, user, skill) -> None:
     _login(client, user)
 
     response = client.post(
@@ -66,11 +66,14 @@ def test_add_my_skill_from_team_page(client, user) -> None:
     )
 
     assert response.status_code == 302
-    assert Capability.objects.filter(skill="Copywriting").exists()
+    cap = Capability.objects.filter(
+        skill__name="Copywriting", provider_profile__owner=user
+    )
+    assert cap.exists()
     assert Capability.objects.first().provider_profile is not None
 
 
-def test_add_my_skill_without_name_rerenders_with_error(client, user) -> None:
+def test_add_my_skill_without_name_rerenders_with_error(client, user, skill) -> None:
     _login(client, user)
 
     response = client.post(
@@ -130,19 +133,23 @@ def test_edit_team_member_rate(client, user, va) -> None:
 # --- skills on a team member ---------------------------------------------------------
 
 
-def test_add_skill_to_team_member(client, user, va) -> None:
+def test_add_skill_to_team_member(client, user, va, skill) -> None:
     _login(client, user)
 
     response = client.post(
         reverse("team:member_skill_add", args=[va.pk]),
-        {"skill": "n8n workflows", "level": "beginner", "tasks": ""},
+        {
+            "skill": get_or_create_skill(owner=user, name="n8n workflows").pk,
+            "level": "beginner",
+            "tasks": "",
+        },
     )
 
     assert response.status_code == 302
-    assert va.capabilities.filter(skill="n8n workflows").exists()
+    assert va.capabilities.filter(skill__name="n8n workflows").exists()
 
 
-def test_add_skill_invalid_shows_flash_error(client, user, va) -> None:
+def test_add_skill_invalid_shows_flash_error(client, user, va, skill) -> None:
     _login(client, user)
 
     response = client.post(
@@ -154,14 +161,14 @@ def test_add_skill_invalid_shows_flash_error(client, user, va) -> None:
     assert not va.capabilities.exists()
 
 
-def test_update_skill_to_advanced(client, user, va) -> None:
-    cap = add_capability(holder=va, skill="n8n workflows")
+def test_update_skill_to_advanced(client, user, va, skill) -> None:
+    cap = add_capability(holder=va, skill=get_or_create_skill(owner=user, name="n8n workflows"))
     _login(client, user)
 
     response = client.post(
         reverse("team:skill_update", args=[cap.pk]),
         {
-            "skill": "n8n workflows",
+            "skill": cap.skill_id,
             "level": "advanced",
             "tasks": "build + monitor podcast pipeline",
         },
@@ -172,8 +179,8 @@ def test_update_skill_to_advanced(client, user, va) -> None:
     assert cap.level == "advanced"
 
 
-def test_delete_skill(client, user, va) -> None:
-    cap = add_capability(holder=va, skill="Bookkeeping")
+def test_delete_skill(client, user, va, skill) -> None:
+    cap = add_capability(holder=va, skill=get_or_create_skill(owner=user, name="Bookkeeping"))
     _login(client, user)
 
     response = client.post(reverse("team:skill_delete", args=[cap.pk]))
@@ -182,12 +189,12 @@ def test_delete_skill(client, user, va) -> None:
     assert not Capability.objects.exists()
 
 
-def test_cannot_update_skill_of_other_owner(client, user) -> None:
+def test_cannot_update_skill_of_other_owner(client, user, skill) -> None:
     other = user.__class__.objects.create_user(
         username="lea", password="test-pass-123456"
     )
     va = create_va_profile(owner=other, display_name="Maria")
-    cap = add_capability(holder=va, skill="Bookkeeping")
+    cap = add_capability(holder=va, skill=get_or_create_skill(owner=user, name="Bookkeeping"))
     _login(client, user)
 
     response = client.post(
@@ -201,8 +208,8 @@ def test_cannot_update_skill_of_other_owner(client, user) -> None:
 # --- review pass 1 fixes: mutations are POST-only; currency symbol from stored field ---
 
 
-def test_skill_delete_via_get_is_405_and_deletes_nothing(client, user, va) -> None:
-    cap = add_capability(holder=va, skill="Bookkeeping")
+def test_skill_delete_via_get_is_405_and_deletes_nothing(client, user, va, skill) -> None:
+    cap = add_capability(holder=va, skill=get_or_create_skill(owner=user, name="Bookkeeping"))
     _login(client, user)
 
     response = client.get(reverse("team:skill_delete", args=[cap.pk]))
@@ -211,8 +218,8 @@ def test_skill_delete_via_get_is_405_and_deletes_nothing(client, user, va) -> No
     assert Capability.objects.filter(pk=cap.pk).exists()
 
 
-def test_skill_update_via_get_is_405(client, user, va) -> None:
-    cap = add_capability(holder=va, skill="Bookkeeping")
+def test_skill_update_via_get_is_405(client, user, va, skill) -> None:
+    cap = add_capability(holder=va, skill=get_or_create_skill(owner=user, name="Bookkeeping"))
     _login(client, user)
 
     response = client.get(reverse("team:skill_update", args=[cap.pk]))

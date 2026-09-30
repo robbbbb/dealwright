@@ -11,6 +11,9 @@ from typing import Any
 
 from django.db import transaction
 
+from team.models import Skill
+from team.services import get_or_create_skill
+
 from .models import RequiredSkill, Service
 from .seed_data import SERVICES
 
@@ -49,7 +52,8 @@ def seed_default_catalog(*, owner: Any) -> tuple[int, int]:
         )
         service.full_clean()  # clean before save; guards transcription
         service.save()
-        for skill, min_level in row["skills"]:
+        for skill_name, min_level in row["skills"]:
+            skill = get_or_create_skill(owner=owner, name=skill_name)
             RequiredSkill.objects.get_or_create(
                 service=service, skill=skill, defaults={"min_level": min_level}
             )
@@ -79,8 +83,8 @@ def delete_service(*, service: Service) -> None:
 
 
 @transaction.atomic
-def add_required_skill(*, service: Service, skill: str, min_level: str) -> RequiredSkill:
-    """Attach a required skill (validated) to a service."""
+def add_required_skill(*, service: Service, skill: Skill, min_level: str) -> RequiredSkill:
+    """Attach a registry skill (validated) to a service."""
     required = RequiredSkill(service=service, skill=skill, min_level=min_level)
     required.full_clean()
     required.save()

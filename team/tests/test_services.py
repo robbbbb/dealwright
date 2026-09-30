@@ -3,7 +3,7 @@
 import pytest
 from django.core.exceptions import ValidationError
 
-from team.models import Capability, ProviderProfile, SkillLevel, VAProfile
+from team.models import Capability, ProviderProfile, Skill, SkillLevel, VAProfile
 from team.services import (
     add_capability,
     create_va_profile,
@@ -12,6 +12,10 @@ from team.services import (
     update_capability,
     update_va_profile,
 )
+
+
+def _n8n(user):
+    return Skill.objects.get_or_create(owner=user, name="n8n workflows")[0]
 
 
 @pytest.mark.django_db
@@ -60,29 +64,29 @@ class TestVAProfileService:
 
 @pytest.mark.django_db
 class TestCapabilityService:
-    def test_add_to_solo_provider_profile(self, user) -> None:
+    def test_add_to_solo_provider_profile(self, user, skill) -> None:
         profile = get_provider_profile(user)
 
-        cap = add_capability(holder=profile, skill="Copywriting")
+        cap = add_capability(holder=profile, skill=skill)
 
         assert cap.provider_profile == profile
         assert cap.va_profile is None
         assert list(profile.capabilities.all()) == [cap]
 
-    def test_add_to_team_va(self, user) -> None:
+    def test_add_to_team_va(self, user, skill) -> None:
         va = create_va_profile(owner=user, display_name="Maria")
 
-        cap = add_capability(holder=va, skill="n8n workflows")
+        cap = add_capability(holder=va, skill=_n8n(user))
 
         assert cap.va_profile == va
         assert list(va.capabilities.all()) == [cap]
 
-    def test_add_with_proficiency_and_tasks(self, user) -> None:
+    def test_add_with_proficiency_and_tasks(self, user, skill) -> None:
         va = create_va_profile(owner=user, display_name="Maria")
 
         cap = add_capability(
             holder=va,
-            skill="Email marketing",
+            skill=skill,
             level=SkillLevel.ADVANCED,
             tasks="Klaviyo flows, campaign copy",
         )
@@ -90,13 +94,13 @@ class TestCapabilityService:
         assert cap.level == SkillLevel.ADVANCED
         assert cap.tasks == "Klaviyo flows, campaign copy"
 
-    def test_update_to_advanced_with_tasks(self, user) -> None:
+    def test_update_to_advanced_with_tasks(self, user, skill) -> None:
         va = create_va_profile(owner=user, display_name="Maria")
-        cap = add_capability(holder=va, skill="n8n workflows")
+        cap = add_capability(holder=va, skill=_n8n(user))
 
         updated = update_capability(
             capability=cap,
-            skill="n8n workflows",
+            skill=_n8n(user),
             level=SkillLevel.ADVANCED,
             tasks="build + monitor podcast pipeline",
         )
@@ -105,20 +109,20 @@ class TestCapabilityService:
         assert updated.trust_rank == 2
         assert updated.tasks == "build + monitor podcast pipeline"
 
-    def test_delete_capability(self, user) -> None:
+    def test_delete_capability(self, user, skill) -> None:
         va = create_va_profile(owner=user, display_name="Maria")
-        cap = add_capability(holder=va, skill="Bookkeeping")
+        cap = add_capability(holder=va, skill=_n8n(user))
 
         delete_capability(capability=cap)
 
         assert Capability.objects.count() == 0
 
-    def test_duplicate_skill_per_holder_rejected(self, user) -> None:
+    def test_duplicate_skill_per_holder_rejected(self, user, skill) -> None:
         va = create_va_profile(owner=user, display_name="Maria")
-        add_capability(holder=va, skill="Email marketing")
+        add_capability(holder=va, skill=skill)
 
         with pytest.raises(ValidationError):
-            add_capability(holder=va, skill="Email marketing")
+            add_capability(holder=va, skill=skill)
 
 
 @pytest.mark.django_db

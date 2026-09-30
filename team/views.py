@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
 from . import selectors, services
-from .forms import EngagementForm, SkillForm, TeamMemberForm
+from .forms import EngagementForm, SkillForm, SkillPickForm, TeamMemberForm
 
 
 @login_required
@@ -18,7 +18,15 @@ def team_home(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":  # add one of my skills
         skill_form = SkillForm(request.POST)
         if skill_form.is_valid():
-            services.add_capability(holder=profile, **skill_form.cleaned_data)
+            skill = services.get_or_create_skill(
+                owner=request.user, name=skill_form.cleaned_data["skill"]
+            )
+            services.add_capability(
+                holder=profile,
+                skill=skill,
+                level=skill_form.cleaned_data["level"],
+                tasks=skill_form.cleaned_data["tasks"],
+            )
             messages.success(request, "Skill added.")
             return redirect("team:team_home")
     return render(
@@ -68,7 +76,7 @@ def member_detail(request: HttpRequest, pk: int) -> HttpResponse:
             "form": form,
             "engagement_form": EngagementForm(instance=va),
             "skills": selectors.list_holder_capabilities(va),
-            "skill_form": SkillForm(),
+            "skill_form": SkillPickForm(request.user),
         },
     )
 
@@ -95,7 +103,7 @@ def member_skill_add(request: HttpRequest, pk: int) -> HttpResponse:
     va = selectors.get_va_for_owner(request.user, pk)
     if va is None:
         raise Http404("No such team member.")
-    form = SkillForm(request.POST)
+    form = SkillPickForm(request.user, request.POST)
     if form.is_valid():
         services.add_capability(holder=va, **form.cleaned_data)
         messages.success(request, f"Skill added to {va.display_name}.")
@@ -116,7 +124,7 @@ def skill_update(request: HttpRequest, cap_pk: int) -> HttpResponse:
     cap = selectors.get_capability_for_owner(request.user, cap_pk)
     if cap is None:
         raise Http404("No such skill.")
-    form = SkillForm(request.POST)
+    form = SkillPickForm(request.user, request.POST)
     if form.is_valid():
         services.update_capability(capability=cap, **form.cleaned_data)
         messages.success(request, "Skill updated.")

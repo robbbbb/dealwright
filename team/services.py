@@ -9,11 +9,22 @@ from typing import Any
 from django.contrib.auth import get_user_model
 from django.db import transaction
 
-from .models import Capability, ProviderProfile, SkillLevel, VAProfile
+from .models import Capability, ProviderProfile, Skill, SkillLevel, VAProfile
 
 User = get_user_model()
 
 Holder = ProviderProfile | VAProfile
+
+
+def get_or_create_skill(*, owner: Any, name: str) -> Skill:
+    """Registry row for one skill name — the single vocabulary source (2026-09-30
+    Robb decision). Names are trimmed; uniqueness enforced per owner."""
+    cleaned = name.strip()
+    skill, created = Skill.objects.get_or_create(owner=owner, name=cleaned)
+    if created:
+        skill.full_clean()  # guards blank/oversized names from any entry path
+        skill.save()
+    return skill
 
 
 def get_provider_profile(user: Any) -> ProviderProfile:
@@ -48,11 +59,11 @@ def update_va_profile(*, va: VAProfile, **fields: Any) -> VAProfile:
 def add_capability(
     *,
     holder: Holder,
-    skill: str,
+    skill: Skill,
     level: str = SkillLevel.BEGINNER,
     tasks: str = "",
 ) -> Capability:
-    """Attach a skill (with proficiency + tasks description) to exactly one holder."""
+    """Attach a registry skill (with proficiency + tasks) to exactly one holder."""
     kwargs: dict[str, Any] = {
         "skill": skill,
         "level": level,
@@ -71,7 +82,7 @@ def add_capability(
 def update_capability(
     *,
     capability: Capability,
-    skill: str,
+    skill: Skill,
     level: str,
     tasks: str = "",
 ) -> Capability:

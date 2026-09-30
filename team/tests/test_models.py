@@ -36,25 +36,25 @@ PROTECTED_CHARACTERISTIC_FIELDS = {
 
 @pytest.mark.django_db
 class TestProficiencyLadder:
-    def test_beginner_is_default_and_tasks_optional(self, va) -> None:
-        cap = Capability(va_profile=va, skill="Email marketing")
+    def test_beginner_is_default_and_tasks_optional(self, va, skill) -> None:
+        cap = Capability(va_profile=va, skill=skill)
         cap.full_clean()  # must not raise
 
         assert cap.level == SkillLevel.BEGINNER
         assert cap.trust_rank == 0
 
-    def test_intermediate_ranks_between(self, va) -> None:
+    def test_intermediate_ranks_between(self, va, skill) -> None:
         cap = Capability(
-            va_profile=va, skill="Email marketing", level=SkillLevel.INTERMEDIATE
+            va_profile=va, skill=skill, level=SkillLevel.INTERMEDIATE
         )
         cap.full_clean()  # must not raise
 
         assert cap.trust_rank == 1
 
-    def test_advanced_is_top_rank(self, va) -> None:
+    def test_advanced_is_top_rank(self, va, skill) -> None:
         cap = Capability(
             va_profile=va,
-            skill="Email marketing",
+            skill=skill,
             level=SkillLevel.ADVANCED,
             tasks="Klaviyo flows, campaign copy, list management",
         )
@@ -62,8 +62,8 @@ class TestProficiencyLadder:
 
         assert cap.trust_rank == 2
 
-    def test_str_reports_skill_and_level(self, va) -> None:
-        cap = Capability(va_profile=va, skill="Email marketing")
+    def test_str_reports_skill_and_level(self, va, skill) -> None:
+        cap = Capability(va_profile=va, skill=skill)
 
         assert str(cap) == "Email marketing (Beginner)"
 
@@ -73,16 +73,16 @@ class TestProficiencyLadder:
 
 @pytest.mark.django_db
 class TestHolderIntegrity:
-    def test_capability_without_holder_fails_clean(self, va) -> None:
-        cap = Capability(skill="Orphan skill")
+    def test_capability_without_holder_fails_clean(self, va, skill) -> None:
+        cap = Capability(skill=skill)
 
         with pytest.raises(ValidationError):
             cap.full_clean()
 
-    def test_capability_with_both_holders_fails_clean(self, user, va) -> None:
+    def test_capability_with_both_holders_fails_clean(self, user, va, skill) -> None:
         profile = ProviderProfile.objects.create(owner=user)
         cap = Capability(
-            skill="Both holders",
+            skill=skill,
             provider_profile=profile,
             va_profile=va,
         )
@@ -90,20 +90,20 @@ class TestHolderIntegrity:
         with pytest.raises(ValidationError):
             cap.full_clean()
 
-    def test_orphan_save_blocked_at_db_level(self) -> None:
+    def test_orphan_save_blocked_at_db_level(self, skill) -> None:
         with pytest.raises(IntegrityError), transaction.atomic():
-            Capability.objects.create(skill="Orphan skill")
+            Capability.objects.create(skill=skill)
 
-    def test_skill_unique_per_holder(self, va) -> None:
-        Capability.objects.create(va_profile=va, skill="Email marketing")
+    def test_skill_unique_per_holder(self, va, skill) -> None:
+        Capability.objects.create(va_profile=va, skill=skill)
 
         with pytest.raises(IntegrityError), transaction.atomic():
-            Capability.objects.create(va_profile=va, skill="Email marketing")
+            Capability.objects.create(va_profile=va, skill=skill)
 
-    def test_same_skill_allowed_across_holders(self, user, va) -> None:
+    def test_same_skill_allowed_across_holders(self, user, va, skill) -> None:
         profile = ProviderProfile.objects.create(owner=user)
-        Capability.objects.create(provider_profile=profile, skill="Email marketing")
-        Capability.objects.create(va_profile=va, skill="Email marketing")
+        Capability.objects.create(provider_profile=profile, skill=skill)
+        Capability.objects.create(va_profile=va, skill=skill)
 
         assert Capability.objects.count() == 2
 

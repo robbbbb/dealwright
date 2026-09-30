@@ -17,7 +17,7 @@ from django.db import IntegrityError
 
 from catalog.models import RequiredSkill, Service
 from catalog.tests.conftest import make_service, make_user
-from team.models import SkillLevel
+from team.models import Skill, SkillLevel
 
 
 class TestPairs:
@@ -129,14 +129,20 @@ class TestRequiredSkill:
         assert {c[0] for c in field.choices} == set(SkillLevel.values)
 
     def test_default_level_is_beginner(self, db) -> None:
-        service = make_service(make_user(), name="Skilled")
-        skill = RequiredSkill(service=service, skill="CRM management")
+        owner = make_user()
+        service = make_service(owner, name="Skilled")
+        skill = RequiredSkill(
+            service=service,
+            skill=Skill.objects.create(owner=owner, name="CRM management"),
+        )
         skill.full_clean()
         skill.save()
         assert skill.min_level == SkillLevel.BEGINNER
 
     def test_unique_skill_per_service(self, db) -> None:
-        service = make_service(make_user(), name="One skill once")
-        RequiredSkill.objects.create(service=service, skill="Copywriting")
+        owner = make_user()
+        service = make_service(owner, name="One skill once")
+        skill = Skill.objects.create(owner=owner, name="Copywriting")
+        RequiredSkill.objects.create(service=service, skill=skill)
         with pytest.raises(IntegrityError):
-            RequiredSkill.objects.create(service=service, skill="Copywriting")
+            RequiredSkill.objects.create(service=service, skill=skill)

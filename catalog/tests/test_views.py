@@ -8,6 +8,7 @@ from django.urls import reverse
 
 from catalog import services
 from catalog.tests.conftest import VALID_SERVICE, make_user
+from team.models import Skill
 
 pytestmark = pytest.mark.django_db
 
@@ -149,11 +150,12 @@ class TestRequiredSkills:
     def test_add_and_remove_skill(self, client) -> None:
         pro = _client_for(client)
         service = services.create_service(owner=pro, **VALID_SERVICE)
+        skill = Skill.objects.create(owner=pro, name="CRM management")
         client.post(
             reverse("catalog:skill_add", kwargs={"pk": service.pk}),
-            {"skill": "CRM management", "min_level": "intermediate"},
+            {"skill": skill.pk, "min_level": "intermediate"},
         )
-        assert service.required_skills.get().skill == "CRM management"
+        assert service.required_skills.get().skill == skill
         skill_pk = service.required_skills.get().pk
         assert (
             client.post(reverse("catalog:skill_delete", kwargs={"skill_pk": skill_pk})).status_code
@@ -171,7 +173,8 @@ class TestRequiredSkills:
         _client_for(client, "mine")
         other = make_user("other")
         service = services.create_service(owner=other, **VALID_SERVICE)
-        services.add_required_skill(service=service, skill="Copywriting", min_level="advanced")
+        skill = Skill.objects.create(owner=other, name="Copywriting")
+        services.add_required_skill(service=service, skill=skill, min_level="advanced")
         skill_pk = service.required_skills.get().pk
         assert (
             client.post(reverse("catalog:skill_delete", kwargs={"skill_pk": skill_pk})).status_code

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from django import forms
 
+from team.models import Skill
+
 from .models import RequiredSkill, Service
 
 _CURRENCY_CHOICES = [
@@ -53,15 +55,15 @@ class ServiceForm(forms.ModelForm):
 
 
 class RequiredSkillForm(forms.Form):
-    """Add a required skill (with minimum level) to a service."""
+    """Add a registry skill (with minimum level) to a service — dropdown, FK."""
 
-    skill = forms.CharField(
-        max_length=120,
-        label="Skill name",
-        widget=forms.TextInput(attrs={"placeholder": "e.g. CRM management"}),
-    )
+    skill = forms.ModelChoiceField(queryset=Skill.objects.none(), label="Skill")
     min_level = forms.ChoiceField(
         choices=RequiredSkill._meta.get_field("min_level").choices,
         initial="beginner",
         label="Minimum level",
     )
+
+    def __init__(self, owner: object, *args: object, **kwargs: object) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["skill"].queryset = Skill.objects.filter(owner=owner).order_by("name")

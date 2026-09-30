@@ -2,7 +2,7 @@
 
 from django import forms
 
-from .models import SkillLevel, VAProfile
+from .models import Skill, SkillLevel, VAProfile
 
 _SELECT_CLASS = (
     "w-full rounded-[9px] border border-dw-line bg-white px-2.5 py-2 text-[13.5px]"
@@ -76,3 +76,24 @@ class SkillForm(forms.Form):
             }
         ),
     )
+
+
+class SkillPickForm(forms.Form):
+    """Attach one of the owner's registry skills to a team member (dropdown, FK)."""
+
+    skill = forms.ModelChoiceField(queryset=Skill.objects.none(), label="Skill")
+    level = forms.ChoiceField(
+        choices=SkillLevel.choices,
+        initial=SkillLevel.BEGINNER,
+        label="Level",
+    )
+    tasks = forms.CharField(
+        max_length=255,
+        required=False,
+        label="Tasks — what do they actually do?",
+        widget=forms.Textarea(attrs={"rows": 2}),
+    )
+
+    def __init__(self, owner: object, *args: object, **kwargs: object) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["skill"].queryset = Skill.objects.filter(owner=owner).order_by("name")

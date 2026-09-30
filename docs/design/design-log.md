@@ -171,3 +171,10 @@ Full MVP card breakdown: `mvp-build-plan.md` — 12 cards (0–11), one per fres
 
 ## Q3 refinement: per-service currency on the catalog (Robb, 2026-09-30)
 - Robb serves clients worldwide → `Service.currency` (ISO 4217, default PHP, validated 3 uppercase letters) declares each row's currency. **Still no FX ever**: prices are per-currency declarations (one row per market when charging several currencies), never converted; `price_summary()` maps common codes to symbols (₱ $ € £ A$ C$ S$) with an honest code fallback. Mirrors `team.VAProfile.currency`. **Card 5 rule:** matching compares same-currency only (like rate_basis) — cross-currency comparisons surface as a flagged mismatch, never a converted number.
+
+## Skill registry — FKs replace free-text names (Robb decision, 2026-09-30)
+
+- **Supersedes the free-text half of the 2026-09-29 supersession** (design-log line ~97): the proficiency ladder stands, but skill *names* are no longer free text. A provider-owned `team.Skill` registry (unique per owner+name) is the single vocabulary; `Capability.skill` (team) and `RequiredSkill.skill` (catalog) are FKs (`PROTECT`) to it. Card 5 matching is now an exact FK join — never string heuristics — so every "met/missing" chip traces to a record.
+- Vocabulary grows at its source: the provider's own "add skill" (team home, free text → `get_or_create_skill`) and the seed. Member-skill and catalog required-skill forms are **dropdowns of the owner's registry** (input validation = ModelChoiceField; cross-owner pks are invalid choices, keeping tenancy at the form).
+- Renaming a skill once updates every capability and requirement that references it (FK payoff); a rename affordance is backlogged, not in MVP UI.
+- Migration lesson (house knowledge): char→FK swaps on SQLite fail when a UniqueConstraint references the swapped column (RemoveField remakes the table with the old constraint) — drop/re-add constraints around the swap; and Postgres refuses FK-targeting renames in the same transaction as inserts into the referenced table ("pending trigger events") — split rename/NOT NULL alters into their own migration.

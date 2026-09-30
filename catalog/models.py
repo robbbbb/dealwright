@@ -173,12 +173,18 @@ class Service(models.Model):
 class RequiredSkill(models.Model):
     """A skill (with minimum level) a service needs — feeds Card 5 matching.
 
-    ``skill`` matches Capability.skill by name; ``min_level`` uses the same
+    ``skill`` is a registry row (team.Skill) — exact FK join against
+    Capability, never string matching; ``min_level`` uses the same
     proficiency ladder the team app defines (advanced > intermediate > beginner).
     """
 
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name="required_skills")
-    skill = models.CharField("skill", max_length=120, db_index=True)
+    skill = models.ForeignKey(  # type: ignore[var-annotated]
+        "team.Skill",
+        on_delete=models.PROTECT,
+        related_name="required_by",
+        verbose_name="skill",
+    )
     min_level = models.CharField(
         "minimum level",
         max_length=12,

@@ -3,7 +3,7 @@
 import pytest
 from django.contrib.auth import get_user_model
 
-from team.models import ProviderProfile, VAProfile
+from team.models import ProviderProfile, Skill, VAProfile
 
 User = get_user_model()
 
@@ -27,3 +27,9 @@ def provider_profile(user) -> ProviderProfile:
 def va(user) -> VAProfile:
     """One team member, hourly ₱250 — the Maria of the test suite."""
     return VAProfile.objects.create(owner=user, display_name="Maria", rate_per_hour=250)
+
+
+@pytest.fixture
+def skill(user) -> Skill:
+    """One registry row — the shared vocabulary source (2026-09-30 decision)."""
+    return Skill.objects.create(owner=user, name="Email marketing")

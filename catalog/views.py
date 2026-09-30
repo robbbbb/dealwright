@@ -76,8 +76,8 @@ def service_edit(request: HttpRequest, pk: int) -> HttpResponse:
             "form": form,
             "is_create": False,
             "service": service,
-            "required_skills": service.required_skills.all(),
-            "skill_form": RequiredSkillForm(),
+            "required_skills": service.required_skills.select_related("skill"),
+            "skill_form": RequiredSkillForm(request.user),
         },
     )
 
@@ -99,7 +99,7 @@ def skill_add(request: HttpRequest, pk: int) -> HttpResponse:
     service = selectors.get_service_for_owner(request.user, pk)
     if service is None:
         raise Http404("No such service.")
-    form = RequiredSkillForm(request.POST)
+    form = RequiredSkillForm(request.user, request.POST)
     if form.is_valid():
         services.add_required_skill(
             service=service,
