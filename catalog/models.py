@@ -50,7 +50,7 @@ class Service(models.Model):
         help_text="Problems-solved tags, e.g. ['leads-lost', 'slow-response'].",
     )
 
-    # --- Two-part pricing (ranges, never points; Q3: account currency) ---
+    # --- Pricing: setup + monthly retainer (ranges, never points; Q3: account currency) ---
     setup_low = models.DecimalField(
         "setup price — low", max_digits=10, decimal_places=2, null=True, blank=True
     )
@@ -58,10 +58,10 @@ class Service(models.Model):
         "setup price — high", max_digits=10, decimal_places=2, null=True, blank=True
     )
     monthly_low = models.DecimalField(
-        "monthly price — low", max_digits=10, decimal_places=2, null=True, blank=True
+        "retainer — low (monthly)", max_digits=10, decimal_places=2, null=True, blank=True
     )
     monthly_high = models.DecimalField(
-        "monthly price — high", max_digits=10, decimal_places=2, null=True, blank=True
+        "retainer — high (monthly)", max_digits=10, decimal_places=2, null=True, blank=True
     )
     custom_quote = models.BooleanField(
         "custom quote",
@@ -101,7 +101,7 @@ class Service(models.Model):
 
     _RANGES: tuple[tuple[str, str, str], ...] = (
         ("setup price", "setup_low", "setup_high"),
-        ("monthly price", "monthly_low", "monthly_high"),
+        ("retainer", "monthly_low", "monthly_high"),
         ("delivery days", "delivery_days_min", "delivery_days_max"),
     )
 
@@ -141,7 +141,7 @@ class Service(models.Model):
         if self.setup_low is not None:
             parts.append(f"setup ₱{self.setup_low:,.0f}–{self.setup_high:,.0f}")
         if self.monthly_low is not None:
-            parts.append(f"monthly ₱{self.monthly_low:,.0f}–{self.monthly_high:,.0f}")
+            parts.append(f"retainer ₱{self.monthly_low:,.0f}–{self.monthly_high:,.0f}/mo")
         return " · ".join(parts) if parts else "Custom quote"
 
 

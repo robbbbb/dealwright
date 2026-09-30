@@ -7,7 +7,7 @@ All prices are **hypotheses in PHP** to test in pilots (anchored on: pastor case
 ## Catalog design rules
 
 1. **Quantifier rule.** Every service declares machine-readable ROI parameters: a `reduction_range` (time) and/or a `revenue_effect` (leads recovered, conversion uplift, avg sale, days-sales-outstanding). Services that can't be quantified honestly are tagged `qualitative-value` — they appear in the proposal's non-financial benefits section, never in the math.
-2. **Two-part pricing.** Setup (one-time build) + monthly (VA operates/monitors). `Custom quote` allowed.
+2. **Two-part pricing.** Setup (one-time build) + monthly retainer (VA operates/monitors). `Custom quote` allowed. *("Monthly" = retainer — Robb vocabulary decision, 2026-09-30.)*
 3. **Skills tag.** Each service lists required VA skills + minimum level (e.g., Django = Verified only) → feeds rule-based matching.
 4. **Claims discipline.** Every money figure is "estimated"; ranges not points; three scenarios derive from the range ends.
 5. **Delivery estimate** per service (sets timeline section of proposals).
