@@ -126,3 +126,15 @@ Rationale: Pass 5 delivers exactly the dispatch scope — thin views over select
 ```
 
 **Builder disposition (2026-09-30):** minor 1 → applied (`@transaction.atomic` on seed_default_catalog). Minor 2 → by design (Q3 declarations; select = convenience). Minor 3 → acceptable (same DOM structure; live probes were builder-side evidence). Minor 4 → applied (helper removed). Minor 5 → Robb's, untouched. **Pass 5: approved & closed.**
+
+---
+
+# Pass 6 — skill registry: FKs replace free-text (Robb decision, 2026-09-30)
+
+**Scope:** the feature commit after 59e89e6 (`754bc80`). New `team.Skill` registry (unique per owner+name); `Capability.skill` + `RequiredSkill.skill` become PROTECT FKs; owner-scoped dropdowns (member skills, catalog required skills); seed grows the registry via `get_or_create_skill`; data-preserving migrations team/0002-0003 + catalog/0002-0003; design-log entry superseding the free-text half of 2026-09-29; backlog: rename affordance. **For:** fresh GLM-5.3 reviewer (gates only).
+
+**Gates:** pytest **124 passed** (team + catalog suites updated to the FK API), ruff, check, no drift; fresh-sqlite migrate + seed verified (76 reqskills → 22 deduped skills); dev Postgres data preserved (50 services / 152 reqskills / 46 skills); DOM probes: catalog edit dropdown (23 options) adds work; member detail dropdown lists owner's 25 skills; team-home free-text add creates registry + capability.
+
+**Adjudicate:** tenancy at the form (ModelChoiceField queryset owner-scoped — cross-owner pk = invalid choice); PROTECT semantics on referenced skills; migration discipline (constraint dance for SQLite, pending-trigger split for Postgres — recorded in design-log); no string matching anywhere in code paths.
+
+## Verdict (pass 6)
