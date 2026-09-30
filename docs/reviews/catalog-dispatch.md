@@ -150,3 +150,15 @@ Rationale: Pass 6 delivers exactly the dispatch scope — a provider-owned team.
 ```
 
 **Builder disposition (2026-09-30):** minor 1 → applied (`clean_fields()` before lookup — validate-before-write, no stray rows, no false unique errors; +tests). Minor 2 → applied (`select_related("skill")` / `prefetch_related("required_skills__skill")` + docstring fixed). Minor 3 → trail only. Minor 4 → accepted (pass-5 precedent; live probes were builder-side). Minor 5 → applied (model-level owner-consistency guards on Capability + RequiredSkill, both tested). Minor 6 → applied (indent fixed). **Pass 6: approved & closed.** 126 passed after minors.
+
+---
+
+# Pass 7 — seed_skills command (Robb request, 2026-09-30)
+
+**Scope:** the feature commit after 7a05b5e. `team/seed_data.py` (DEFAULT_SKILLS derived from catalog.seed_data union), `services.seed_default_skills` (idempotent), thin `seed_skills` command, 6 tests incl. cross-seed row sharing. **For:** fresh GLM-5.3 reviewer (gates only).
+
+**Gates:** pytest **132 passed** (6 new), ruff, check, no drift; live dev run: both existing users report 22 already present (registry pre-populated by pass-6 backfill — idempotency visible).
+
+**Adjudicate:** derivation not duplication (single source of truth; no invented vocabulary); both seeds converge on shared rows; command = thin wrapper (house pattern).
+
+## Verdict (pass 7)
