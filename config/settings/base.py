@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # Dealwright
     "core",
     "team",  # Card 4: provider profile (solo|team) + team roster + shared Capability
+    "catalog",  # Card 2: service catalog — deterministic prices + ROI parameters
 ]
 
 MIDDLEWARE = [
