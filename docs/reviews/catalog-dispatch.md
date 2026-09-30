@@ -102,3 +102,15 @@ Rationale: Pass 4 delivers exactly the dispatch scope — an ISO 4217 CharField 
 ```
 
 **Builder disposition (2026-09-30):** minor 1 → noted (this file's own label; total gate number was correct). Minor 2 → Robb's edit, untouched. **Pass 4: approved & closed.**
+
+---
+
+# Pass 5 — provider catalog UI (Robb request, 2026-09-30)
+
+**Scope:** the feature commit after 985d0f4 (git log --oneline -3). Catalog app grows views/selectors/forms/urls + templates/catalog/ (list, form, skills manager, empty-state seed button); seed data extracted to `catalog/seed_data.py` with the command now a thin wrapper over `services.seed_default_catalog` (single write path); sidebar "Service catalog" wired live. **For:** fresh GLM-5.3 reviewer (gates only).
+
+**Gates:** pytest (**124 passed** = 105 + 19 view tests), ruff, manage.py check, no migration drift (models untouched), CSS rebuilt & committed, DOM probes via headless Chromium: list 8 category sections / 25 rows / correct ₱ price strings / 76 skill chips / sidebar active; mobile 390px: 25 stacked cards, no horizontal overflow; edit page 11 fields, tags prefilled, 7 currency options, skills list + add form; empty state (fresh user) shows seed button, click → 25 rows.
+
+**Adjudicate:** team-app conventions held (services full_clean, selectors, POST-only, tenancy 404s); tags comma-parse in form only (input validation, not business logic); seed reuse not duplication; claims discipline (prices still labelled ranges via price_summary, no computed conversions).
+
+## Verdict (pass 5)
