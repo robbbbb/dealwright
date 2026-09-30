@@ -1,17 +1,18 @@
-"""Card 2 — service catalog: the deterministic source of prices and ROI parameters.
+"""Service catalog: what you sell and what it costs — services + prices only.
+
+Robb decision (2026-09-30, design-log): ROI lever fields (reduction, hours,
+revenue effect, qualitative flag) were REMOVED from the model — no computation
+in the catalog for now. ROI parameters, when Card 3 needs them, will come from
+session data and/or a versioned benchmarks table, not from these rows.
 
 Design refs:
-- mvp-build-plan.md Card 2 (quantifier rule is the TDD anchor; seed from
-  service-catalog-draft.md; admin CRUD in MVP).
-- service-catalog-draft.md rules 1-5: quantifier rule, two-part pricing,
-  required VA skills feed matching, claims discipline (ranges not points),
-  delivery estimate.
-- design-log Q8 (8 categories incl. Personal productivity ops), Q3 (currency
-  passthrough — no FX, prices in the account's currency).
+- service-catalog-draft.md: two-part pricing, required VA skills feed
+  matching, claims discipline (ranges not points), delivery estimate.
+- design-log Q8 (8 categories), Q3 (currency passthrough — no FX).
 - team app (Card 4): RequiredSkill reuses the team SkillLevel ladder so Card 5
   matches required levels against Capability levels on one scale.
 
-Money discipline: every figure here is a provider-editable *hypothesis* range,
+Money discipline: every figure is a provider-editable *hypothesis* range,
 never AI-generated; proposals always label catalog-derived numbers as estimates.
 
 Protected personal characteristics do not exist in this schema by design.
@@ -27,14 +28,7 @@ from team.models import SkillLevel
 
 
 class Service(models.Model):
-    """One sellable service: what it solves, its ROI levers, prices, skills."""
-
-    class RevenueEffect(models.TextChoices):
-        """Mechanism + unit for the money lever. Ranges carry the unit's scale."""
-
-        RECOVER_LEADS_PCT = "recover_leads_pct", "Recovered leads (% of missed)"
-        CONVERSION_UPLIFT_PCT = "conversion_uplift_pct", "Conversion uplift (%)"
-        DSO_DAYS = "dso_days", "Payment days saved (DSO)"
+    """One sellable service: what it solves, what it costs, skills it needs."""
 
     owner = models.ForeignKey(  # type: ignore[var-annotated]
         settings.AUTH_USER_MODEL,
@@ -54,64 +48,6 @@ class Service(models.Model):
         default=list,
         blank=True,
         help_text="Problems-solved tags, e.g. ['leads-lost', 'slow-response'].",
-    )
-
-    # --- ROI levers (quantifier rule: >=1 pair or qualitative flag) ---
-    reduction_low = models.DecimalField(
-        "time reduction — low (%)",
-        max_digits=5,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        help_text="Automation lever: % of task time removed (Card 3 automation mode).",
-    )
-    reduction_high = models.DecimalField(
-        "time reduction — high (%)",
-        max_digits=5,
-        decimal_places=2,
-        null=True,
-        blank=True,
-    )
-    hours_saved_low = models.DecimalField(
-        "hours saved — low (hrs/week)",
-        max_digits=6,
-        decimal_places=1,
-        null=True,
-        blank=True,
-        help_text="Delegation lever: weekly hours removed (Card 3 delegation mode).",
-    )
-    hours_saved_high = models.DecimalField(
-        "hours saved — high (hrs/week)",
-        max_digits=6,
-        decimal_places=1,
-        null=True,
-        blank=True,
-    )
-    revenue_effect_type = models.CharField(
-        "revenue effect type",
-        max_length=30,
-        choices=RevenueEffect.choices,
-        blank=True,
-        help_text="Unit of the money lever; blank unless numbers are declared.",
-    )
-    revenue_effect_low = models.DecimalField(
-        "revenue effect — low",
-        max_digits=8,
-        decimal_places=2,
-        null=True,
-        blank=True,
-    )
-    revenue_effect_high = models.DecimalField(
-        "revenue effect — high",
-        max_digits=8,
-        decimal_places=2,
-        null=True,
-        blank=True,
-    )
-    qualitative_value = models.BooleanField(
-        "qualitative value only",
-        default=False,
-        help_text="Honest-but-unquantifiable: proposal's non-financial benefits, never the math.",
     )
 
     # --- Two-part pricing (ranges, never points; Q3: account currency) ---
@@ -151,14 +87,6 @@ class Service(models.Model):
                 fields=["owner", "category", "name"], name="dw_service_unique_per_owner"
             ),
             models.CheckConstraint(
-                condition=models.Q(reduction_low__isnull=True) | models.Q(reduction_low__gte=0),
-                name="dw_service_reduction_low_non_negative",
-            ),
-            models.CheckConstraint(
-                condition=models.Q(hours_saved_low__isnull=True) | models.Q(hours_saved_low__gte=0),
-                name="dw_service_hours_low_non_negative",
-            ),
-            models.CheckConstraint(
                 condition=models.Q(setup_low__isnull=True) | models.Q(setup_low__gte=0),
                 name="dw_service_setup_low_non_negative",
             ),
@@ -172,9 +100,6 @@ class Service(models.Model):
         return f"{self.name} ({self.category})"
 
     _RANGES: tuple[tuple[str, str, str], ...] = (
-        ("reduction", "reduction_low", "reduction_high"),
-        ("hours saved", "hours_saved_low", "hours_saved_high"),
-        ("revenue effect", "revenue_effect_low", "revenue_effect_high"),
         ("setup price", "setup_low", "setup_high"),
         ("monthly price", "monthly_low", "monthly_high"),
         ("delivery days", "delivery_days_min", "delivery_days_max"),
@@ -191,22 +116,6 @@ class Service(models.Model):
                 errors[low_attr] = [f"{label.capitalize()} needs both ends of the range."]
             elif low is not None and high is not None and low > high:
                 errors[high_attr] = [f"{label.capitalize()} low must not exceed high."]
-
-        has_revenue_numbers = self.revenue_effect_low is not None
-        if has_revenue_numbers and not self.revenue_effect_type:
-            errors["revenue_effect_type"] = ["Numbers need a revenue effect type (their unit)."]
-        if self.revenue_effect_type and not has_revenue_numbers:
-            errors["revenue_effect_low"] = ["A revenue effect type needs its numbers."]
-
-        has_roi_parameter = any(
-            getattr(self, low_attr) is not None
-            for _, low_attr, _ in self._RANGES[:3]
-        )
-        if not has_roi_parameter and not self.qualitative_value:
-            errors["qualitative_value"] = [
-                "Quantifier rule: declare a reduction/hours/revenue range"
-                " or flag qualitative value."
-            ]
 
         if not self.custom_quote and self.setup_low is None and self.monthly_low is None:
             errors["custom_quote"] = [

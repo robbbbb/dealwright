@@ -48,6 +48,8 @@ professionalism/consistency, audience growth, reputation protection, retention, 
 
 ## C. The generic calculator (concept — NOT built yet)
 
+> **Superseded for the catalog model (2026-09-30, Robb):** ROI levers no longer live on `Service` — the catalog is services + prices + delivery + skills only. The formulas below now describe a possible *benchmarks table + session data* source for Card 3, not catalog fields.
+
 **Principle:** the VA enters what they *know*; the app derives catalog ranges from formulas + the benchmark table above (versioned data, like guardrails); everything stays editable; every derived figure is labelled an estimate.
 
 ### C1. Inputs (things a VA actually knows)

@@ -10,8 +10,6 @@ VALID_SERVICE: dict = {
     "category": "Lead capture & CRM automation",
     "name": "Test service",
     "problem_tags": ["leads-lost"],
-    "reduction_low": 10,
-    "reduction_high": 30,
     "setup_low": 8000,
     "setup_high": 15000,
     "monthly_low": 2000,

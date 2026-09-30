@@ -1,7 +1,9 @@
-"""Card 2 — catalog model validation.
+"""Catalog model validation — services + prices + delivery + skills.
 
-Design refs: mvp-build-plan.md Card 2 (quantifier rule is the TDD anchor);
-service-catalog-draft.md rules 1-5; styleguide — models validate shape.
+Robb decision (2026-09-30, recorded in design-log): the ROI lever fields and
+the quantifier rule were REMOVED from the model — the catalog carries no
+computation for now; ROI parameters move to session data / a future
+benchmarks table (Card 3 planning).
 
 Tier: catalog & profile management → 80-85%.
 """
@@ -18,79 +20,17 @@ from catalog.tests.conftest import make_service, make_user
 from team.models import SkillLevel
 
 
-class TestQuantifierRule:
-    """Every service declares machine-readable ROI parameters or is qualitative."""
-
-    def test_service_must_declare_roi_parameter_or_qualitative(self, db) -> None:
-        owner = User.objects.create_user(username="pro")
-        with pytest.raises(ValidationError, match="[Qq]uantifier"):
-            Service(
-                owner=owner,
-                category="Reporting, invoices, dashboards & data entry",
-                name="No levers at all",
-                setup_low=1000,
-                setup_high=2000,
-            ).full_clean()
-
-    def test_qualitative_flag_alone_is_valid(self, db) -> None:
-        owner = User.objects.create_user(username="pro")
-        Service(
-            owner=owner,
-            category="Personal productivity ops",
-            name="Purely qualitative",
-            qualitative_value=True,
-            custom_quote=True,
-        ).full_clean()
-
-    def test_reduction_pair_alone_is_valid(self, db) -> None:
-        owner = User.objects.create_user(username="pro")
-        Service(
-            owner=owner,
-            category="X",
-            name="Reduction only",
-            reduction_low=40,
-            reduction_high=70,
-            custom_quote=True,
-        ).full_clean()
-
-    def test_hours_pair_alone_is_valid(self, db) -> None:
-        owner = User.objects.create_user(username="pro")
-        Service(
-            owner=owner,
-            category="X",
-            name="Hours only",
-            hours_saved_low=3,
-            hours_saved_high=6,
-            custom_quote=True,
-        ).full_clean()
-
-    def test_revenue_pair_alone_is_valid(self, db) -> None:
-        owner = User.objects.create_user(username="pro")
-        Service(
-            owner=owner,
-            category="X",
-            name="Revenue only",
-            revenue_effect_type=Service.RevenueEffect.CONVERSION_UPLIFT_PCT,
-            revenue_effect_low=10,
-            revenue_effect_high=20,
-            custom_quote=True,
-        ).full_clean()
-
-
 class TestPairs:
     def test_incomplete_range_fails(self, db) -> None:
         owner = User.objects.create_user(username="pro")
         with pytest.raises(ValidationError):
             Service(
-                owner=owner, category="X", name="Half a range", reduction_low=10, custom_quote=True
+                owner=owner, category="X", name="Half a range", setup_low=1000, custom_quote=True
             ).full_clean()
 
     @pytest.mark.parametrize(
         "low_field,high_field,low,high",
         [
-            ("reduction_low", "reduction_high", 70, 40),
-            ("hours_saved_low", "hours_saved_high", 6, 3),
-            ("revenue_effect_low", "revenue_effect_high", 30, 10),
             ("setup_low", "setup_high", 15000, 8000),
             ("monthly_low", "monthly_high", 4000, 2000),
             ("delivery_days_min", "delivery_days_max", 14, 7),
@@ -103,7 +43,6 @@ class TestPairs:
                 owner=owner,
                 category="X",
                 name="Inverted range",
-                qualitative_value=True,
                 custom_quote=True,
                 **{low_field: low, high_field: high},
             ).full_clean()
@@ -114,10 +53,9 @@ class TestPairs:
             Service(
                 owner=owner,
                 category="X",
-                name="Negative hours",
-                hours_saved_low=-1,
-                hours_saved_high=2,
-                custom_quote=True,
+                name="Negative price",
+                setup_low=-1000,
+                setup_high=2000,
             ).full_clean()
 
 
@@ -125,9 +63,7 @@ class TestPricing:
     def test_pricing_required_unless_custom_quote(self, db) -> None:
         owner = User.objects.create_user(username="pro")
         with pytest.raises(ValidationError, match="[Pp]ric"):
-            Service(
-                owner=owner, category="X", name="Free?", reduction_low=10, reduction_high=20
-            ).full_clean()
+            Service(owner=owner, category="X", name="Free?").full_clean()
 
     def test_custom_quote_without_ranges_is_valid(self, db) -> None:
         owner = User.objects.create_user(username="pro")
@@ -135,34 +71,8 @@ class TestPricing:
             owner=owner,
             category="X",
             name="Custom",
-            qualitative_value=True,
             custom_quote=True,
         ).full_clean()
-
-
-class TestRevenueEffect:
-    def test_type_requires_numbers(self, db) -> None:
-        owner = User.objects.create_user(username="pro")
-        with pytest.raises(ValidationError):
-            Service(
-                owner=owner,
-                category="X",
-                name="Type without numbers",
-                revenue_effect_type=Service.RevenueEffect.DSO_DAYS,
-                custom_quote=True,
-            ).full_clean()
-
-    def test_numbers_require_type(self, db) -> None:
-        owner = User.objects.create_user(username="pro")
-        with pytest.raises(ValidationError):
-            Service(
-                owner=owner,
-                category="X",
-                name="Numbers without type",
-                revenue_effect_low=5,
-                revenue_effect_high=15,
-                custom_quote=True,
-            ).full_clean()
 
 
 class TestTagsAndTenancy:
@@ -174,7 +84,6 @@ class TestTagsAndTenancy:
                 category="X",
                 name="Bad tags",
                 problem_tags=["ok-tag", 42],
-                qualitative_value=True,
                 custom_quote=True,
             ).full_clean()
 
