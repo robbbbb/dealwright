@@ -23,7 +23,6 @@ def team_home(request: HttpRequest) -> HttpResponse:
             services.add_capability(holder=profile, **skill_form.cleaned_data)
             messages.success(request, "Skill added.")
             return redirect("team:team_home")
-        registry_form = RegistrySkillForm()
     return render(
         request,
         "team/team.html",

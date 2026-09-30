@@ -234,3 +234,15 @@ Rationale: Pass 9 delivers exactly the dispatch scope — the pass-8 slug decisi
 **Adjudicate:** free text confined to vocabulary creation (single write path get_or_create_skill); removal guard at service level (friendly) over PROTECT (hard); tenancy on both new routes; slug rules identical to pass 8/9.
 
 ## Verdict (pass 10)
+### Pass 10 verdict — APPROVED
+
+Probes confirm: scope exact; gates green (147 passed / ruff / check / no drift); free text confined to RegistrySkillForm → get_or_create_skill (single validated write path) with pickers everywhere else; removal guard proven at both layers (service ValidationError + ProtectedError underneath); tenancy/POST-only on both new routes; slug semantics verified live over real pre-0006 rows; DOM gate reproduced exactly (23 usage chips, remove only on the 0-use chip, my-skills add a 23-option select).
+
+```
+Verdict: APPROVED
+Blocking findings: none. Scope is exact (11 dispatched files, catalog untouched); all four hermetic gates green on re-run; free text confined to RegistrySkillForm → team:skill_create → get_or_create_skill while every other attachment point is an owner-scoped picker; removal guard proven at both layers; tenancy and method guards hold; slug semantics verified live; design-log records the deliberate free-text surface + picker-everywhere rule.
+Minor findings: (1) team/forms.SkillForm (old free-text capability form) is dead code — delete in cleanup. (2) team_home re-assigns registry_form redundantly in the invalid-POST branch — cosmetic. (3) Backfill probe ran on sqlite, not dev Postgres (sandbox limit; precedent). (4) Robb's pre-existing dashboard.html edit, untouched.
+Rationale: Pass 10 delivers exactly the dispatch scope — a Skill-list manager exposing vocabulary creation as the single deliberate free-text surface behind get_or_create_skill, registry pickers at every other attachment point, usage-annotated chips gating a friendly service-level removal guard layered over PROTECT, and Skill.slug making registry rows addressable under the same frozen-slug rules as pass 8/9.
+```
+
+**Builder disposition (2026-09-30):** minor 1 → applied (dead SkillForm deleted). Minor 2 → applied (redundant re-assignment removed). Minor 3 → accepted (precedent; 0006 is byte-pattern-identical to the proven 0004). Minor 4 → Robb's, untouched. **Pass 10: approved & closed.** 147 passed after cleanup.

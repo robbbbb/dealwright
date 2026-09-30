@@ -52,31 +52,6 @@ class EngagementForm(forms.ModelForm):
         }
 
 
-class SkillForm(forms.Form):
-    """Add/update a capability on the freelancer profile or a team member."""
-
-    skill = forms.CharField(
-        max_length=120,
-        label="Skill name",
-        widget=forms.TextInput(attrs={"placeholder": "e.g. Email marketing"}),
-    )
-    level = forms.ChoiceField(
-        choices=SkillLevel.choices,
-        initial=SkillLevel.BEGINNER,
-        label="Level",
-    )
-    tasks = forms.CharField(
-        max_length=255,
-        required=False,
-        label="Tasks — what do you actually do?",
-        widget=forms.Textarea(
-            attrs={
-                "rows": 2,
-                "placeholder": "e.g. Klaviyo flows, campaign copy, list management",
-            }
-        ),
-    )
-
 
 class SkillPickForm(forms.Form):
     """Attach one of the owner's registry skills to a team member (dropdown, FK)."""
