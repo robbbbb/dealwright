@@ -7,6 +7,7 @@ constraints must hold from any entry path (app, admin, shell).
 from typing import Any
 
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db import transaction
 
 from .models import Capability, ProviderProfile, Skill, SkillLevel, VAProfile
@@ -97,6 +98,16 @@ def update_capability(
 
 def delete_capability(*, capability: Capability) -> None:
     capability.delete()
+
+
+def delete_registry_skill(*, skill: Skill) -> None:
+    """Remove a registry skill only when nothing references it — PROTECT is the
+    hard guard; this pre-check gives the UI a friendly message instead."""
+    if skill.capabilities.exists() or skill.required_by.exists():
+        raise ValidationError(
+            "This skill is in use by your skills or service requirements — remove those first."
+        )
+    skill.delete()
 
 def seed_default_skills(*, owner: Any) -> tuple[int, int]:
     """Load the starter skill vocabulary for one provider; never touch existing rows.

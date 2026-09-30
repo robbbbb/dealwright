@@ -256,6 +256,12 @@ class Skill(models.Model):
         related_name="skills",
     )
     name = models.CharField("name", max_length=120)
+    slug = models.SlugField(
+        "slug",
+        max_length=140,
+        blank=True,  # generated once at creation from the name
+        help_text="URL name — set at creation from the skill name, unique per owner.",
+    )
     created_at = models.DateTimeField("created at", auto_now_add=True)
 
     class Meta:
@@ -267,10 +273,23 @@ class Skill(models.Model):
                 fields=["owner", "name"],
                 name="dw_skill_unique_per_owner",
             ),
+            models.UniqueConstraint(
+                fields=["owner", "slug"],
+                name="dw_skill_slug_unique_per_owner",
+            ),
         ]
 
     def __str__(self) -> str:
         return self.name
+
+    def save(self, *args: object, **kwargs: object) -> None:
+        if not self.slug:
+            self.slug = _unique_slug(
+                Skill.objects.filter(owner=self.owner),
+                slugify(self.name) or "skill",
+                self.pk,
+            )
+        super().save(*args, **kwargs)
 
 
 class Capability(models.Model):

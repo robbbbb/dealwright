@@ -2,33 +2,28 @@
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
 from . import selectors, services
-from .forms import EngagementForm, SkillForm, SkillPickForm, TeamMemberForm
+from .forms import EngagementForm, RegistrySkillForm, SkillPickForm, TeamMemberForm
 
 
 @login_required
 def team_home(request: HttpRequest) -> HttpResponse:
-    """/team/ — my skills (solo side) + the team roster."""
+    """/team/ — the skill list (vocabulary), my skills (solo side) + the roster."""
     profile = services.get_provider_profile(request.user)
-    skill_form = SkillForm()
-    if request.method == "POST":  # add one of my skills
-        skill_form = SkillForm(request.POST)
+    skill_form = SkillPickForm(request.user)
+    registry_form = RegistrySkillForm()
+    if request.method == "POST":  # add one of my skills from the registry
+        skill_form = SkillPickForm(request.user, request.POST)
         if skill_form.is_valid():
-            skill = services.get_or_create_skill(
-                owner=request.user, name=skill_form.cleaned_data["skill"]
-            )
-            services.add_capability(
-                holder=profile,
-                skill=skill,
-                level=skill_form.cleaned_data["level"],
-                tasks=skill_form.cleaned_data["tasks"],
-            )
+            services.add_capability(holder=profile, **skill_form.cleaned_data)
             messages.success(request, "Skill added.")
             return redirect("team:team_home")
+        registry_form = RegistrySkillForm()
     return render(
         request,
         "team/team.html",
@@ -36,10 +31,45 @@ def team_home(request: HttpRequest) -> HttpResponse:
             "profile": profile,
             "my_skills": selectors.list_holder_capabilities(profile),
             "skill_form": skill_form,
+            "registry_form": registry_form,
+            "registry_skills": selectors.list_registry_skills(request.user),
             "vas": selectors.list_vas(request.user),
             "member_form": TeamMemberForm(),
         },
     )
+
+
+@login_required
+@require_POST
+def skill_create(request: HttpRequest) -> HttpResponse:
+    """Create a registry skill — the deliberate free-text surface (vocabulary)."""
+    form = RegistrySkillForm(request.POST)
+    if form.is_valid():
+        skill = services.get_or_create_skill(
+            owner=request.user, name=form.cleaned_data["name"]
+        )
+        messages.success(request, f"'{skill.name}' added to your skill list.")
+    else:
+        messages.error(request, "Please give the skill a name.")
+    return redirect("team:team_home")
+
+
+@login_required
+@require_POST
+def skill_registry_delete(request: HttpRequest, skill: str) -> HttpResponse:
+    skill_obj = selectors.get_registry_skill_for_owner(request.user, skill)
+    if skill_obj is None:
+        raise Http404("No such skill.")
+    try:
+        services.delete_registry_skill(skill=skill_obj)
+        messages.success(request, f"'{skill_obj.name}' removed from your skill list.")
+    except ValidationError:
+        messages.error(
+            request,
+            f"'{skill_obj.name}' is in use — remove it from your skills, team members, "
+            "or service requirements first.",
+        )
+    return redirect("team:team_home")
 
 
 @login_required
@@ -144,7 +174,7 @@ def skill_delete(request: HttpRequest, cap: str) -> HttpResponse:
     return _redirect_target_for(capability)
 
 
-def _first_error(form: SkillForm) -> str:
+def _first_error(form: SkillPickForm) -> str:
     """Compact one-line summary for flash-message error display."""
     parts = [f"{field}: {' '.join(errors)}" for field, errors in form.errors.items()]
     return "Please fix the skill form — " + "; ".join(parts)

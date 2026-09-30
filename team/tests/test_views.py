@@ -3,7 +3,7 @@
 import pytest
 from django.urls import reverse
 
-from team.models import Capability, VAProfile
+from team.models import Capability, Skill, VAProfile
 from team.services import (
     add_capability,
     create_va_profile,
@@ -66,9 +66,10 @@ def test_team_page_lists_vas_and_my_skills(client, user, va, skill) -> None:
 def test_add_my_skill_from_team_page(client, user, skill) -> None:
     _login(client, user)
 
+    copywriting = get_or_create_skill(owner=user, name="Copywriting")
     response = client.post(
         reverse("team:team_home"),
-        {"skill": "Copywriting", "level": "beginner", "tasks": ""},
+        {"skill": copywriting.pk, "level": "beginner", "tasks": ""},
     )
 
     assert response.status_code == 302
@@ -288,3 +289,54 @@ class TestTeamSlugSemantics:
         on_profile = add_capability(holder=profile, skill=skill)
         assert on_va.slug != on_profile.slug  # same skill, owner-wide uniqueness
         assert on_profile.slug.startswith(on_va.slug + "-")
+
+
+class TestSkillListManager:
+    def _create(self, client, name: str):
+        return client.post(reverse("team:skill_create"), {"name": name})
+
+    def test_create_registry_skill(self, client, user) -> None:
+        _login(client, user)
+        assert self._create(client, "Podcast editing").status_code == 302
+        assert Skill.objects.filter(owner=user, name="Podcast editing").exists()
+
+    def test_create_is_idempotent(self, client, user) -> None:
+        _login(client, user)
+        self._create(client, "Podcast editing")
+        self._create(client, "Podcast editing")
+        assert Skill.objects.filter(owner=user, name="Podcast editing").count() == 1
+
+    def test_blank_name_rejected(self, client, user) -> None:
+        _login(client, user)
+        assert self._create(client, "").status_code == 302  # flash error, no row
+        assert Skill.objects.filter(owner=user).count() == 0
+
+    def test_create_get_rejected(self, client, user) -> None:
+        _login(client, user)
+        assert client.get(reverse("team:skill_create")).status_code == 405
+
+    def test_remove_unused_skill(self, client, user) -> None:
+        _login(client, user)
+        skill = get_or_create_skill(owner=user, name="Unused skill")
+        url = reverse("team:skill_registry_delete", kwargs={"skill": skill.slug})
+        assert client.post(url).status_code == 302
+        assert not Skill.objects.filter(pk=skill.pk).exists()
+
+    def test_cannot_remove_skill_in_use(self, client, user, va, skill) -> None:
+        _login(client, user)
+        add_capability(holder=va, skill=skill)
+        url = reverse("team:skill_registry_delete", kwargs={"skill": skill.slug})
+        assert client.post(url).status_code == 302  # flash error, row survives
+        assert Skill.objects.filter(pk=skill.pk).exists()
+
+    def test_remove_get_rejected(self, client, user, skill) -> None:
+        _login(client, user)
+        url = reverse("team:skill_registry_delete", kwargs={"skill": skill.slug})
+        assert client.get(url).status_code == 405
+
+    def test_cannot_remove_other_users_skill(self, client, user) -> None:
+        _login(client, user)
+        other = user.__class__.objects.create_user(username="reg-other")
+        foreign = get_or_create_skill(owner=other, name="Foreign skill")
+        url = reverse("team:skill_registry_delete", kwargs={"skill": foreign.slug})
+        assert client.post(url).status_code == 404

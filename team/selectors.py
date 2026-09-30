@@ -2,14 +2,27 @@
 
 from typing import Any
 
-from django.db.models import Q, QuerySet
+from django.db.models import Count, Q, QuerySet
 
-from .models import Capability, ProviderProfile, VAProfile
+from .models import Capability, ProviderProfile, Skill, VAProfile
 
 
 def list_vas(owner: Any) -> QuerySet[VAProfile]:
     """The owner's whole team (active and inactive; UI shows status)."""
     return VAProfile.objects.filter(owner=owner).prefetch_related("capabilities")
+
+
+def list_registry_skills(owner: Any) -> QuerySet[Skill]:
+    """The owner's vocabulary with total usage (capabilities + requirements),
+    so the UI can offer removal only for unused rows."""
+    return Skill.objects.filter(owner=owner).annotate(
+        uses=Count("capabilities", distinct=True) + Count("required_by", distinct=True)
+    )
+
+
+def get_registry_skill_for_owner(owner: Any, skill_slug: str) -> Skill | None:
+    """Ownership-checked registry lookup by slug — None means not found."""
+    return Skill.objects.filter(owner=owner, slug=skill_slug).first()
 
 
 def get_va_for_owner(owner: Any, member_slug: str) -> VAProfile | None:

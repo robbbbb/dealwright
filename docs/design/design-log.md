@@ -193,3 +193,9 @@ Full MVP card breakdown: `mvp-build-plan.md` — 12 cards (0–11), one per fres
 
 - Team addressable routes are slug-based: `/team/<member-slug>/` (+ `/engagement/`, `/skills/add/`), capabilities at `/team/skills/<cap-slug>/update|delete/`. VAProfile.slug unique per owner (from display_name); Capability.slug unique per owner **across both holders** (provider + VAs share one namespace, so a redirect after delete/update is unambiguous). Frozen at creation; renames never break links. Sequential pks no longer addressable anywhere in the app.
 - Capability.save() skips slug generation when orphaned (no holder) — the DB check constraint still rejects orphans, preserving the `test_orphan_save_blocked_at_db_level` guarantee.
+
+## Skill-list manager — vocabulary gets a UI (Robb request, 2026-09-30)
+
+- The team page gains a **Skill list** card: create a registry skill (the one deliberate free-text surface — this IS vocabulary creation), chips with live usage counts (capabilities + service requirements), and removal **only when unused** (service-level guard + PROTECT underneath; in-use rows show counts, no remove button).
+- "My skills" on the team page is now a **picker** (SkillPickForm) like member pages and the catalog — every attachment point picks from the registry; nothing bypasses it.
+- Skill registry rows become addressable: `Skill.slug` (unique per owner, frozen at creation) — `/team/skills/create/` (POST) and `/team/skills/<skill-slug>/remove/` (POST).

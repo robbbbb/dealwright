@@ -1,7 +1,7 @@
 """team namespace — template references become {% url 'team:...' %}.
 
-Addressable routes use slugs (member slug; capability slug unique per owner) —
-never sequential pks (Robb, 2026-09-30, same decision as catalog slugs).
+Addressable routes use slugs (member slug; capability and registry-skill slugs
+unique per owner) — never sequential pks (Robb, 2026-09-30).
 """
 
 from django.urls import path
@@ -13,6 +13,8 @@ app_name = "team"
 urlpatterns = [
     path("", views.team_home, name="team_home"),
     path("add/", views.member_add, name="member_add"),
+    path("skills/create/", views.skill_create, name="skill_create"),
+    path("skills/<slug:skill>/remove/", views.skill_registry_delete, name="skill_registry_delete"),
     path("<slug:member>/", views.member_detail, name="member_detail"),
     path("<slug:member>/engagement/", views.member_engagement, name="member_engagement"),
     path("<slug:member>/skills/add/", views.member_skill_add, name="member_skill_add"),

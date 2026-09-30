@@ -97,3 +97,14 @@ class SkillPickForm(forms.Form):
     def __init__(self, owner: object, *args: object, **kwargs: object) -> None:
         super().__init__(*args, **kwargs)
         self.fields["skill"].queryset = Skill.objects.filter(owner=owner).order_by("name")
+
+
+class RegistrySkillForm(forms.Form):
+    """Create a registry skill — the one deliberate free-text surface: this IS
+    vocabulary creation. Everything else picks from the list it feeds."""
+
+    name = forms.CharField(
+        max_length=120,
+        label="Skill name",
+        widget=forms.TextInput(attrs={"placeholder": "e.g. Podcast editing"}),
+    )
