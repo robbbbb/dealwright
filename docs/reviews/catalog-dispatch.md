@@ -174,3 +174,15 @@ Rationale: Pass 7 delivers exactly the dispatch scope — a starter registry voc
 ```
 
 **Builder disposition (2026-09-30):** minor 1 → applied (two COUNT queries bracket the loop instead of per-name `.exists()`). Minor 2 → applied (test now asserts the full invariant: registry stays at exactly the vocabulary size after both seeds). Minor 3 → Robb's, untouched. **Pass 7: approved & closed.** 132 passed after minors.
+
+---
+
+# Pass 8 — slug URLs (Robb decision, 2026-09-30)
+
+**Scope:** the feature commit after 17b91fe. `Service.slug` (unique per owner) + `RequiredSkill.slug` (unique per service), frozen at creation in save(); slugged routes incl. category slug validated canonically; data-preserving migrations 0004/0005; design-log + backlog (team-app follow-up). **For:** fresh GLM-5.3 reviewer (gates only).
+
+**Gates:** pytest **132 passed**, ruff, check, no drift; dev Postgres migrated with backfill (0 null slugs); DOM probes: list links all slugged, zero int URLs, edit 200, legacy `/catalog/1/` → 404; rename keeps slug; same-name cross-category gets `-2`.
+
+**Adjudicate:** slug generation in save() (holds from any entry path incl. admin/shell); constraint validation with blank slug only transient pre-save (no blank rows can exist post-save); canonical-category 404; no pk-based routes remain in catalog/urls.py; templates resolve slugs only.
+
+## Verdict (pass 8)
