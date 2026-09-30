@@ -178,3 +178,7 @@ Full MVP card breakdown: `mvp-build-plan.md` — 12 cards (0–11), one per fres
 - Vocabulary grows at its source: the provider's own "add skill" (team home, free text → `get_or_create_skill`) and the seed. Member-skill and catalog required-skill forms are **dropdowns of the owner's registry** (input validation = ModelChoiceField; cross-owner pks are invalid choices, keeping tenancy at the form).
 - Renaming a skill once updates every capability and requirement that references it (FK payoff); a rename affordance is backlogged, not in MVP UI.
 - Migration lesson (house knowledge): char→FK swaps on SQLite fail when a UniqueConstraint references the swapped column (RemoveField remakes the table with the old constraint) — drop/re-add constraints around the swap; and Postgres refuses FK-targeting renames in the same transaction as inserts into the referenced table ("pending trigger events") — split rename/NOT NULL alters into their own migration.
+
+## seed_skills — starter registry vocabulary (2026-09-30)
+
+- `seed_skills <username>` mirrors the `seed_catalog` pattern: data in `team/seed_data.DEFAULT_SKILLS`, write path in `services.seed_default_skills` (get_or_create per name — idempotent, edit-safe). **The vocabulary is derived, not duplicated**: the sorted union of every skill the default catalog requires — one source of truth (catalog.seed_data), nothing invented. Test asserts seed_skills + seed_catalog share registry rows without duplicates (both seeds converge on the same vocabulary).

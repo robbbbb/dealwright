@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 
 from .models import Capability, ProviderProfile, Skill, SkillLevel, VAProfile
+from .seed_data import DEFAULT_SKILLS
 
 User = get_user_model()
 
@@ -96,3 +97,16 @@ def update_capability(
 
 def delete_capability(*, capability: Capability) -> None:
     capability.delete()
+
+def seed_default_skills(*, owner: Any) -> tuple[int, int]:
+    """Load the starter skill vocabulary for one provider; never touch existing rows.
+
+    Returns (created, total). Idempotent by (owner, name) — same pattern as
+    catalog.services.seed_default_catalog.
+    """
+    created = 0
+    for name in DEFAULT_SKILLS:
+        existed = Skill.objects.filter(owner=owner, name=name).exists()
+        get_or_create_skill(owner=owner, name=name)
+        created += 0 if existed else 1
+    return created, len(DEFAULT_SKILLS)
