@@ -124,8 +124,6 @@ def skill_update(request: HttpRequest, cap: str) -> HttpResponse:
     capability = selectors.get_capability_for_owner(request.user, cap)
     if capability is None:
         raise Http404("No such skill.")
-    if cap is None:
-        raise Http404("No such skill.")
     form = SkillPickForm(request.user, request.POST)
     if form.is_valid():
         services.update_capability(capability=capability, **form.cleaned_data)
@@ -140,8 +138,6 @@ def skill_update(request: HttpRequest, cap: str) -> HttpResponse:
 def skill_delete(request: HttpRequest, cap: str) -> HttpResponse:
     capability = selectors.get_capability_for_owner(request.user, cap)
     if capability is None:
-        raise Http404("No such skill.")
-    if cap is None:
         raise Http404("No such skill.")
     services.delete_capability(capability=capability)
     messages.success(request, "Skill removed.")

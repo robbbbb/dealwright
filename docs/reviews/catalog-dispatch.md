@@ -210,3 +210,15 @@ Rationale: Pass 8 delivers exactly the dispatch scope — owner-scoped Service s
 **Adjudicate:** same rules as pass 8 (frozen slugs, owner-scoped 404s, canonical lookups); orphan-capability behavior preserved (DB check constraint, not slug generation); no int patterns remain anywhere in the app (team + catalog).
 
 ## Verdict (pass 9)
+### Pass 9 verdict — APPROVED
+
+Probes confirm: zero int patterns anywhere (routes, template reverses, view redirects); fresh-sqlite from zero proves per-owner VA slugs, cross-holder `-2` suffixes, freeze-on-rename, cross-owner same-slug allowed, DB-level UNIQUE, orphan save still blocked by the check constraint; tenancy (other user's member/cap slug → 404) and POST-only guards hold; constraints in DDL; save()-only generation; decision trail complete.
+
+```
+Verdict: APPROVED
+Blocking findings: none. Scope is exact; all four hermetic gates green on re-run; zero int patterns anywhere; full slug semantics proven on fresh sqlite from zero including orphan-capability DB rejection; tenancy and method guards verified; constraints present in DDL with idempotent re-migrate; decision trail complete with backlog struck resolved.
+Minor findings: (1) Dead `if cap is None` checks in skill_update/skill_delete (cap is the URL slug string, never None) — delete in cleanup. (2) 0005 docstring overstates NOT NULL (state restatement; pass-8 precedent, trail note). (3) Dev-Postgres verified by sqlite equivalence (sandbox limit, precedent). (4) Robb's pre-existing dashboard.html edit, untouched.
+Rationale: Pass 9 delivers exactly the dispatch scope — the pass-8 slug decision extended to the team app with VAProfile.slug unique per owner and Capability.slug unique per owner across both holders, slugs frozen at creation in save() alone, orphan-capability rejection preserved at the DB check constraint, and data-preserving migrations verified from zero — with sequential pks no longer addressable anywhere in the app.
+```
+
+**Builder disposition (2026-09-30):** minor 1 → applied (dead checks deleted). Minor 2 → trail note (committed migration). Minor 3 → accepted (precedent). Minor 4 → Robb's, untouched. **Pass 9: approved & closed.** 139 passed after cleanup.
