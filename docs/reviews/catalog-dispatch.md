@@ -78,3 +78,15 @@ Rationale: Pass 3 delivers exactly what the dispatch specifies — a vocabulary-
 ```
 
 **Builder disposition (2026-09-30):** minors → both pre-existing/out-of-scope, untouched. **Pass 3: approved & closed.**
+
+---
+
+# Pass 4 — per-service currency (Robb request, 2026-09-30)
+
+**Scope:** the feature commit adding `Service.currency` (ISO 4217 CharField, default PHP, clean() validates 3 uppercase letters), `currency_symbol()` map (₱ $ € £ A$ C$ S$ + code fallback), symbol-aware `price_summary()`, 5 currency tests, migration regenerated pre-deploy, design-log Q3 refinement + backlog minor resolved. **For:** fresh GLM-5.3 reviewer (gates only).
+
+**Gates:** pytest (**105 passed** = 101 + 5 currency), ruff, manage.py check, no migration drift, seed 25/8 reloads and validates (all PHP), admin renders, grep: no hardcoded ₱ in price_summary, currency validation covers lowercase/toolong.
+
+**Adjudicate:** no-FX discipline (declarations only, one row per market); Card 5 same-currency rule recorded; symbol fallback never invents glyphs.
+
+## Verdict (pass 4)
