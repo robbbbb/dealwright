@@ -114,3 +114,15 @@ Rationale: Pass 4 delivers exactly the dispatch scope — an ISO 4217 CharField 
 **Adjudicate:** team-app conventions held (services full_clean, selectors, POST-only, tenancy 404s); tags comma-parse in form only (input validation, not business logic); seed reuse not duplication; claims discipline (prices still labelled ranges via price_summary, no computed conversions).
 
 ## Verdict (pass 5)
+### Pass 5 verdict — APPROVED
+
+Probes confirm: exact scope (models/migrations untouched), 124 passed/ruff/check/no-drift, seed data byte-equivalent (25/8/76) with single write path for command + in-app button, login gating, 404 tenancy on all four pk-addressed ops, ISO-4217 rejection via ModelForm, trimmed tag parsing, seed idempotency (25 then 0), live sidebar wiring with namespace-active isolation, claims discipline (price_summary only, zero conversion logic).
+
+```
+Verdict: APPROVED
+Blocking findings: none. Scope is exact (13 expected files, models/migrations untouched); all four hermetic gates green on re-run; seed data byte-equivalent to the pass-2-reviewed command with the command now a thin wrapper over the single services.seed_default_catalog write path used by both entry points; probes confirm login gating, 404 tenancy on all four pk-addressed ops, ISO-4217 field-error rejection with zero rows created, trimmed tag parsing, skill round-trip, seed idempotency, live sidebar wiring with namespace-active isolation, and claims discipline.
+Minor findings: (1) seed_default_catalog performs 25+76 writes without @transaction.atomic (only add_required_skill wrapped) — pass-1/2-approved path moved verbatim, so atomic wrap is a follow-up nicety, not a regression. (2) Currency select offers 7 codes while the model accepts any well-formed ISO 4217 code — consistent declaration-only design; select is convenience. (3) Dispatch listed headless-Chromium DOM probes; reviewer verified DOM structure via test client instead of a live viewport. (4) services_status helper in test_views.py oddly placed, asserts only 302 — cosmetic. (5) Pre-existing uncommitted templates/dashboard.html edit (Robb's), untouched.
+Rationale: Pass 5 delivers exactly the dispatch scope — thin views over selectors/services with the house pattern held line for line, forms restricted to input validation, POST-only mutations, ownership-404 tenancy, the seed command refactored to share one write path with the in-app empty-state action without data drift, and the sidebar wired live — with all gates, probes, and claims-discipline checks green on independent re-run, and the card's coverage tier respected.
+```
+
+**Builder disposition (2026-09-30):** minor 1 → applied (`@transaction.atomic` on seed_default_catalog). Minor 2 → by design (Q3 declarations; select = convenience). Minor 3 → acceptable (same DOM structure; live probes were builder-side evidence). Minor 4 → applied (helper removed). Minor 5 → Robb's, untouched. **Pass 5: approved & closed.**

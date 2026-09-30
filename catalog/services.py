@@ -31,6 +31,7 @@ def _defaults_from_row(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+@transaction.atomic
 def seed_default_catalog(*, owner: Any) -> tuple[int, int]:
     """Create missing default services for one provider; never touch existing rows.
 

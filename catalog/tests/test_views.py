@@ -65,17 +65,13 @@ class TestSeedDefaults:
     def test_post_loads_missing_only(self, client) -> None:
         pro = _client_for(client)
         client.post(reverse("catalog:seed_defaults"))
-        response = client.post(reverse("catalog:seed_defaults"))
-        assert services_status(response) is True  # idempotent second run
+        assert client.post(reverse("catalog:seed_defaults")).status_code == 302
         assert pro.services.count() == 25
 
     def test_get_rejected(self, client) -> None:
         _client_for(client)
         assert client.get(reverse("catalog:seed_defaults")).status_code == 405
 
-
-def services_status(response: object) -> bool:
-    return response.status_code == 302
 
 
 class TestServiceCreate:
