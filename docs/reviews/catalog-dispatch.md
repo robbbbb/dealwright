@@ -66,3 +66,15 @@ Rationale: Pass 2 supersedes pass 1's quantifier-rule approval per Robb's record
 **Gates:** pytest (101 passed), ruff, manage.py check, no migration drift, seed 25/8 re-loads and validates, grep confirms no stray "monthly price" labels in catalog/ (code names excluded by design), price_summary renders retainer format.
 
 ## Verdict (pass 3)
+### Pass 3 verdict — APPROVED
+
+Label-only as designed: field names stable everywhere, migration structurally identical modulo the two verbose_name strings, price_summary renders "setup ₱… · retainer ₱…/mo" with "Custom quote" fallback, all gates green, decision trail (design-log vocabulary entry + draft rule 2 annotation) present.
+
+```
+Verdict: APPROVED
+Blocking findings: none. All six verification items green with pasted evidence: the feature commit touches only the four claimed files; monthly_low/monthly_high survive intact in models, seed, tests, and migration (label-only as designed); pytest 101 passed, ruff clean, manage.py check clean, no migration drift; migration 0001 is structurally identical to pass 2's modulo the two verbose_name strings and generator timestamp; the /tmp probe seeds 25 services idempotently, renders price_summary as 'setup ₱4,000–8,000 · retainer ₱1,500–3,000/mo' with the 'Custom quote' fallback, and every row passes full_clean(); zero stray "monthly price" labels in catalog/; decision trail present at HEAD.
+Minor findings: (1) pre-existing uncommitted templates/dashboard.html edit (Robb's); (2) pass-2 minor 1 (build-plan text amendment) remains backlog-dispositioned.
+Rationale: Pass 3 delivers exactly what the dispatch specifies — a vocabulary-only relabel of the monthly pricing concept to "retainer" ... with internal field names deliberately stable per the recorded decision and its bench→team precedent, migration regenerated pre-deploy with zero structural drift, and all hermetic gates green on re-run by a fresh reviewer.
+```
+
+**Builder disposition (2026-09-30):** minors → both pre-existing/out-of-scope, untouched. **Pass 3: approved & closed.**
