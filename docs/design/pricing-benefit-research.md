@@ -109,9 +109,11 @@ After computing, the calculator shows the *client's* side: "at these prices, the
 
 ## E. Worked case: "I want only my churchmates to listen" (Robb, 2026-09-30)
 
-Private-audience podcast (pastor case variant): audience capped by design → **every revenue lever switches off**; ROI = time reclaimed only (12 h/mo × 60–75% = 7–9 h/mo ≈ ₱2,100–2,700 at ₱300/hr) + qualitative (consistency, pastor capacity, accessibility). The app must never project reach/leads/conversion for a private audience.
+**Robb decision (same day): price-only for now — no computation in this case.** The private-audience podcast offering is entered as services + prices and nothing else: `qualitative_value=True`, no reduction/hours/revenue levers, no value math in the proposal. Tentative band: setup ₱8–12k, monthly ₱1.5–2.5k (smaller scope than the public pipeline: no clip engine/captions/SEO/distribution matrix — just edit → private feed/group → congregational email).
 
-Implications:
-1. **Session intake needs audience intent** (public growth vs private community) — gates which levers the ROI engine may use (Card 3/6 design note).
-2. **Private variant is less work → lower band**: no clip engine/captions/SEO/distribution matrix; just edit → private feed/group → congregational email. Tentative: setup ₱8–12k, monthly ₱1.5–2.5k (vs public pipeline 12–20k / 3–6k). Catalog variant or scope toggle — decide with D-checklist.
-3. **Value check validation:** public-pipeline pricing (₱3–6k/mo) vs ₱2,700/mo benefit → amber flag (D6 tension again); private-variant ₱2k/mo passes cleanly.
+What stays true regardless of computation:
+1. The app must never project reach/leads/conversion for a private audience — audience is capped by design. (Keeps mattering for Cards 6/8: extraction/LLM may not invent audience or revenue claims.)
+2. Session intake should still capture **audience intent** (public growth vs private community) — even without math, it gates copy tone and which catalog rows fit.
+3. The ROI time-math for this case is preserved above only as reference for a future pilot; it is NOT surfaced to providers or clients for now.
+
+Schema note: "services and price only" needs no migration — qualitative_value + prices already satisfies the quantifier rule; lever fields simply stay empty on such rows.
