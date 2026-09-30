@@ -49,15 +49,15 @@ def member_add(request: HttpRequest) -> HttpResponse:
         if form.is_valid():
             va = services.create_va_profile(owner=request.user, **form.cleaned_data)
             messages.success(request, f"{va.display_name} added to your team.")
-            return redirect("team:member_detail", pk=va.pk)
+            return redirect("team:member_detail", member=va.slug)
     else:
         form = TeamMemberForm()
     return render(request, "team/member_add.html", {"form": form})
 
 
 @login_required
-def member_detail(request: HttpRequest, pk: int) -> HttpResponse:
-    va = selectors.get_va_for_owner(request.user, pk)
+def member_detail(request: HttpRequest, member: str) -> HttpResponse:
+    va = selectors.get_va_for_owner(request.user, member)
     if va is None:
         raise Http404("No such team member.")
     if request.method == "POST":  # identity fields
@@ -65,7 +65,7 @@ def member_detail(request: HttpRequest, pk: int) -> HttpResponse:
         if form.is_valid():
             services.update_va_profile(va=va, **form.cleaned_data)
             messages.success(request, "Team member updated.")
-            return redirect("team:member_detail", pk=va.pk)
+            return redirect("team:member_detail", member=va.slug)
     else:
         form = TeamMemberForm(instance=va)
     return render(
@@ -83,9 +83,9 @@ def member_detail(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 @require_POST  # hardening per review: never rely on form validation to reject GET
-def member_engagement(request: HttpRequest, pk: int) -> HttpResponse:
+def member_engagement(request: HttpRequest, member: str) -> HttpResponse:
     """Rates & availability card — the Card 5 hard-filter inputs."""
-    va = selectors.get_va_for_owner(request.user, pk)
+    va = selectors.get_va_for_owner(request.user, member)
     if va is None:
         raise Http404("No such team member.")
     form = EngagementForm(request.POST, instance=va)
@@ -94,13 +94,13 @@ def member_engagement(request: HttpRequest, pk: int) -> HttpResponse:
         messages.success(request, "Rates & availability saved.")
     else:
         messages.error(request, "Please fix the engagement form.")
-    return redirect("team:member_detail", pk=va.pk)
+    return redirect("team:member_detail", member=va.slug)
 
 
 @login_required
 @require_POST  # mutations are never GET-reachable (CSRF surface — review pass 1)
-def member_skill_add(request: HttpRequest, pk: int) -> HttpResponse:
-    va = selectors.get_va_for_owner(request.user, pk)
+def member_skill_add(request: HttpRequest, member: str) -> HttpResponse:
+    va = selectors.get_va_for_owner(request.user, member)
     if va is None:
         raise Http404("No such team member.")
     form = SkillPickForm(request.user, request.POST)
@@ -109,39 +109,43 @@ def member_skill_add(request: HttpRequest, pk: int) -> HttpResponse:
         messages.success(request, f"Skill added to {va.display_name}.")
     else:
         messages.error(request, _first_error(form))
-    return redirect("team:member_detail", pk=va.pk)
+    return redirect("team:member_detail", member=va.slug)
 
 
 def _redirect_target_for(capability) -> HttpResponse:  # type: ignore[no-untyped-def]
     if capability.va_profile_id is not None:
-        return redirect("team:member_detail", pk=capability.va_profile_id)
+        return redirect("team:member_detail", member=capability.va_profile.slug)
     return redirect("team:team_home")
 
 
 @login_required
 @require_POST  # mutations are never GET-reachable (CSRF surface — review pass 1)
-def skill_update(request: HttpRequest, cap_pk: int) -> HttpResponse:
-    cap = selectors.get_capability_for_owner(request.user, cap_pk)
+def skill_update(request: HttpRequest, cap: str) -> HttpResponse:
+    capability = selectors.get_capability_for_owner(request.user, cap)
+    if capability is None:
+        raise Http404("No such skill.")
     if cap is None:
         raise Http404("No such skill.")
     form = SkillPickForm(request.user, request.POST)
     if form.is_valid():
-        services.update_capability(capability=cap, **form.cleaned_data)
+        services.update_capability(capability=capability, **form.cleaned_data)
         messages.success(request, "Skill updated.")
     else:
         messages.error(request, _first_error(form))
-    return _redirect_target_for(cap)
+    return _redirect_target_for(capability)
 
 
 @login_required
 @require_POST  # mutations are never GET-reachable (CSRF surface — review pass 1)
-def skill_delete(request: HttpRequest, cap_pk: int) -> HttpResponse:
-    cap = selectors.get_capability_for_owner(request.user, cap_pk)
+def skill_delete(request: HttpRequest, cap: str) -> HttpResponse:
+    capability = selectors.get_capability_for_owner(request.user, cap)
+    if capability is None:
+        raise Http404("No such skill.")
     if cap is None:
         raise Http404("No such skill.")
-    services.delete_capability(capability=cap)
+    services.delete_capability(capability=capability)
     messages.success(request, "Skill removed.")
-    return _redirect_target_for(cap)
+    return _redirect_target_for(capability)
 
 
 def _first_error(form: SkillForm) -> str:

@@ -25,6 +25,8 @@ from typing import cast
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
+from django.utils.text import slugify
 
 
 class DeliveryMode(models.TextChoices):
@@ -54,6 +56,15 @@ class SkillLevel(models.TextChoices):
 
     # Owns it end to end — can design, execute, and teach it. Highest match weight.
     ADVANCED = "advanced", "Advanced"
+
+
+def _unique_slug(queryset, base: str, exclude_pk: int | None) -> str:
+    """First free `base`, `base-2`, `base-3`, … within the queryset's scope."""
+    candidate, counter = base, 1
+    while queryset.filter(slug=candidate).exclude(pk=exclude_pk).exists():
+        counter += 1
+        candidate = f"{base}-{counter}"
+    return candidate
 
 
 _LEVEL_RANK: dict[str, int] = {
@@ -120,6 +131,12 @@ class VAProfile(models.Model):
         related_name="va_profiles",
     )
     display_name = models.CharField("display name", max_length=120)
+    slug = models.SlugField(
+        "slug",
+        max_length=140,
+        blank=True,  # generated once at creation; renames never break links
+        help_text="URL name — set at creation from the display name, unique per owner.",
+    )
     is_active = models.BooleanField(
         "active",
         default=True,
@@ -190,10 +207,23 @@ class VAProfile(models.Model):
                 fields=["owner", "display_name"],
                 name="dw_va_name_unique_per_owner",
             ),
+            models.UniqueConstraint(
+                fields=["owner", "slug"],
+                name="dw_va_slug_unique_per_owner",
+            ),
         ]
 
     def __str__(self) -> str:
         return self.display_name
+
+    def save(self, *args: object, **kwargs: object) -> None:
+        if not self.slug:
+            self.slug = _unique_slug(
+                VAProfile.objects.filter(owner=self.owner),
+                slugify(self.display_name) or "member",
+                self.pk,
+            )
+        super().save(*args, **kwargs)
 
     @property
     def engagement_incomplete(self) -> bool:
@@ -272,6 +302,12 @@ class Capability(models.Model):
         verbose_name="skill",
         help_text="Registry row — exact FK join feeds Card 5 matching.",
     )
+    slug = models.SlugField(
+        "slug",
+        max_length=140,
+        blank=True,  # generated once at creation from the skill name
+        help_text="URL name — set at creation from the skill name, unique per owner.",
+    )
     level = models.CharField(
         "level",
         max_length=12,
@@ -307,10 +343,34 @@ class Capability(models.Model):
                 condition=models.Q(va_profile__isnull=False),
                 name="dw_cap_skill_unique_per_va",
             ),
+            models.UniqueConstraint(
+                fields=["provider_profile", "slug"],
+                condition=models.Q(provider_profile__isnull=False),
+                name="dw_cap_slug_unique_per_provider",
+            ),
+            models.UniqueConstraint(
+                fields=["va_profile", "slug"],
+                condition=models.Q(va_profile__isnull=False),
+                name="dw_cap_slug_unique_per_va",
+            ),
         ]
 
     def __str__(self) -> str:
         return f"{self.skill} ({self.get_level_display()})"
+
+    def save(self, *args: object, **kwargs: object) -> None:
+        if not self.slug and (self.provider_profile_id or self.va_profile_id):
+            holder_owner = (
+                self.provider_profile.owner if self.provider_profile_id else self.va_profile.owner
+            )
+            self.slug = _unique_slug(
+                Capability.objects.filter(
+                    Q(provider_profile__owner=holder_owner) | Q(va_profile__owner=holder_owner)
+                ),
+                slugify(self.skill.name) or "skill",
+                self.pk,
+            )
+        super().save(*args, **kwargs)  # orphans still hit the DB check constraint
 
     def clean(self) -> None:
         """Shape integrity (services call full_clean before save; admin too)."""

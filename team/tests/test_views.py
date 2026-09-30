@@ -4,7 +4,13 @@ import pytest
 from django.urls import reverse
 
 from team.models import Capability, VAProfile
-from team.services import add_capability, create_va_profile, get_or_create_skill
+from team.services import (
+    add_capability,
+    create_va_profile,
+    get_or_create_skill,
+    get_provider_profile,
+    update_va_profile,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -30,7 +36,7 @@ def test_other_users_team_member_is_404(client, user) -> None:
     va = create_va_profile(owner=other, display_name="Maria")
     _login(client, user)
 
-    response = client.get(reverse("team:member_detail", args=[va.pk]))
+    response = client.get(reverse("team:member_detail", args=[va.slug]))
 
     assert response.status_code == 404
 
@@ -100,7 +106,7 @@ def test_add_team_member(client, user) -> None:
     va = VAProfile.objects.get(display_name="Jen")
     assert va.engagement_incomplete  # identity-only: terms come later
     assert va.rate_basis == "hourly"
-    assert response.url == reverse("team:member_detail", args=[va.pk])
+    assert response.url == reverse("team:member_detail", args=[va.slug])
 
 
 def test_identity_only_member_passes_full_clean(user) -> None:
@@ -122,7 +128,7 @@ def test_edit_team_member_rate(client, user, va) -> None:
         "industry_experience": "",
     }
 
-    response = client.post(reverse("team:member_engagement", args=[va.pk]), payload)
+    response = client.post(reverse("team:member_engagement", args=[va.slug]), payload)
 
     assert response.status_code == 302
     va.refresh_from_db()
@@ -137,7 +143,7 @@ def test_add_skill_to_team_member(client, user, va, skill) -> None:
     _login(client, user)
 
     response = client.post(
-        reverse("team:member_skill_add", args=[va.pk]),
+        reverse("team:member_skill_add", args=[va.slug]),
         {
             "skill": get_or_create_skill(owner=user, name="n8n workflows").pk,
             "level": "beginner",
@@ -153,7 +159,7 @@ def test_add_skill_invalid_shows_flash_error(client, user, va, skill) -> None:
     _login(client, user)
 
     response = client.post(
-        reverse("team:member_skill_add", args=[va.pk]),
+        reverse("team:member_skill_add", args=[va.slug]),
         {"skill": "", "level": "beginner", "tasks": ""},
     )
 
@@ -166,7 +172,7 @@ def test_update_skill_to_advanced(client, user, va, skill) -> None:
     _login(client, user)
 
     response = client.post(
-        reverse("team:skill_update", args=[cap.pk]),
+        reverse("team:skill_update", args=[cap.slug]),
         {
             "skill": cap.skill_id,
             "level": "advanced",
@@ -183,7 +189,7 @@ def test_delete_skill(client, user, va, skill) -> None:
     cap = add_capability(holder=va, skill=get_or_create_skill(owner=user, name="Bookkeeping"))
     _login(client, user)
 
-    response = client.post(reverse("team:skill_delete", args=[cap.pk]))
+    response = client.post(reverse("team:skill_delete", args=[cap.slug]))
 
     assert response.status_code == 302
     assert not Capability.objects.exists()
@@ -200,7 +206,7 @@ def test_cannot_update_skill_of_other_owner(client, user, skill) -> None:
     _login(client, user)
 
     response = client.post(
-        reverse("team:skill_update", args=[cap.pk]),
+        reverse("team:skill_update", args=[cap.slug]),
         {"skill": cap.skill_id, "level": "beginner", "tasks": ""},
     )
 
@@ -214,7 +220,7 @@ def test_skill_delete_via_get_is_405_and_deletes_nothing(client, user, va, skill
     cap = add_capability(holder=va, skill=get_or_create_skill(owner=user, name="Bookkeeping"))
     _login(client, user)
 
-    response = client.get(reverse("team:skill_delete", args=[cap.pk]))
+    response = client.get(reverse("team:skill_delete", args=[cap.slug]))
 
     assert response.status_code == 405
     assert Capability.objects.filter(pk=cap.pk).exists()
@@ -224,7 +230,7 @@ def test_skill_update_via_get_is_405(client, user, va, skill) -> None:
     cap = add_capability(holder=va, skill=get_or_create_skill(owner=user, name="Bookkeeping"))
     _login(client, user)
 
-    response = client.get(reverse("team:skill_update", args=[cap.pk]))
+    response = client.get(reverse("team:skill_update", args=[cap.slug]))
 
     assert response.status_code == 405
 
@@ -232,7 +238,7 @@ def test_skill_update_via_get_is_405(client, user, va, skill) -> None:
 def test_member_skill_add_via_get_is_405(client, user, va) -> None:
     _login(client, user)
 
-    response = client.get(reverse("team:member_skill_add", args=[va.pk]))
+    response = client.get(reverse("team:member_skill_add", args=[va.slug]))
 
     assert response.status_code == 405
     assert va.capabilities.count() == 0
@@ -256,8 +262,29 @@ def test_rate_renders_symbol_from_stored_currency(client, user) -> None:
 def test_member_engagement_via_get_is_405(client, user, va) -> None:
     _login(client, user)
 
-    response = client.get(reverse("team:member_engagement", args=[va.pk]))
+    response = client.get(reverse("team:member_engagement", args=[va.slug]))
 
     assert response.status_code == 405
     va.refresh_from_db()
     assert va.rate_per_hour == 250  # untouched
+
+
+class TestTeamSlugSemantics:
+    def test_member_slug_frozen_on_rename(self, client, user, va) -> None:
+        _login(client, user)
+        created_slug = va.slug
+        update_va_profile(va=va, display_name="Renamed Member")
+        va.refresh_from_db()
+        assert va.slug == created_slug  # renames never break links
+
+    def test_same_display_name_owner_scoped(self, user, va) -> None:
+        other = user.__class__.objects.create_user(username="slug-other")
+        twin = create_va_profile(owner=other, display_name=va.display_name)
+        assert twin.slug == va.slug  # uniqueness is per owner, not global
+
+    def test_capability_slug_dedupes_across_holders(self, user, va, skill) -> None:
+        profile = get_provider_profile(user)
+        on_va = add_capability(holder=va, skill=skill)
+        on_profile = add_capability(holder=profile, skill=skill)
+        assert on_va.slug != on_profile.slug  # same skill, owner-wide uniqueness
+        assert on_profile.slug.startswith(on_va.slug + "-")
