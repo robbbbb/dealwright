@@ -89,3 +89,7 @@ Live call transcription · automated interviews · marketplace payments · publi
 
 - **Provider "My delivery terms" card (pre-Card 5, design-pass item C):** abstract `EngagementTermsMixin` on ProviderProfile + VAProfile; provider-profile edit UI (delivery_mode toggle, branding_name, persona) which Card 8 needs. Status: open (sequenced before Card 5).
 - **landing.html marketing copy still says "bench"** ("5 bench profiles" / "unlimited bench") while in-app vocabulary is now team. Owner: Robb (marketing wording). Status: open (Robb).
+
+## Card 2 (catalog) review minors (2026-09-29)
+- Response-time lever (draft's hrs→minutes, e.g. speed-to-lead) has no catalog field; currently quantified via conversion uplift only. Card 3 must refine time-lever units when the engine consumes them.
+- `Service.price_summary()` hardcodes ₱ in display — fine for PH launch; derive from account currency when Q3 internationalization lands.

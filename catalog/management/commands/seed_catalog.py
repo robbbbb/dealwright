@@ -204,20 +204,24 @@ class Command(BaseCommand):
 
         created = 0
         for row in SERVICES:
-            service, was_created = Service.objects.get_or_create(
+            exists = Service.objects.filter(
+                owner=owner, category=row["category"], name=row["name"]
+            ).exists()
+            if exists:
+                continue  # edit-safe: existing rows are never touched
+            service = Service(
                 owner=owner,
                 category=row["category"],
                 name=row["name"],
-                defaults=self._service_defaults(row),
+                **self._service_defaults(row),
             )
-            if was_created:
-                service.full_clean()  # transcription guard (tests assert this for all rows)
-                service.save()
-                for skill, min_level in row["skills"]:
-                    RequiredSkill.objects.get_or_create(
-                        service=service, skill=skill, defaults={"min_level": min_level}
-                    )
-                created += 1
+            service.full_clean()  # clean before save (styleguide); guards transcription
+            service.save()
+            for skill, min_level in row["skills"]:
+                RequiredSkill.objects.get_or_create(
+                    service=service, skill=skill, defaults={"min_level": min_level}
+                )
+            created += 1
 
         self.stdout.write(
             self.style.SUCCESS(
