@@ -18,10 +18,9 @@ def get_va_for_owner(owner: Any, va_id: int) -> VAProfile | None:
 
 
 def list_holder_capabilities(holder: ProviderProfile | VAProfile) -> QuerySet[Capability]:
-    """One query, no join: rows render local columns only (skill/level/note/pk) and
-    the holder is already in context — the FKs are never accessed. Add select_related
-    here only if templates start rendering holder names from capability rows."""
-    return holder.capabilities.all()
+    """Capabilities with their registry skill joined — templates render
+    cap.skill (FK name) per row, so one select_related beats N+1."""
+    return holder.capabilities.select_related("skill")
 
 
 def get_capability_for_owner(owner: Any, capability_id: int) -> Capability | None:

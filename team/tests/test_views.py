@@ -194,12 +194,14 @@ def test_cannot_update_skill_of_other_owner(client, user, skill) -> None:
         username="lea", password="test-pass-123456"
     )
     va = create_va_profile(owner=other, display_name="Maria")
-    cap = add_capability(holder=va, skill=get_or_create_skill(owner=user, name="Bookkeeping"))
+    cap = add_capability(
+        holder=va, skill=get_or_create_skill(owner=other, name="Bookkeeping")
+    )
     _login(client, user)
 
     response = client.post(
         reverse("team:skill_update", args=[cap.pk]),
-        {"skill": "Bookkeeping", "level": "beginner", "tasks": ""},
+        {"skill": cap.skill_id, "level": "beginner", "tasks": ""},
     )
 
     assert response.status_code == 404

@@ -138,3 +138,15 @@ Rationale: Pass 5 delivers exactly the dispatch scope — thin views over select
 **Adjudicate:** tenancy at the form (ModelChoiceField queryset owner-scoped — cross-owner pk = invalid choice); PROTECT semantics on referenced skills; migration discipline (constraint dance for SQLite, pending-trigger split for Postgres — recorded in design-log); no string matching anywhere in code paths.
 
 ## Verdict (pass 6)
+### Pass 6 verdict — APPROVED
+
+Probes confirm: registry unique per owner+name with PROTECT from both referencing tables; data migrations verified in both directions (real backfill over old-schema TEXT rows: per-owner dedup, cross-app row sharing, NOT NULL + constraints survive); tenancy at the form (cross-owner pk = invalid choice, zero rows) plus 404 at the view; production query paths FK-join only; house rules + POST-only discipline hold; decision trail complete.
+
+```
+Verdict: APPROVED
+Blocking findings: none. Scope is exact (20 files, no templates — chips render via Skill.__str__ unchanged); all four hermetic gates green; registry integrity proven (unique per owner+name, PROTECT from both Capability and RequiredSkill); data migrations verified in both directions on fresh sqlite including a real backfill probe over old-schema TEXT rows; tenancy holds at the form and view; string matching fully excised from production query paths.
+Minor findings: (1) get_or_create_skill validates AFTER get_or_create — stray invalid rows possible from direct calls; docstring overclaims. (2) FK chip rendering is N+1 on list/team paths (no select_related); team selector docstring stale. (3) Dev-Postgres counts drifted append-only vs card snapshot — no action. (4) DOM probes verified structurally via test client, not live viewport (pass-5 disposition). (5) No model-level owner-consistency check between skill registry and holder/service. (6) Cosmetic over-indent in catalog/0003.
+Rationale: Pass 6 delivers exactly the dispatch scope — a provider-owned team.Skill registry, PROTECT FKs on both referencing models, owner-scoped dropdowns pushing tenancy into form validation, seed vocabulary growth via get_or_create_skill, and data-preserving migrations independently verified (including on real old-schema rows and in reverse) — with every gate green on re-run by a fresh reviewer.
+```
+
+**Builder disposition (2026-09-30):** minor 1 → applied (`clean_fields()` before lookup — validate-before-write, no stray rows, no false unique errors; +tests). Minor 2 → applied (`select_related("skill")` / `prefetch_related("required_skills__skill")` + docstring fixed). Minor 3 → trail only. Minor 4 → accepted (pass-5 precedent; live probes were builder-side). Minor 5 → applied (model-level owner-consistency guards on Capability + RequiredSkill, both tested). Minor 6 → applied (indent fixed). **Pass 6: approved & closed.** 126 passed after minors.

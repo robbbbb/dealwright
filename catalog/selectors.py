@@ -11,7 +11,7 @@ from .models import RequiredSkill, Service
 
 def list_services(owner: Any) -> QuerySet[Service]:
     """The owner's whole catalog, category-grouped for the list page."""
-    return Service.objects.filter(owner=owner).prefetch_related("required_skills")
+    return Service.objects.filter(owner=owner).prefetch_related("required_skills__skill")
 
 
 def get_service_for_owner(owner: Any, service_id: int) -> Service | None:

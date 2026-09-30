@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 
-from team.models import Capability, ProviderProfile, SkillLevel, VAProfile
+from team.models import Capability, ProviderProfile, Skill, SkillLevel, VAProfile
 
 User = get_user_model()
 
@@ -215,3 +215,14 @@ def test_no_protected_characteristic_fields(model) -> None:
     field_names = {f.name for f in model._meta.get_fields()}
 
     assert not PROTECTED_CHARACTERISTIC_FIELDS & field_names
+
+
+class TestCapabilityRegistryGuard:
+    def test_skill_from_other_registry_rejected(self, user, va) -> None:
+        from django.contrib.auth.models import User
+
+        other = User.objects.create_user(username="foreign-owner")
+        foreign = Skill.objects.create(owner=other, name="Foreign")
+        cap = Capability(va_profile=va, skill=foreign)
+        with pytest.raises(ValidationError):
+            cap.full_clean()

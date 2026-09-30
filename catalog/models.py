@@ -205,3 +205,13 @@ class RequiredSkill(models.Model):
 
     def __str__(self) -> str:
         return f"{self.skill} ≥ {self.get_min_level_display()}"
+
+    def clean(self) -> None:
+        """Tenancy guard — a required skill must come from the service owner's registry."""
+        from django.core.exceptions import ValidationError
+
+        if self.service_id and self.skill_id:
+            if self.skill.owner_id != self.service.owner_id:
+                raise ValidationError(
+                    {"skill": "Skill must come from this provider's own registry."}
+                )

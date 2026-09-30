@@ -319,6 +319,15 @@ class Capability(models.Model):
             raise ValidationError(
                 "A capability belongs to either the provider or one VA — not both."
             )
+        holder_owner = (
+            self.provider_profile.owner if self.provider_profile_id
+            else self.va_profile.owner if self.va_profile_id
+            else None
+        )
+        if holder_owner is not None and self.skill_id and self.skill.owner_id != holder_owner.pk:
+            raise ValidationError(
+                {"skill": "Skill must come from this provider's own registry."}
+            )
 
     @property
     def trust_rank(self) -> int:

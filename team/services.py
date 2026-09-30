@@ -19,12 +19,11 @@ Holder = ProviderProfile | VAProfile
 def get_or_create_skill(*, owner: Any, name: str) -> Skill:
     """Registry row for one skill name — the single vocabulary source (2026-09-30
     Robb decision). Names are trimmed; uniqueness enforced per owner."""
-    cleaned = name.strip()
-    skill, created = Skill.objects.get_or_create(owner=owner, name=cleaned)
-    if created:
-        skill.full_clean()  # guards blank/oversized names from any entry path
-        skill.save()
-    return skill
+    candidate = Skill(owner=owner, name=name.strip())
+    # clean_fields (not full_clean): shape check BEFORE any write — no stray rows,
+    # and no false unique error against the row we are about to look up.
+    candidate.clean_fields()
+    return Skill.objects.get_or_create(owner=owner, name=candidate.name)[0]
 
 
 def get_provider_profile(user: Any) -> ProviderProfile:

@@ -146,3 +146,13 @@ class TestRequiredSkill:
         RequiredSkill.objects.create(service=service, skill=skill)
         with pytest.raises(IntegrityError):
             RequiredSkill.objects.create(service=service, skill=skill)
+
+
+class TestSkillRegistryGuards:
+    def test_required_skill_from_other_registry_rejected(self, db) -> None:
+        mine, other = make_user("mine"), make_user("other2")
+        service = make_service(mine, name="Guarded")
+        foreign = Skill.objects.create(owner=other, name="Foreign skill")
+        rs = RequiredSkill(service=service, skill=foreign)
+        with pytest.raises(ValidationError):
+            rs.full_clean()
