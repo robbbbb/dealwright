@@ -196,3 +196,40 @@ class TestSidebarWiring:
         html = client.get(reverse("catalog:service_list")).content.decode()
         assert 'href="/catalog/"' in html
         assert "Coming soon" not in html.split("Service catalog")[0][-400:]
+
+class TestSlugSemantics:
+    def test_slug_frozen_on_rename(self, client) -> None:
+        pro = _client_for(client)
+        service = services.create_service(owner=pro, **VALID_SERVICE)
+        created_slug = service.slug
+        services.update_service(service=service, name="Totally new name")
+        service.refresh_from_db()
+        assert service.slug == created_slug  # renames never break links
+
+    def test_same_name_cross_category_gets_suffix(self, client) -> None:
+        pro = _client_for(client)
+        first = services.create_service(owner=pro, **VALID_SERVICE)
+        second = services.create_service(
+            owner=pro, **{**VALID_SERVICE, "category": "Automated follow-ups"}
+        )
+        assert first.slug != second.slug
+        assert second.slug.startswith(first.slug + "-")
+
+    def test_cross_owner_same_slug_allowed(self, client) -> None:
+        from catalog.models import Service
+
+        mine = _client_for(client, "mine")
+        other = make_user("other-slug")
+        a = services.create_service(owner=mine, **VALID_SERVICE)
+        b = services.create_service(owner=other, **VALID_SERVICE)
+        assert a.slug == b.slug  # uniqueness is per owner, not global
+        assert Service.objects.filter(slug=a.slug).count() == 2
+
+    def test_wrong_category_slug_is_404(self, client) -> None:
+        pro = _client_for(client)
+        service = services.create_service(owner=pro, **VALID_SERVICE)
+        url = reverse(
+            "catalog:service_edit",
+            kwargs={"category": "not-the-real-category", "service": service.slug},
+        )
+        assert client.get(url).status_code == 404

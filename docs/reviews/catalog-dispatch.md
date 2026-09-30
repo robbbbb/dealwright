@@ -186,3 +186,15 @@ Rationale: Pass 7 delivers exactly the dispatch scope — a starter registry voc
 **Adjudicate:** slug generation in save() (holds from any entry path incl. admin/shell); constraint validation with blank slug only transient pre-save (no blank rows can exist post-save); canonical-category 404; no pk-based routes remain in catalog/urls.py; templates resolve slugs only.
 
 ## Verdict (pass 8)
+### Pass 8 verdict — APPROVED
+
+Probes confirm: zero int patterns in urls.py, zero pk-based reverses in templates, legacy `/catalog/1/` → 404; fresh-sqlite from zero: 25/25 slugged with 0 blanks, `-2` suffixes, rename-frozen slugs, shell-path saves generate slugs, wrong-category 404, cross-user 404, delete GET 405; both slug constraints present in DB DDL; re-seed idempotent; slug logic only in save(), clean() read-only.
+
+```
+Verdict: APPROVED
+Blocking findings: none. Scope is exact (11 dispatched files); all four hermetic gates green on re-run; zero int patterns remain in routes or template reverses; fresh-sqlite probes prove slug semantics end-to-end (no blanks, suffixing, freeze-on-rename, canonical-category 404, tenancy 404, POST-only deletes); migrations verified from zero with constraints present and idempotent re-seeding; save()-only slug generation with read-only clean(); decision trail complete.
+Minor findings: (1) service_edit retained ~28 lines of unreachable old pk-based body referencing `service` (now the slug string) — latent trap, delete in cleanup. (2) No dedicated slug-semantics tests in the suite — verified live by review; recommend follow-ups. (3) 0005 docstring overstates ("NOT NULL" — columns were already NOT NULL; AlterField is a state restatement). (4) Dev-Postgres backfill verified by sqlite equivalence (sandbox limit, pass-5/6 precedent). (5) Robb's pre-existing dashboard.html edit, untouched.
+Rationale: Pass 8 delivers exactly the dispatch scope — owner-scoped Service slugs and service-scoped RequiredSkill slugs frozen at creation in save() (holding from every entry path including raw shell saves, proven live), slug-addressed routes with canonical category validation, and data-preserving migrations independently verified from zero — with every gate, probe, and decision-trail check green on independent re-run.
+```
+
+**Builder disposition (2026-09-30):** minor 1 → applied (dead pk-based body deleted). Minor 2 → applied (TestSlugSemantics: freeze-on-rename, `-2` suffix, cross-owner same slug, wrong-category 404 — 4 tests). Minor 3 → trail note only (committed migration, behavior identical). Minor 4 → accepted (precedent). Minor 5 → Robb's, untouched. **Pass 8: approved & closed.** 136 passed after minors.

@@ -95,30 +95,6 @@ def service_edit(request: HttpRequest, category: str, service: str) -> HttpRespo
             "skill_form": RequiredSkillForm(request.user),
         },
     )
-    if request.method == "POST":
-        form = ServiceForm(request.POST, instance=service)
-        if form.is_valid():
-            fields = {k: v for k, v in form.cleaned_data.items() if k != "tags_text"}
-            services.update_service(service=service, **fields)
-            messages.success(request, "Service updated.")
-            return redirect(
-                "catalog:service_edit",
-                category=slugify(service.category),
-                service=service.slug,
-            )
-    else:
-        form = ServiceForm(instance=service)
-    return render(
-        request,
-        "catalog/service_form.html",
-        {
-            "form": form,
-            "is_create": False,
-            "service": service,
-            "required_skills": service.required_skills.select_related("skill"),
-            "skill_form": RequiredSkillForm(request.user),
-        },
-    )
 
 
 @login_required
