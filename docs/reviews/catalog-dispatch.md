@@ -90,3 +90,15 @@ Rationale: Pass 3 delivers exactly what the dispatch specifies — a vocabulary-
 **Adjudicate:** no-FX discipline (declarations only, one row per market); Card 5 same-currency rule recorded; symbol fallback never invents glyphs.
 
 ## Verdict (pass 4)
+### Pass 4 verdict — APPROVED
+
+Probes confirm: default PHP, USD symbol rendering, JPY code fallback (no invented glyphs), both invalid inputs rejected; zero conversion logic anywhere; migration drift is exactly the currency field; PHP behavior byte-identical to pass 3; Card 5 same-currency rule recorded; backlog minor struck resolved.
+
+```
+Verdict: APPROVED
+Blocking findings: none. All gates pass with pasted evidence: pytest 105 passed, ruff clean, manage.py check clean, no migration drift; the feature commit touches only the five claimed files; the /tmp sqlite probe confirms default PHP, USD symbol rendering, JPY code fallback, and both invalid inputs rejected; no-FX discipline holds (zero conversion logic); migration 0001 differs from pass 3's by exactly the currency field; seed reloads 25/8 idempotently, all-PHP, all rows full_clean-valid; decision trail complete.
+Minor findings: (1) dispatch arithmetic label said "101 + 5 currency" — TestCurrency contributes 4 test functions; total 105 correct, label off by one, docs-only. (2) Pre-existing uncommitted templates/dashboard.html edit (Robb's).
+Rationale: Pass 4 delivers exactly the dispatch scope — an ISO 4217 CharField declaration with default PHP and uppercase-3 validation, a symbol map with honest code fallback, and a symbol-aware price_summary — with zero FX logic anywhere (declarations only, one row per market, per Q3) ... all hermetic gates green on re-run by a fresh reviewer.
+```
+
+**Builder disposition (2026-09-30):** minor 1 → noted (this file's own label; total gate number was correct). Minor 2 → Robb's edit, untouched. **Pass 4: approved & closed.**
