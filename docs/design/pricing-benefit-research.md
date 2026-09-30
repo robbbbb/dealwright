@@ -106,3 +106,12 @@ After computing, the calculator shows the *client's* side: "at these prices, the
 - Classic industry stats from general knowledge (follow-ups 5+, 44% give-up, no-show reminder cuts, DSO bands) — **cited-check before any client-facing use**; internal benchmark bands only.
 
 *Nothing in this doc is a guarantee; every figure is a labelled estimate pending pilot data (claims discipline).*
+
+## E. Worked case: "I want only my churchmates to listen" (Robb, 2026-09-30)
+
+Private-audience podcast (pastor case variant): audience capped by design → **every revenue lever switches off**; ROI = time reclaimed only (12 h/mo × 60–75% = 7–9 h/mo ≈ ₱2,100–2,700 at ₱300/hr) + qualitative (consistency, pastor capacity, accessibility). The app must never project reach/leads/conversion for a private audience.
+
+Implications:
+1. **Session intake needs audience intent** (public growth vs private community) — gates which levers the ROI engine may use (Card 3/6 design note).
+2. **Private variant is less work → lower band**: no clip engine/captions/SEO/distribution matrix; just edit → private feed/group → congregational email. Tentative: setup ₱8–12k, monthly ₱1.5–2.5k (vs public pipeline 12–20k / 3–6k). Catalog variant or scope toggle — decide with D-checklist.
+3. **Value check validation:** public-pipeline pricing (₱3–6k/mo) vs ₱2,700/mo benefit → amber flag (D6 tension again); private-variant ₱2k/mo passes cleanly.
