@@ -104,9 +104,8 @@ def seed_default_skills(*, owner: Any) -> tuple[int, int]:
     Returns (created, total). Idempotent by (owner, name) — same pattern as
     catalog.services.seed_default_catalog.
     """
-    created = 0
+    before = Skill.objects.filter(owner=owner).count()
     for name in DEFAULT_SKILLS:
-        existed = Skill.objects.filter(owner=owner, name=name).exists()
         get_or_create_skill(owner=owner, name=name)
-        created += 0 if existed else 1
+    created = Skill.objects.filter(owner=owner).count() - before
     return created, len(DEFAULT_SKILLS)

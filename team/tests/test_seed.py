@@ -53,9 +53,10 @@ def test_shares_rows_with_catalog_seed() -> None:
     user = User.objects.create_user(username="pro")
     call_command("seed_skills", "pro", stdout=_Out())
     catalog_services.seed_default_catalog(owner=user)
-    shared = {"Copy review", "Basic bookkeeping"} & set(DEFAULT_SKILLS)
-    for name in shared:
-        assert Skill.objects.filter(owner=user, name=name).count() == 1
+    # full invariant: both seeds converge — registry stays exactly the vocabulary
+    assert Skill.objects.filter(owner=user).count() == len(DEFAULT_SKILLS)
+    assert user.services.count() == 25
+    assert user.services.first().required_skills.count() > 0
 
 
 class _Out:

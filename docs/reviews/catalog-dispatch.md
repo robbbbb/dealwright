@@ -162,3 +162,15 @@ Rationale: Pass 6 delivers exactly the dispatch scope — a provider-owned team.
 **Adjudicate:** derivation not duplication (single source of truth; no invented vocabulary); both seeds converge on shared rows; command = thin wrapper (house pattern).
 
 ## Verdict (pass 7)
+### Pass 7 verdict — APPROVED
+
+Probes confirm: scope exact (7 files, no models/migrations/templates); gates green (132 passed / ruff / check / no drift); DEFAULT_SKILLS genuinely derived at import (programmatic equality with the 22-name union, zero hardcoded literals); live sqlite: CommandError on unknown user, 22 valid owner-scoped rows first run, 0 on re-run, 0 for other users, and convergence (after seed_catalog the registry stays 22 with all 76 required-skill rows linking to those same pks); write path through the validated get_or_create_skill; design-log records derived-not-duplicated.
+
+```
+Verdict: APPROVED
+Blocking findings: none. Scope is exact (7 files); all four hermetic gates green on re-run; DEFAULT_SKILLS is genuinely derived at import with zero hardcoded literals; live probe confirms CommandError on unknown user, idempotency, tenancy, and cross-seed convergence; write path goes through get_or_create_skill (validate-before-create) with the command a pure thin wrapper; design-log records the derived-not-duplicated rule.
+Minor findings: (1) seed_default_skills issues one extra .exists() query per name to count creations — cosmetic. (2) test_shares_rows_with_catalog_seed spot-checks only 2 shared names rather than the full 22-row count after both seeds. (3) Robb's pre-existing uncommitted templates/dashboard.html edit, untouched.
+Rationale: Pass 7 delivers exactly the dispatch scope — a starter registry vocabulary that cannot drift from the catalog draft because it is computed from it, seeded through the single validated get_or_create_skill write path behind an idempotent thin command, with both seed entry points proven to converge on shared registry rows — and every gate, derivation check, and behavioral probe passed on independent re-run by a fresh reviewer.
+```
+
+**Builder disposition (2026-09-30):** minor 1 → applied (two COUNT queries bracket the loop instead of per-name `.exists()`). Minor 2 → applied (test now asserts the full invariant: registry stays at exactly the vocabulary size after both seeds). Minor 3 → Robb's, untouched. **Pass 7: approved & closed.** 132 passed after minors.
