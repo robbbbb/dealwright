@@ -362,3 +362,70 @@ def test_mfa_index_renders_states(client: Client) -> None:
     TOTP.activate(user, totp_auth.generate_totp_secret())
     content = client.get(reverse("mfa_index")).content.decode()
     assert "Authenticator app is active" in content
+
+
+# --- password change (settings → security; themed in pass 17) -----------------
+
+
+@pytest.mark.django_db
+def test_password_change_page_renders_on_brand(client: Client) -> None:
+    """Reached from Settings → Security — themed, not allauth's bare default."""
+    create_user()
+    client.force_login(User.objects.get(email="rob@example.com"))
+
+    response = client.get(reverse("account_change_password"))
+
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert "Change password" in content
+    assert "Current Password" in content
+    assert "Dealwright" in content  # themed brand header, not allauth default
+    assert 'name="oldpassword"' in content
+
+
+@pytest.mark.django_db
+def test_password_change_flow_round_trip(client: Client) -> None:
+    create_user()
+    client.force_login(User.objects.get(email="rob@example.com"))
+
+    response = client.post(
+        reverse("account_change_password"),
+        {
+            "oldpassword": PASSWORD,
+            "password1": "fresh-harbor-mint-77",
+            "password2": "fresh-harbor-mint-77",
+        },
+    )
+
+    assert response.status_code == 302
+    user = User.objects.get(email="rob@example.com")
+    assert user.check_password("fresh-harbor-mint-77")
+
+
+@pytest.mark.django_db
+def test_password_change_rejects_wrong_current_password(client: Client) -> None:
+    create_user()
+    client.force_login(User.objects.get(email="rob@example.com"))
+
+    response = client.post(
+        reverse("account_change_password"),
+        {
+            "oldpassword": "wrong-pass-1",
+            "password1": "fresh-harbor-mint-77",
+            "password2": "fresh-harbor-mint-77",
+        },
+    )
+
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert "Current Password" in content  # re-rendered with inline error
+    user = User.objects.get(email="rob@example.com")
+    assert user.check_password(PASSWORD)  # nothing changed
+
+
+@pytest.mark.django_db
+def test_password_change_requires_login(client: Client) -> None:
+    response = client.get(reverse("account_change_password"))
+
+    assert response.status_code == 302
+    assert "/accounts/login/" in response.url
