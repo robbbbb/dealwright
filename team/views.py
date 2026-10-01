@@ -8,7 +8,13 @@ from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
 from . import selectors, services
-from .forms import EngagementForm, RegistrySkillForm, SkillPickForm, TeamMemberForm
+from .forms import (
+    EngagementForm,
+    ProviderProfileForm,
+    RegistrySkillForm,
+    SkillPickForm,
+    TeamMemberForm,
+)
 
 
 @login_required
@@ -88,6 +94,22 @@ def member_add(request: HttpRequest) -> HttpResponse:
     else:
         form = TeamMemberForm()
     return render(request, "team/member_add.html", {"form": form})
+
+
+@login_required
+def provider_settings(request: HttpRequest) -> HttpResponse:
+    """Settings — delivery identity (mode, branding, persona) + own terms.
+    One OneToOne row per user, so tenancy is structural."""
+    profile = services.get_provider_profile(request.user)
+    if request.method == "POST":
+        form = ProviderProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            services.update_provider_profile(profile=profile, **form.cleaned_data)
+            messages.success(request, "Settings saved.")
+            return redirect("team:provider_settings")
+    else:
+        form = ProviderProfileForm(instance=profile)
+    return render(request, "team/provider_settings.html", {"form": form, "profile": profile})
 
 
 @login_required

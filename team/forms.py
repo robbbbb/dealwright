@@ -2,7 +2,7 @@
 
 from django import forms
 
-from .models import Skill, SkillLevel, VAProfile
+from .models import ProviderProfile, Skill, SkillLevel, VAProfile
 
 _SELECT_CLASS = (
     "w-full rounded-[9px] border border-dw-line bg-white px-2.5 py-2 text-[13.5px]"
@@ -51,6 +51,40 @@ class EngagementForm(forms.ModelForm):
             "project_rate": "One-time fixed price per engagement (per-project basis).",
         }
 
+
+
+class ProviderProfileForm(forms.ModelForm):
+    """Provider settings — delivery identity plus the freelancer's own terms
+    (pre-Card-5 card: Card 8's About-me and Card 5's solo mode read these)."""
+
+    class Meta:
+        model = ProviderProfile
+        fields = [
+            "delivery_mode",
+            "branding_name",
+            "persona",
+            "rate_basis",
+            "rate_per_hour",
+            "project_rate",
+            "currency",
+            "availability_hours_per_week",
+            "timezone",
+            "languages",
+        ]
+        widgets = {
+            "delivery_mode": forms.Select(attrs={"class": _SELECT_CLASS}),
+            "rate_basis": forms.Select(attrs={"class": _SELECT_CLASS}),
+            "currency": forms.Select(
+                attrs={"class": _SELECT_CLASS},
+                choices=[("PHP", "PHP"), ("USD", "USD")],
+            ),
+            "project_rate": forms.NumberInput(attrs={"step": "0.01"}),
+            "persona": forms.Textarea(attrs={"rows": 3}),
+        }
+        help_texts = {
+            "rate_basis": "Which rate matching uses — never converted across bases.",
+            "project_rate": "One-time fixed price per engagement (per-project basis).",
+        }
 
 
 class SkillPickForm(forms.Form):

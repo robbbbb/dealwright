@@ -416,3 +416,81 @@ class TestSkillListManager:
         foreign = get_or_create_skill(owner=other, name="Foreign skill")
         url = reverse("team:skill_registry_delete", kwargs={"skill": foreign.slug})
         assert client.post(url).status_code == 404
+
+
+# --- provider settings (delivery terms) -------------------------------------------------
+
+
+def test_provider_settings_requires_login(client) -> None:
+    response = client.get(reverse("team:provider_settings"))
+
+    assert response.status_code == 302
+    assert "/accounts/login/" in response.url
+
+
+def test_provider_settings_get_shows_current_terms(
+    client, user, provider_profile
+) -> None:
+    provider_profile.branding_name = "Rodriguez VA Services"
+    provider_profile.save()
+    _login(client, user)
+
+    response = client.get(reverse("team:provider_settings"))
+
+    assert response.status_code == 200
+    assert b"Rodriguez VA Services" in response.content
+
+
+def test_provider_settings_post_saves_terms(client, user, provider_profile) -> None:
+    _login(client, user)
+
+    response = client.post(
+        reverse("team:provider_settings"),
+        {
+            "delivery_mode": "team",
+            "branding_name": "Rodriguez VA Services",
+            "persona": "Podcast workflows for creators.",
+            "rate_basis": "hourly",
+            "rate_per_hour": "350",
+            "currency": "PHP",
+            "availability_hours_per_week": "30",
+            "timezone": "Asia/Manila",
+            "languages": "English, Tagalog",
+        },
+    )
+
+    assert response.status_code == 302
+    provider_profile.refresh_from_db()
+    assert provider_profile.delivery_mode == "team"
+    assert provider_profile.rate_per_hour == 350
+    assert provider_profile.availability_hours_per_week == 30
+    assert provider_profile.languages == "English, Tagalog"
+
+
+def test_provider_settings_post_invalid_writes_nothing(
+    client, user, provider_profile
+) -> None:
+    _login(client, user)
+
+    response = client.post(
+        reverse("team:provider_settings"),
+        {
+            "delivery_mode": "solo",
+            "rate_basis": "project",  # project_rate missing → clean() rejects
+            "rate_per_hour": "0",
+            "currency": "PHP",
+            "availability_hours_per_week": "40",
+            "timezone": "Asia/Manila",
+        },
+    )
+
+    assert response.status_code == 200
+    provider_profile.refresh_from_db()
+    assert provider_profile.rate_basis == "hourly"  # nothing written
+
+
+def test_settings_url_beats_member_slug(client, user) -> None:
+    """The literal /team/settings/ route must win over <slug:member>/ matching."""
+    _login(client, user)
+
+    assert client.get("/team/settings/").status_code == 200

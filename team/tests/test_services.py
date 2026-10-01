@@ -10,6 +10,7 @@ from team.services import (
     delete_capability,
     get_provider_profile,
     update_capability,
+    update_provider_profile,
     update_va_profile,
 )
 
@@ -31,6 +32,43 @@ class TestProviderProfileService:
         profile = get_provider_profile(user)
 
         assert profile.delivery_mode == "solo"
+
+
+@pytest.mark.django_db
+class TestUpdateProviderProfileService:
+    def test_updates_terms_and_identity(self, provider_profile) -> None:
+        updated = update_provider_profile(
+            profile=provider_profile,
+            delivery_mode="team",
+            branding_name="Rodriguez VA Services",
+            persona="Podcast workflows for creators.",
+            rate_basis="hourly",
+            rate_per_hour=350,
+            project_rate=None,
+            currency="PHP",
+            availability_hours_per_week=30,
+            timezone="Asia/Manila",
+            languages="English, Tagalog",
+        )
+
+        assert updated.delivery_mode == "team"
+        assert updated.branding_name == "Rodriguez VA Services"
+        assert updated.rate_per_hour == 350
+        assert updated.availability_hours_per_week == 30
+        assert updated.languages == "English, Tagalog"
+        provider_profile.refresh_from_db()
+        assert provider_profile.persona == "Podcast workflows for creators."
+
+    def test_invalid_state_writes_nothing(self, provider_profile) -> None:
+        with pytest.raises(ValidationError):
+            update_provider_profile(
+                profile=provider_profile,
+                rate_basis="project",
+                project_rate=None,
+            )
+
+        provider_profile.refresh_from_db()
+        assert provider_profile.rate_basis == "hourly"
 
 
 @pytest.mark.django_db

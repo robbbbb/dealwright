@@ -87,7 +87,7 @@ Live call transcription · automated interviews · marketplace payments · publi
 - **Post-deploy migration rule** — `bench.0001` was regenerated twice pre-commit (nothing deployed; dev DB reset via `migrate bench zero`). After first Railway deploy: migrations are append-only, never regenerated. Status: standing rule (noted in design log).
 - **Green chip slot intentionally empty** — proficiency ladder is self-reported; the green "Verified" chip remains reserved for future real verification (design log, Card 4 decisions). Status: by design.
 
-- **Provider "My delivery terms" card (pre-Card 5, design-pass item C):** abstract `EngagementTermsMixin` on ProviderProfile + VAProfile; provider-profile edit UI (delivery_mode toggle, branding_name, persona) which Card 8 needs. Status: open (sequenced before Card 5).
+- ~~**Provider "My delivery terms" card (pre-Card 5, design-pass item C):**~~ **Resolved 2026-10-01:** shared abstract `EngagementTermsMixin` (rate_basis, rate_per_hour, project_rate, currency, availability_hours_per_week, timezone, languages + project-basis clean + `engagement_incomplete`) on both `ProviderProfile` and `VAProfile` — VA schema unchanged (only `languages` gained `default=""`, a migration no-op); provider adds the columns + mirrored non-negative checks. Provider settings page `/team/settings/` (delivery mode, branding name, persona + terms) via `ProviderProfileForm`/`update_provider_profile`; literal route precedes `<slug:member>/`; sidebar Settings placeholder now live. Card 5 consumes the shared `engagement_incomplete` for solo self-qualification and team filtering alike. Status: resolved (pending review pass).
 - **landing.html marketing copy still says "bench"** ("5 bench profiles" / "unlimited bench") while in-app vocabulary is now team. Owner: Robb (marketing wording). Status: open (Robb).
 
 ## Card 2 (catalog) review minors (2026-09-29)
@@ -112,7 +112,7 @@ Live call transcription · automated interviews · marketplace payments · publi
 
 No Settings screen exists in mocks or cards; the MVP surface folds into existing cards as follows:
 
-- **Profile & delivery terms** — name, branding_name, persona (solo/team), delivery_mode — this is where the pre-Card 5 "My delivery terms" provider-profile edit item lands. Status: open (owned by that item).
+- **Profile & delivery terms** — name, branding_name, persona (solo/team), delivery_mode — this is where the pre-Card 5 "My delivery terms" provider-profile edit item lands. Status: resolved 2026-10-01 (`/team/settings/`, sidebar-wired; engagement terms included).
 - **Integrations** — webhook URL + token mint/regenerate/revoke, "send test event" button, n8n docs link — the only new UI Card 10 forces. Status: open (Card 10 scope).
 - **Security** — links to the already-built allauth surfaces (password change, email manage, MFA + recovery codes). Status: open (Card 9 wiring).
 - **Billing** — placeholder only; post-pilot per pre-launch checklist. Status: deferred.

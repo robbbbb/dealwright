@@ -204,6 +204,62 @@ class TestProviderProfile:
         assert provider_profile.display_name == "robb"
 
 
+# --- provider engagement terms (pre-Card-5 card: design-log 2026-09-29) -------
+
+
+@pytest.mark.django_db
+class TestProviderEngagementTerms:
+    def test_new_profile_carries_member_default_terms(self, provider_profile) -> None:
+        assert provider_profile.rate_basis == "hourly"
+        assert provider_profile.rate_per_hour == 0
+        assert provider_profile.project_rate is None
+        assert provider_profile.currency == "PHP"
+        assert provider_profile.availability_hours_per_week == 40
+        assert provider_profile.timezone == "Asia/Manila"
+        assert provider_profile.languages == ""
+
+    def test_defaults_count_as_incomplete(self, provider_profile) -> None:
+        assert provider_profile.engagement_incomplete
+
+    def test_hourly_rate_completes_terms(self, provider_profile) -> None:
+        provider_profile.rate_per_hour = 350
+
+        assert not provider_profile.engagement_incomplete
+
+    def test_project_basis_incomplete_without_rate(self, provider_profile) -> None:
+        provider_profile.rate_basis = "project"
+
+        assert provider_profile.engagement_incomplete
+
+    def test_project_basis_complete_with_rate(self, provider_profile) -> None:
+        provider_profile.rate_basis = "project"
+        provider_profile.project_rate = 25000
+
+        assert not provider_profile.engagement_incomplete
+
+    def test_project_basis_requires_project_rate(self, provider_profile) -> None:
+        provider_profile.rate_basis = "project"
+
+        with pytest.raises(ValidationError) as err:
+            provider_profile.full_clean()
+
+        assert "project_rate" in err.value.message_dict
+
+    @pytest.mark.parametrize(
+        ("field", "value"),
+        [
+            ("rate_per_hour", -1),
+            ("project_rate", -500),
+            ("availability_hours_per_week", -5),
+        ],
+    )
+    def test_negative_money_and_hours_blocked_at_db(
+        self, user, field, value
+    ) -> None:
+        with pytest.raises(IntegrityError), transaction.atomic():
+            ProviderProfile.objects.create(owner=user, **{field: value})
+
+
 # --- schema compliance ------------------------------------------------------------------
 
 

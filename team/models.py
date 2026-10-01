@@ -74,7 +74,71 @@ _LEVEL_RANK: dict[str, int] = {
 }
 
 
-class ProviderProfile(models.Model):
+class EngagementTermsMixin(models.Model):
+    """Commercial terms shared by the account holder (ProviderProfile) and each
+    team member (VAProfile) — one model powers both About-me and matching, no
+    duplicate systems (design-log 2026-09-29). Rate basis/currency are
+    declarations, never converted (Q3 no-FX); rate/availability/timezone/language
+    are the Card 5 hard filters. ``industry_experience``/``notes`` stay VA-only —
+    provider positioning is ``persona``."""
+
+    rate_basis = models.CharField(
+        "rate basis",
+        max_length=10,
+        choices=RateBasis.choices,
+        default=RateBasis.HOURLY,
+        help_text="Which rate field matching uses — never converted across bases.",
+    )
+    rate_per_hour = models.DecimalField(
+        "rate per hour",
+        max_digits=6,
+        decimal_places=2,
+        default=0,
+        help_text="Used when rate basis is hourly; Q3 currency passthrough, no FX.",
+    )
+    project_rate = models.DecimalField(
+        "project rate",
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="One-time fixed price per engagement; used when rate basis is project.",
+    )
+    currency = models.CharField("currency", max_length=3, default="PHP")
+    availability_hours_per_week = models.PositiveSmallIntegerField(
+        "availability (hrs/week)",
+        default=40,
+    )
+    timezone = models.CharField("timezone", max_length=64, default="Asia/Manila")
+    languages = models.CharField(
+        "languages",
+        max_length=200,
+        blank=True,
+        default="",
+        help_text="Comma-separated, e.g. 'English, Tagalog'. Hard filter in matching.",
+    )
+
+    class Meta:
+        abstract = True
+
+    def clean(self) -> None:
+        """Shape integrity (services call full_clean before save; admin too)."""
+        super().clean()
+        if self.rate_basis == RateBasis.PROJECT and self.project_rate is None:
+            raise ValidationError(
+                {"project_rate": "Per-project team members need a project rate."}
+            )
+
+    @property
+    def engagement_incomplete(self) -> bool:
+        """Commercial terms still at defaults — Card 5 excludes these holders
+        (with an explicit reason) and surfaces show 'Rates not set'."""
+        if self.rate_basis == "project":
+            return self.project_rate is None
+        return not self.rate_per_hour
+
+
+class ProviderProfile(EngagementTermsMixin, models.Model):
     """The Dealwright account holder's delivery identity (Q9)."""
 
     owner = models.OneToOneField(  # type: ignore[var-annotated]
@@ -109,6 +173,20 @@ class ProviderProfile(models.Model):
     class Meta:
         verbose_name = "provider profile"
         verbose_name_plural = "provider profiles"
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(rate_per_hour__gte=0),
+                name="dw_provider_rate_non_negative",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(project_rate__isnull=True) | models.Q(project_rate__gte=0),
+                name="dw_provider_project_rate_non_negative",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(availability_hours_per_week__gte=0),
+                name="dw_provider_availability_non_negative",
+            ),
+        ]
 
     def __str__(self) -> str:
         return f"{self.display_name} ({self.get_delivery_mode_display()})"
@@ -121,9 +199,10 @@ class ProviderProfile(models.Model):
         return user.get_full_name() or user.get_username()
 
 
-class VAProfile(models.Model):
-    """One team member of a team-mode provider. Rate/availability/timezone/language
-    are the Card 5 hard filters; industry experience is soft context only."""
+class VAProfile(EngagementTermsMixin, models.Model):
+    """One team member of a team-mode provider. Commercial terms come from the
+    shared EngagementTermsMixin; rate/availability/timezone/language are the
+    Card 5 hard filters; industry experience is soft context only."""
 
     owner = models.ForeignKey(  # type: ignore[var-annotated]
         settings.AUTH_USER_MODEL,
@@ -141,40 +220,6 @@ class VAProfile(models.Model):
         "active",
         default=True,
         help_text="Inactive members stay on the team record but never match.",
-    )
-    rate_basis = models.CharField(
-        "rate basis",
-        max_length=10,
-        choices=RateBasis.choices,
-        default=RateBasis.HOURLY,
-        help_text="Which rate field matching uses — never converted across bases.",
-    )
-    rate_per_hour = models.DecimalField(
-        "rate per hour",
-        max_digits=6,
-        decimal_places=2,
-        default=0,
-        help_text="Used when rate basis is hourly; Q3 currency passthrough, no FX.",
-    )
-    project_rate = models.DecimalField(
-        "project rate",
-        max_digits=10,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        help_text="One-time fixed price per engagement; used when rate basis is project.",
-    )
-    currency = models.CharField("currency", max_length=3, default="PHP")
-    availability_hours_per_week = models.PositiveSmallIntegerField(
-        "availability (hrs/week)",
-        default=40,
-    )
-    timezone = models.CharField("timezone", max_length=64, default="Asia/Manila")
-    languages = models.CharField(
-        "languages",
-        max_length=200,
-        blank=True,
-        help_text="Comma-separated, e.g. 'English, Tagalog'. Hard filter in matching.",
     )
     industry_experience = models.CharField(
         "industry experience",
@@ -224,22 +269,6 @@ class VAProfile(models.Model):
                 self.pk,
             )
         super().save(*args, **kwargs)
-
-    @property
-    def engagement_incomplete(self) -> bool:
-        """Commercial terms still at defaults — Card 5 excludes these members
-        (with an explicit reason) and the roster shows 'Rates not set'."""
-        if self.rate_basis == "project":
-            return self.project_rate is None
-        return not self.rate_per_hour
-
-    def clean(self) -> None:
-        """Shape integrity (services call full_clean before save; admin too)."""
-        super().clean()
-        if self.rate_basis == RateBasis.PROJECT and self.project_rate is None:
-            raise ValidationError(
-                {"project_rate": "Per-project team members need a project rate."}
-            )
 
 
 class Skill(models.Model):

@@ -16,6 +16,8 @@ urlpatterns = [
     path("members/", views.member_list, name="member_list"),  # must precede <slug:member>/
     path("skills/create/", views.skill_create, name="skill_create"),
     path("skills/<slug:skill>/remove/", views.skill_registry_delete, name="skill_registry_delete"),
+    # literal route — must precede <slug:member>/
+    path("settings/", views.provider_settings, name="provider_settings"),
     path("<slug:member>/", views.member_detail, name="member_detail"),
     path("<slug:member>/engagement/", views.member_engagement, name="member_engagement"),
     path("<slug:member>/skills/add/", views.member_skill_add, name="member_skill_add"),

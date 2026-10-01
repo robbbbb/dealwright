@@ -56,6 +56,16 @@ def update_va_profile(*, va: VAProfile, **fields: Any) -> VAProfile:
     return va
 
 
+def update_provider_profile(*, profile: ProviderProfile, **fields: Any) -> ProviderProfile:
+    """Delivery identity + own engagement terms — full_clean before save, so a
+    rejected update writes nothing (single write, no atomic needed)."""
+    for name, value in fields.items():
+        setattr(profile, name, value)
+    profile.full_clean()
+    profile.save()
+    return profile
+
+
 @transaction.atomic
 def add_capability(
     *,
