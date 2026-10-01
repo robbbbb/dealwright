@@ -1,0 +1,20 @@
+{# allauth account/reauthenticate.html — "confirm it's you" gate before sensitive actions (2FA setup); themed pass 18 #}
+{% extends "auth-base.html" %}
+{% load i18n %}
+{% block title %}Confirm it's you · Dealwright{% endblock %}
+{% block auth_content %}
+  <h1 class="dw-h1">Confirm it's you</h1>
+  <p class="dw-sub">Enter your password to continue to the next step</p>
+  <form method="post" action="{% url 'account_reauthenticate' %}">
+    {% csrf_token %}
+    {% if redirect_field_value %}<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">{% endif %}
+    {{ form.non_field_errors }}
+    <div class="dw-field">
+      <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+      {{ form.password }}
+      {{ form.password.errors }}
+    </div>
+    <button type="submit" class="btn-primary">{% trans "Confirm" %}</button>
+  </form>
+  <p class="dw-swap"><a href="{% url 'home' %}">← Back to your workspace</a></p>
+{% endblock %}

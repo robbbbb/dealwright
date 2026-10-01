@@ -429,3 +429,51 @@ def test_password_change_requires_login(client: Client) -> None:
 
     assert response.status_code == 302
     assert "/accounts/login/" in response.url
+
+
+# --- reauthenticate (identity gate before 2FA setup; themed pass 18) ----------
+
+
+@pytest.mark.django_db
+def test_reauthenticate_page_renders_on_brand(client: Client) -> None:
+    create_user()
+    client.force_login(User.objects.get(email="rob@example.com"))
+
+    response = client.get(
+        reverse("account_reauthenticate"), {"next": reverse("mfa_activate_totp")}
+    )
+
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert "Confirm it's you" in content
+    assert "Dealwright" in content  # themed brand header, not allauth default
+    assert 'name="password"' in content
+    assert reverse("mfa_activate_totp") in content  # next carried through
+
+
+@pytest.mark.django_db
+def test_reauthenticate_round_trip(client: Client) -> None:
+    create_user()
+    client.force_login(User.objects.get(email="rob@example.com"))
+
+    response = client.post(
+        reverse("account_reauthenticate"),
+        {"password": PASSWORD, "next": reverse("mfa_activate_totp")},
+    )
+
+    assert response.status_code == 302
+    assert response.url == reverse("mfa_activate_totp")
+
+
+@pytest.mark.django_db
+def test_reauthenticate_rejects_wrong_password(client: Client) -> None:
+    create_user()
+    client.force_login(User.objects.get(email="rob@example.com"))
+
+    response = client.post(
+        reverse("account_reauthenticate"),
+        {"password": "wrong-pass-1", "next": reverse("mfa_activate_totp")},
+    )
+
+    assert response.status_code == 200
+    assert "Dealwright" in response.content.decode()  # error stays on brand
