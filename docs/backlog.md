@@ -107,3 +107,14 @@ Live call transcription · automated interviews · marketplace payments · publi
 - **Roster card N+1 (pass 11 review minor)** — `_member_card.html` renders `va.capabilities.count` per card; `.count` bypasses `prefetch_related`, so both roster surfaces issue one COUNT per member. Pre-existing pattern, now on two pages. Future selectors pass: annotate `Count("capabilities")` in `list_vas`. Status: open (perf hygiene).
 - **Migration 0008 legacy empty-string categories** — an empty category string backfills to a nameless category row (slug `category`) rather than being dropped; data-preserving by design. If legacy data with empty categories is ever encountered in prod, rename those rows via admin. Status: note.
 - **Edit-path cross-owner category pk probe** (pass 12 review minor 1) — create-path probe is committed (`test_post_cross_owner_category_pk_is_invalid_choice`); the equivalent edit-path probe (`service_edit` POST with foreign pk → invalid choice, no write) was verified live by the pass-12 reviewer but is not yet a committed test. Commit it with the next catalog card. Status: open (small).
+
+## Settings surface (2026-10-01, Robb-directed chat decision)
+
+No Settings screen exists in mocks or cards; the MVP surface folds into existing cards as follows:
+
+- **Profile & delivery terms** — name, branding_name, persona (solo/team), delivery_mode — this is where the pre-Card 5 "My delivery terms" provider-profile edit item lands. Status: open (owned by that item).
+- **Integrations** — webhook URL + token mint/regenerate/revoke, "send test event" button, n8n docs link — the only new UI Card 10 forces. Status: open (Card 10 scope).
+- **Security** — links to the already-built allauth surfaces (password change, email manage, MFA + recovery codes). Status: open (Card 9 wiring).
+- **Billing** — placeholder only; post-pilot per pre-launch checklist. Status: deferred.
+- **~~Account default currency~~ declined for MVP (Robb: "don't see the purpose for now")** — no account-level currency setting; per-service/VA ISO 4217 declarations (shipped, Q3 no-FX) already carry all money. Currency-per-account stays a post-pilot idea at most (existing deferred line); if ever built, guardrail: form preselection only — never conversion, never cross-currency sums. Status: declined (recorded).
+- **Never settings material:** prices/retainers (catalog), guardrails/banned-phrases/disclaimers (versioned data, always on), model routing + API keys (Railway env vars), quality-mode toggle (post-pilot decision).
