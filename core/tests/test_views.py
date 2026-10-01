@@ -44,9 +44,10 @@ def test_signed_in_users_get_dashboard(client: Client) -> None:
     # Desktop: logout lives in the avatar account menu, not the sidebar
     assert 'dw-user-btn' in content and 'aria-controls="dw-user-menu"' in content
     assert content.count(">Log out</button>") == 2  # drawer (mobile) + avatar menu (desktop)
-    # Sidebar sections per docs/mockups/dashboard-mockup.html
+    # Sidebar sections (ROI estimates removed 2026-10-01: ROI is settings config
+    # + engine embedded in sessions/proposals, not a provider-facing page)
     for nav_item in (
-        "Dashboard", "Clients", "Discovery sessions", "ROI estimates",
+        "Dashboard", "Clients", "Discovery sessions",
         "Proposals", "Service catalog", "My skills", "Integrations", "Settings",
     ):
         assert nav_item in content, f"missing sidebar item: {nav_item}"

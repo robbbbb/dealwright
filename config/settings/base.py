@@ -139,3 +139,7 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ROI benchmark configuration — platform-level settings (Card 3). Superuser-edited
+# in the repo; providers never see it. See config/roi.py for the bands + discipline.
+from config.roi import ROI_BENCHMARK_BANDS, ROI_BENCHMARKS_VERSION  # noqa: E402, F401
