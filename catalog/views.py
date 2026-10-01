@@ -10,16 +10,16 @@ from django.utils.text import slugify
 from django.views.decorators.http import require_POST
 
 from . import selectors, services
-from .forms import RequiredSkillForm, ServiceForm
+from .forms import CategoryForm, RequiredSkillForm, ServiceForm
 
 
 @login_required
 def service_list(request: HttpRequest) -> HttpResponse:
     """/catalog/ — the provider's services grouped by category."""
     services_qs = selectors.list_services(request.user)
-    categories = {}
+    categories: dict[str, list] = {}
     for service in services_qs:
-        categories.setdefault(service.category, []).append(service)
+        categories.setdefault(service.category.name, []).append(service)
     return render(
         request,
         "catalog/service_list.html",
@@ -43,27 +43,50 @@ def seed_defaults(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
+def category_add(request: HttpRequest) -> HttpResponse:
+    """Add a category row — the vocabulary services are picked from."""
+    if request.method == "POST":
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            category, created = services.get_or_create_category(
+                owner=request.user, name=form.cleaned_data["name"]
+            )
+            if created:
+                messages.success(request, f"'{category.name}' added to your categories.")
+            else:
+                messages.info(request, f"'{category.name}' is already in your categories.")
+            return redirect("catalog:service_list")
+    else:
+        form = CategoryForm()
+    return render(request, "catalog/category_add.html", {"form": form})
+
+
+@login_required
 def service_create(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
-        form = ServiceForm(request.POST)
+        form = ServiceForm(request.user, request.POST)
         if form.is_valid():
             fields = {k: v for k, v in form.cleaned_data.items() if k != "tags_text"}
             service = services.create_service(owner=request.user, **fields)
             messages.success(request, f"{service.name} added to your catalog.")
             return redirect(
                 "catalog:service_edit",
-                category=slugify(service.category),
+                category=slugify(service.category.name),
                 service=service.slug,
             )
     else:
-        form = ServiceForm()
-    return render(request, "catalog/service_form.html", {"form": form, "is_create": True})
+        form = ServiceForm(request.user)
+    return render(
+        request,
+        "catalog/service_form.html",
+        {"form": form, "is_create": True, "categories": selectors.list_categories(request.user)},
+    )
 
 
 def _canonical_service(request: HttpRequest, category: str, service_slug: str):
     """Slug lookup + tenancy + canonical category — anything else is a 404."""
     service = selectors.get_service_for_owner(request.user, service_slug)
-    if service is None or slugify(service.category) != category:
+    if service is None or slugify(service.category.name) != category:
         raise Http404("No such service.")
     return service
 
@@ -72,7 +95,7 @@ def _canonical_service(request: HttpRequest, category: str, service_slug: str):
 def service_edit(request: HttpRequest, category: str, service: str) -> HttpResponse:
     svc = _canonical_service(request, category, service)
     if request.method == "POST":
-        form = ServiceForm(request.POST, instance=svc)
+        form = ServiceForm(request.user, request.POST, instance=svc)
         if form.is_valid():
             fields = {k: v for k, v in form.cleaned_data.items() if k != "tags_text"}
             services.update_service(service=svc, **fields)
@@ -83,7 +106,7 @@ def service_edit(request: HttpRequest, category: str, service: str) -> HttpRespo
                 service=svc.slug,
             )
     else:
-        form = ServiceForm(instance=svc)
+        form = ServiceForm(request.user, instance=svc)
     return render(
         request,
         "catalog/service_form.html",
@@ -125,7 +148,7 @@ def skill_add(request: HttpRequest, category: str, service: str) -> HttpResponse
 
 def _redirect_to_service(svc) -> HttpResponse:  # type: ignore[no-untyped-def]
     return redirect(
-        "catalog:service_edit", category=slugify(svc.category), service=svc.slug
+        "catalog:service_edit", category=slugify(svc.category.name), service=svc.slug
     )
 
 

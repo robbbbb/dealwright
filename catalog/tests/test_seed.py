@@ -37,7 +37,7 @@ def seeded(db) -> User:
 
 def test_seed_creates_full_catalog(seeded: User) -> None:
     assert Service.objects.count() == SERVICE_COUNT
-    assert set(Service.objects.values_list("category", flat=True)) == set(CATEGORIES)
+    assert set(Service.objects.values_list("category__name", flat=True)) == set(CATEGORIES)
     names = set(Service.objects.values_list("name", flat=True))
     assert any(n.startswith("Podcast distribution pipeline") for n in names)
     assert any(n.startswith("Personal assistant service") for n in names)

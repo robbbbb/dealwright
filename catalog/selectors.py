@@ -6,12 +6,19 @@ from typing import Any
 
 from django.db.models import QuerySet
 
-from .models import RequiredSkill, Service
+from .models import RequiredSkill, Service, ServiceCategory
 
 
 def list_services(owner: Any) -> QuerySet[Service]:
     """The owner's whole catalog, category-grouped for the list page."""
-    return Service.objects.filter(owner=owner).prefetch_related("required_skills__skill")
+    return Service.objects.filter(owner=owner).select_related("category").prefetch_related(
+        "required_skills__skill"
+    )
+
+
+def list_categories(owner: Any) -> QuerySet[ServiceCategory]:
+    """The owner's category vocabulary — pickers and empty-state checks."""
+    return ServiceCategory.objects.filter(owner=owner).order_by("name")
 
 
 def get_service_for_owner(owner: Any, slug: str) -> Service | None:

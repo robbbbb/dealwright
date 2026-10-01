@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 
 from catalog import services
-from catalog.tests.conftest import VALID_SERVICE, make_user
+from catalog.tests.conftest import VALID_SERVICE, category_for, make_service, make_user
 from team.models import Skill
 
 
@@ -31,7 +31,7 @@ def _client_for(client: object, username: str = "pro") -> User:
 
 def _service_data(**overrides: object) -> dict[str, object]:
     data = {
-        "category": "Content & Social",
+        "category": "",  # tests pass the pk of a category created for the user
         "name": "Social calendar",
         "currency": "PHP",
         "setup_low": "4000",
@@ -58,11 +58,13 @@ class TestServiceList:
         html = response.content.decode()
         assert "Podcast distribution pipeline" in html
         assert "setup ₱4,000–8,000 · retainer ₱1,500–3,000/mo" in html
+        assert "ready to quote" in html
+        assert "Browse services" in html
 
     def test_other_users_services_not_listed(self, client) -> None:
         _client_for(client, "mine")
         other = make_user("other")
-        services.create_service(owner=other, **VALID_SERVICE)
+        make_service(other)
         html = client.get(reverse("catalog:service_list")).content.decode()
         assert VALID_SERVICE["name"] not in html
 
@@ -85,6 +87,57 @@ class TestSeedDefaults:
 
 
 
+class TestCategoryAdd:
+    def test_requires_login(self, client) -> None:
+        assert client.get(reverse("catalog:category_add")).status_code == 302
+
+    def test_get_renders_form(self, client) -> None:
+        _client_for(client)
+        response = client.get(reverse("catalog:category_add"))
+        assert response.status_code == 200
+        assert "Category name" in response.content.decode()
+
+    def test_post_creates_and_redirects_to_catalog(self, client) -> None:
+        pro = _client_for(client)
+        response = client.post(
+            reverse("catalog:category_add"), {"name": "Content & Social"}
+        )
+        assert response.status_code == 302
+        assert response.url == reverse("catalog:service_list")
+        assert pro.service_categories.filter(name="Content & Social").exists()
+
+    def test_duplicate_name_is_idempotent(self, client) -> None:
+        pro = _client_for(client)
+        category_for(pro, "Content & Social")
+        assert (
+            client.post(
+                reverse("catalog:category_add"), {"name": "Content & Social"}
+            ).status_code
+            == 302
+        )
+        assert pro.service_categories.count() == 1
+
+    def test_blank_name_rerenders_with_error(self, client) -> None:
+        pro = _client_for(client)
+        response = client.post(reverse("catalog:category_add"), {"name": "  "})
+        assert response.status_code == 200
+        assert "name" in response.context["form"].errors
+        assert pro.service_categories.count() == 0
+
+    def test_service_form_select_lists_only_owner_categories(self, client) -> None:
+        pro = _client_for(client)
+        category_for(pro, "Mine only")
+        category_for(make_user("other-cats"), "Foreign cat")
+        html = client.get(reverse("catalog:service_create")).content.decode()
+        assert "Mine only" in html
+        assert "Foreign cat" not in html
+
+    def test_create_page_hints_when_no_categories(self, client) -> None:
+        _client_for(client)
+        html = client.get(reverse("catalog:service_create")).content.decode()
+        assert "add your first category" in html
+
+
 class TestServiceCreate:
     def test_get_renders_form(self, client) -> None:
         _client_for(client)
@@ -94,16 +147,29 @@ class TestServiceCreate:
 
     def test_post_creates_service_with_parsed_tags(self, client) -> None:
         pro = _client_for(client)
-        response = client.post(reverse("catalog:service_create"), _service_data())
+        category = category_for(pro, "Content & Social")
+        response = client.post(
+            reverse("catalog:service_create"), _service_data(category=category.pk)
+        )
         assert response.status_code == 302
         service = pro.services.get(name="Social calendar")
         assert service.problem_tags == ["leads-lost", "slow-response"]
         assert service.currency == "PHP"
+        assert service.category.name == "Content & Social"
+
+    def test_post_without_category_shows_error(self, client) -> None:
+        pro = _client_for(client)
+        response = client.post(reverse("catalog:service_create"), _service_data())
+        assert response.status_code == 200
+        assert "category" in response.context["form"].errors
+        assert pro.services.count() == 0
 
     def test_invalid_data_shows_error_and_creates_nothing(self, client) -> None:
         pro = _client_for(client)
+        category = category_for(pro, "Content & Social")
         response = client.post(
-            reverse("catalog:service_create"), _service_data(currency="usd")
+            reverse("catalog:service_create"),
+            _service_data(category=category.pk, currency="usd"),
         )
         assert response.status_code == 200
         assert "currency" in response.context["form"].errors
@@ -116,10 +182,10 @@ class TestServiceCreate:
 class TestServiceEdit:
     def test_edit_own_service(self, client) -> None:
         pro = _client_for(client)
-        service = services.create_service(owner=pro, **VALID_SERVICE)
+        service = make_service(pro)
         response = client.post(
             _url("service_edit", service),
-            _service_data(name="Renamed"),
+            _service_data(name="Renamed", category=service.category_id),
         )
         assert response.status_code == 302
         service.refresh_from_db()
@@ -128,7 +194,7 @@ class TestServiceEdit:
     def test_other_users_service_is_404(self, client) -> None:
         _client_for(client, "mine")
         other = make_user("other")
-        service = services.create_service(owner=other, **VALID_SERVICE)
+        service = make_service(other)
         assert (
             client.get(_url("service_edit", service)).status_code
             == 404
@@ -136,29 +202,35 @@ class TestServiceEdit:
 
     def test_edit_page_lists_required_skills_and_add_form(self, client) -> None:
         pro = _client_for(client)
-        service = services.create_service(owner=pro, **VALID_SERVICE)
+        service = make_service(pro)
         response = client.get(_url("service_edit", service))
-        assert "Required skills" in response.content.decode()
+        html = response.content.decode()
+        assert "Service details" in html
+        assert "Pricing" in html
+        assert "Delivery window" in html
+        assert "Required skills" in html
+        assert "Danger zone" in html
+        assert html.index("Required skills") < html.index("Danger zone")
 
 
 class TestServiceDelete:
     def test_post_deletes_own(self, client) -> None:
         pro = _client_for(client)
-        service = services.create_service(owner=pro, **VALID_SERVICE)
+        service = make_service(pro)
         url = _url("service_delete", service)
         assert client.post(url).status_code == 302
         assert pro.services.count() == 0
 
     def test_get_rejected(self, client) -> None:
         pro = _client_for(client)
-        service = services.create_service(owner=pro, **VALID_SERVICE)
+        service = make_service(pro)
         assert client.get(_url("service_delete", service)).status_code == 405
 
 
 class TestRequiredSkills:
     def test_add_and_remove_skill(self, client) -> None:
         pro = _client_for(client)
-        service = services.create_service(owner=pro, **VALID_SERVICE)
+        service = make_service(pro)
         skill = Skill.objects.create(owner=pro, name="CRM management")
         client.post(
             _url("skill_add", service),
@@ -174,13 +246,13 @@ class TestRequiredSkills:
 
     def test_skill_add_get_rejected(self, client) -> None:
         pro = _client_for(client)
-        service = services.create_service(owner=pro, **VALID_SERVICE)
+        service = make_service(pro)
         assert client.get(_url("skill_add", service)).status_code == 405
 
     def test_cannot_touch_other_users_skill(self, client) -> None:
         _client_for(client, "mine")
         other = make_user("other")
-        service = services.create_service(owner=other, **VALID_SERVICE)
+        service = make_service(other)
         skill = Skill.objects.create(owner=other, name="Copywriting")
         services.add_required_skill(service=service, skill=skill, min_level="advanced")
         skill_slug = service.required_skills.get().slug
@@ -200,7 +272,7 @@ class TestSidebarWiring:
 class TestSlugSemantics:
     def test_slug_frozen_on_rename(self, client) -> None:
         pro = _client_for(client)
-        service = services.create_service(owner=pro, **VALID_SERVICE)
+        service = make_service(pro)
         created_slug = service.slug
         services.update_service(service=service, name="Totally new name")
         service.refresh_from_db()
@@ -208,9 +280,10 @@ class TestSlugSemantics:
 
     def test_same_name_cross_category_gets_suffix(self, client) -> None:
         pro = _client_for(client)
-        first = services.create_service(owner=pro, **VALID_SERVICE)
+        first = make_service(pro)
+        second_cat = category_for(pro, "Automated follow-ups")
         second = services.create_service(
-            owner=pro, **{**VALID_SERVICE, "category": "Automated follow-ups"}
+            owner=pro, **{**VALID_SERVICE, "category": second_cat}
         )
         assert first.slug != second.slug
         assert second.slug.startswith(first.slug + "-")
@@ -220,14 +293,14 @@ class TestSlugSemantics:
 
         mine = _client_for(client, "mine")
         other = make_user("other-slug")
-        a = services.create_service(owner=mine, **VALID_SERVICE)
-        b = services.create_service(owner=other, **VALID_SERVICE)
+        a = make_service(mine)
+        b = make_service(other)
         assert a.slug == b.slug  # uniqueness is per owner, not global
         assert Service.objects.filter(slug=a.slug).count() == 2
 
     def test_wrong_category_slug_is_404(self, client) -> None:
         pro = _client_for(client)
-        service = services.create_service(owner=pro, **VALID_SERVICE)
+        service = make_service(pro)
         url = reverse(
             "catalog:service_edit",
             kwargs={"category": "not-the-real-category", "service": service.slug},

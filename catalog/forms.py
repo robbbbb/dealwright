@@ -6,7 +6,7 @@ from django import forms
 
 from team.models import Skill
 
-from .models import RequiredSkill, Service
+from .models import RequiredSkill, Service, ServiceCategory
 
 _CURRENCY_CHOICES = [
     ("PHP", "PHP ₱"), ("USD", "USD $"), ("EUR", "EUR €"), ("GBP", "GBP £"),
@@ -15,7 +15,14 @@ _CURRENCY_CHOICES = [
 
 
 class ServiceForm(forms.ModelForm):
-    """Provider-editable service fields; problem tags entered as comma-separated text."""
+    """Provider-editable service fields; category picked from the owner's rows."""
+
+    category = forms.ModelChoiceField(
+        queryset=ServiceCategory.objects.none(),
+        label="Category",
+        empty_label="Select a category",
+        help_text="Pick from your categories — add new ones from the catalog page.",
+    )
 
     tags_text = forms.CharField(
         max_length=400,
@@ -42,8 +49,11 @@ class ServiceForm(forms.ModelForm):
             "custom_quote": "Priced per engagement instead of from ranges.",
         }
 
-    def __init__(self, *args: object, **kwargs: object) -> None:
+    def __init__(self, owner: object, *args: object, **kwargs: object) -> None:
         super().__init__(*args, **kwargs)
+        self.fields["category"].queryset = ServiceCategory.objects.filter(
+            owner=owner
+        ).order_by("name")
         if self.instance.pk and self.instance.problem_tags:
             self.fields["tags_text"].initial = ", ".join(self.instance.problem_tags)
 
@@ -52,6 +62,16 @@ class ServiceForm(forms.ModelForm):
         tags_text = str(cleaned.get("tags_text") or "").strip()
         cleaned["problem_tags"] = [t.strip() for t in tags_text.split(",") if t.strip()]
         return cleaned
+
+
+class CategoryForm(forms.Form):
+    """Create a category row — the catalog vocabulary surface (like team skills)."""
+
+    name = forms.CharField(
+        max_length=80,
+        label="Category name",
+        widget=forms.TextInput(attrs={"placeholder": "e.g. Lead capture & CRM automation"}),
+    )
 
 
 class RequiredSkillForm(forms.Form):

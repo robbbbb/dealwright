@@ -16,6 +16,7 @@ urlpatterns = [
     path("", views.service_list, name="service_list"),
     path("seed/", views.seed_defaults, name="seed_defaults"),
     path("add/", views.service_create, name="service_create"),
+    path("categories/add/", views.category_add, name="category_add"),  # precedes <slug:category>/…
     path("<slug:category>/<slug:service>/", views.service_edit, name="service_edit"),
     path("<slug:category>/<slug:service>/delete/", views.service_delete, name="service_delete"),
     path(

@@ -36,6 +36,61 @@ _CURRENCY_SYMBOLS = {
 }
 
 
+class ServiceCategory(models.Model):
+    """One named category in the provider's catalog vocabulary.
+
+    Supersedes the Service CharField category (Robb, 2026-10-01): categories
+    are picked, not retyped. Same registry pattern as team.Skill — owner-scoped,
+    slug unique per owner and frozen at creation, PROTECTed while referenced.
+    """
+
+    owner = models.ForeignKey(  # type: ignore[var-annotated]
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="service_categories",
+    )
+    name = models.CharField("name", max_length=80)
+    slug = models.SlugField(
+        "slug",
+        max_length=140,
+        blank=True,  # generated once at creation; renames never break links
+        help_text="URL name — set at creation from the name, unique per owner.",
+    )
+    created_at = models.DateTimeField("created at", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "service category"
+        verbose_name_plural = "service categories"
+        ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["owner", "name"], name="dw_servicecategory_unique_per_owner"
+            ),
+            models.UniqueConstraint(
+                fields=["owner", "slug"], name="dw_servicecategory_slug_unique_per_owner"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.name
+
+    def save(self, *args: object, **kwargs: object) -> None:
+        if not self.slug:
+            self.slug = self._unique_slug(slugify(self.name) or "category")
+        super().save(*args, **kwargs)
+
+    def _unique_slug(self, base: str) -> str:
+        candidate, counter = base, 1
+        while (
+            ServiceCategory.objects.filter(owner=self.owner, slug=candidate)
+            .exclude(pk=self.pk)
+            .exists()
+        ):
+            counter += 1
+            candidate = f"{base}-{counter}"
+        return candidate
+
+
 class Service(models.Model):
     """One sellable service: what it solves, what it costs, skills it needs."""
 
@@ -45,11 +100,12 @@ class Service(models.Model):
         related_name="services",
         help_text="Provider whose catalog this belongs to (custom catalogs are Tier 0).",
     )
-    category = models.CharField(
-        "category",
-        max_length=80,
-        db_index=True,
-        help_text="Seed ships 8 canonical categories; providers may use their own.",
+    category = models.ForeignKey(
+        ServiceCategory,
+        on_delete=models.PROTECT,  # load-bearing for grouping/matching — not deletable while used
+        related_name="services",
+        verbose_name="category",
+        help_text="Pick from the provider's own category rows (supersedes free text, 2026-10-01).",
     )
     name = models.CharField("name", max_length=120)
     problem_tags = models.JSONField(
@@ -170,6 +226,12 @@ class Service(models.Model):
         )
         if not tags_ok:
             errors["problem_tags"] = ["Problem tags must be a list of strings."]
+
+        # Only judge when both sides are known: ModelForm._post_clean runs
+        # full_clean on an instance without owner (applied in the service layer);
+        # every real write path sets owner, so cross-owner rows stay impossible.
+        if self.category_id and self.owner_id and self.category.owner_id != self.owner_id:
+            errors["category"] = ["Category must come from this provider's own list."]
 
         if not _CURRENCY_RE.fullmatch(self.currency or ""):
             errors["currency"] = ["Use a 3-letter ISO 4217 code, e.g. PHP, USD, EUR."]

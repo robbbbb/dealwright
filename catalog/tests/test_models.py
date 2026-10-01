@@ -15,8 +15,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
-from catalog.models import RequiredSkill, Service
-from catalog.tests.conftest import make_service, make_user
+from catalog.models import RequiredSkill, Service, ServiceCategory
+from catalog.tests.conftest import category_for, make_service, make_user
 from team.models import Skill, SkillLevel
 
 
@@ -25,7 +25,11 @@ class TestPairs:
         owner = User.objects.create_user(username="pro")
         with pytest.raises(ValidationError):
             Service(
-                owner=owner, category="X", name="Half a range", setup_low=1000, custom_quote=True
+                owner=owner,
+                category=category_for(owner),
+                name="Half a range",
+                setup_low=1000,
+                custom_quote=True,
             ).full_clean()
 
     @pytest.mark.parametrize(
@@ -41,7 +45,7 @@ class TestPairs:
         with pytest.raises(ValidationError):
             Service(
                 owner=owner,
-                category="X",
+                category=category_for(owner),
                 name="Inverted range",
                 custom_quote=True,
                 **{low_field: low, high_field: high},
@@ -52,7 +56,7 @@ class TestPairs:
         with pytest.raises(ValidationError):
             Service(
                 owner=owner,
-                category="X",
+                category=category_for(owner),
                 name="Negative price",
                 setup_low=-1000,
                 setup_high=2000,
@@ -63,13 +67,13 @@ class TestPricing:
     def test_pricing_required_unless_custom_quote(self, db) -> None:
         owner = User.objects.create_user(username="pro")
         with pytest.raises(ValidationError, match="[Pp]ric"):
-            Service(owner=owner, category="X", name="Free?").full_clean()
+            Service(owner=owner, category=category_for(owner), name="Free?").full_clean()
 
     def test_custom_quote_without_ranges_is_valid(self, db) -> None:
         owner = User.objects.create_user(username="pro")
         Service(
             owner=owner,
-            category="X",
+            category=category_for(owner),
             name="Custom",
             custom_quote=True,
         ).full_clean()
@@ -103,7 +107,7 @@ class TestTagsAndTenancy:
         with pytest.raises(ValidationError):
             Service(
                 owner=owner,
-                category="X",
+                category=category_for(owner),
                 name="Bad tags",
                 problem_tags=["ok-tag", 42],
                 custom_quote=True,
@@ -115,11 +119,22 @@ class TestTagsAndTenancy:
         with pytest.raises(ValidationError):  # full_clean catches it before the DB
             make_service(owner, name="Dup")
 
+    def test_owner_delete_blocked_while_category_in_use(self, db) -> None:
+        """Categories are PROTECTed — account deletion is blocked until the
+        catalog is emptied (residual logged in docs/backlog.md)."""
+        from django.db.models import ProtectedError
+
+        service = make_service(make_user("cascade-a"))
+        with pytest.raises(ProtectedError):
+            service.owner.delete()
+
     def test_services_cascade_with_owner(self, db) -> None:
-        service = make_service(make_user())
-        assert Service.objects.count() == 1
-        service.owner.delete()
+        service = make_service(make_user("cascade-b"))
+        owner = service.owner
+        service.delete()  # free the category, then the account cascade works
+        owner.delete()
         assert Service.objects.count() == 0
+        assert not ServiceCategory.objects.filter(owner_id=owner.pk).exists()
 
 
 class TestRequiredSkill:
@@ -156,3 +171,49 @@ class TestSkillRegistryGuards:
         rs = RequiredSkill(service=service, skill=foreign)
         with pytest.raises(ValidationError):
             rs.full_clean()
+
+
+class TestServiceCategory:
+    """Categories are a provider-owned registry (2026-10-01, supersedes free text)."""
+
+    def test_slug_unique_per_owner_and_frozen_on_rename(self, db) -> None:
+        mine, other = make_user("cat-a"), make_user("cat-b")
+        mine_cat = category_for(mine, "Leads & CRM")
+        other_cat = category_for(other, "Leads & CRM")
+        assert mine_cat.slug == other_cat.slug  # uniqueness is per owner
+        mine_cat.name = "Totally new name"
+        mine_cat.save()
+        mine_cat.refresh_from_db()
+        assert mine_cat.slug == "leads-crm"  # renames never break links
+
+    def test_same_name_same_owner_rejected(self, db) -> None:
+        owner = make_user("cat-c")
+        category_for(owner, "Dup")
+        with pytest.raises(ValidationError):
+            ServiceCategory(owner=owner, name="Dup").full_clean()
+
+    def test_service_category_from_other_owner_rejected(self, db) -> None:
+        mine, other = make_user("cat-d"), make_user("cat-e")
+        foreign = category_for(other, "Foreign cat")
+        service = Service(
+            owner=mine,
+            category=foreign,
+            name="Smuggled",
+            custom_quote=True,
+        )
+        with pytest.raises(ValidationError, match="own list"):
+            service.full_clean()
+
+    def test_in_use_category_is_protected(self, db) -> None:
+        from django.db.models import ProtectedError
+
+        owner = make_user("cat-f")
+        service = make_service(owner)
+        with pytest.raises(ProtectedError):
+            service.category.delete()
+
+    def test_cascades_with_owner(self, db) -> None:
+        owner = make_user("cat-g")
+        category = category_for(owner)
+        owner.delete()
+        assert not ServiceCategory.objects.filter(pk=category.pk).exists()

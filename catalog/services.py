@@ -14,7 +14,7 @@ from django.db import transaction
 from team.models import Skill
 from team.services import get_or_create_skill
 
-from .models import RequiredSkill, Service
+from .models import RequiredSkill, Service, ServiceCategory
 from .seed_data import SERVICES
 
 
@@ -34,6 +34,16 @@ def _defaults_from_row(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def get_or_create_category(*, owner: Any, name: str) -> tuple[ServiceCategory, bool]:
+    """Vocabulary row for one category name — idempotent per owner+name
+    (mirrors team skills; the deliberate free-text surface)."""
+    candidate = ServiceCategory(owner=owner, name=name.strip())
+    # clean_fields (not full_clean): shape check BEFORE any write — no stray rows,
+    # and no false unique error against the row we are about to look up.
+    candidate.clean_fields()
+    return ServiceCategory.objects.get_or_create(owner=owner, name=candidate.name)
+
+
 @transaction.atomic
 def seed_default_catalog(*, owner: Any) -> tuple[int, int]:
     """Create missing default services for one provider; never touch existing rows.
@@ -41,12 +51,19 @@ def seed_default_catalog(*, owner: Any) -> tuple[int, int]:
     Returns (created, total_seed_rows). Edit-safe by natural key (owner, category, name).
     """
     created = 0
+    categories: dict[str, ServiceCategory] = {}
     for row in SERVICES:
-        if Service.objects.filter(owner=owner, category=row["category"], name=row["name"]).exists():
+        if Service.objects.filter(
+            owner=owner, category__name=row["category"], name=row["name"]
+        ).exists():
             continue
+        if row["category"] not in categories:
+            categories[row["category"]] = get_or_create_category(
+                owner=owner, name=row["category"]
+            )[0]
         service = Service(
             owner=owner,
-            category=row["category"],
+            category=categories[row["category"]],
             name=row["name"],
             **_defaults_from_row(row),
         )

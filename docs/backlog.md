@@ -99,3 +99,8 @@ Live call transcription · automated interviews · marketplace payments · publi
 - Amend mvp-build-plan.md Card 2/3 text when Card 3 is planned (review pass-2 minor 1 — plan doc still describes the removed lever fields).
 - **Skill rename affordance** — the registry FK means one rename fixes every capability/requirement referencing it, but no UI renames yet (create-only). Cheap win for a future team/catalog UI pass. Status: open.
 - ~~**Slug URLs for team app**~~ **Resolved 2026-09-30:** `/team/<member-slug>/`, `/team/<member-slug>/skills/<cap-slug>/…` — same frozen-at-creation rules as catalog (VA slug unique per owner; capability slug unique per owner across holders).
+
+## Category registry residuals (2026-10-01)
+
+- **Category rename/delete provider UI deferred** — categories are managed beyond "add" only via Django admin; delete is PROTECT-blocked while services reference the row. If Robb wants self-serve rename/delete, it needs the team skill-registry treatment (usage counts, removal only when unused). Status: open.
+- **Account self-deletion flow must handle PROTECTed rows** — deleting a user with catalog services is blocked (ServiceCategory PROTECT); same shape as team capabilities. Allauth exposes no delete-account view in MVP, so no live path today — but any future account-removal feature must cascade/clean catalog + team rows deliberately. Status: open.

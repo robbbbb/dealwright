@@ -1,0 +1,18 @@
+{% extends "app-base.html" %}
+{% block title %}Add category — Dealwright{% endblock %}
+{% block app_content %}
+<div class="mx-auto max-w-[560px]">
+  <a href="{% url 'catalog:service_list' %}" class="text-[12px] font-bold text-dw-700 no-underline hover:underline">← Back to service catalog</a>
+  <h1 class="mt-2 mb-1 text-[21px] font-extrabold leading-tight text-dw-ink">Add category</h1>
+  <p class="mb-4 text-[12px] text-dw-muted">Group your services by the client problem area they solve — you'll pick from these when adding a service.</p>
+
+  <div class="card">
+    <form method="post" class="m-0">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div class="dw-field">{{ form.name.label_tag }}{{ form.name }}{{ form.name.errors }}</div>
+      <button type="submit" class="btn-primary">Add category</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

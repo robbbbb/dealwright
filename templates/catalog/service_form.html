@@ -1,62 +1,180 @@
 {% extends "app-base.html" %}
 {% block title %}{% if is_create %}Add service{% else %}{{ service.name }}{% endif %} — Dealwright{% endblock %}
 {% block app_content %}
-<div class="mx-auto max-w-[720px]">
+<div class="mx-auto max-w-[1320px]">
+  <a href="{% url 'catalog:service_list' %}" class="inline-flex items-center gap-1 text-[11.5px] font-bold text-dw-700 no-underline hover:underline"><span aria-hidden="true">←</span> Back to service catalog</a>
 
-  <header class="mb-6">
-    <p class="mb-1.5 text-[10.5px] font-extrabold uppercase tracking-[1.1px] text-dw-600">Service catalog</p>
-    <h1 class="text-[24px] font-extrabold leading-tight tracking-[-.35px] text-dw-ink">{% if is_create %}Add a service{% else %}Edit service{% endif %}</h1>
-    <p class="mt-2 text-[13px] leading-5 text-dw-muted">Setup plus monthly retainer, declared per currency — never converted.</p>
+  <header class="mb-5 mt-3 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+    <div class="max-w-3xl">
+      <p class="mb-1.5 text-[10.5px] font-extrabold uppercase tracking-[1.1px] text-dw-600">{% if is_create %}New catalog entry{% else %}Service details{% endif %}</p>
+      <h1 class="text-[26px] font-extrabold leading-tight tracking-[-.45px] text-dw-ink">{% if is_create %}Add a service{% else %}{{ service.name }}{% endif %}</h1>
+      <p class="mt-2 text-[13px] leading-5 text-dw-muted">Define the offer, stored price ranges, delivery window, and skills required to fulfill it.</p>
+    </div>
+    {% if not is_create %}
+    <div class="flex flex-wrap gap-1.5">
+      <span class="rounded-full bg-dw-canvas px-2.5 py-1 text-[10px] font-bold text-dw-muted">{{ service.category }}</span>
+      <span class="rounded-full bg-dw-teal-bg px-2.5 py-1 text-[10px] font-bold text-dw-teal">{{ service.currency }}</span>
+    </div>
+    {% endif %}
   </header>
 
-  <section class="mb-4 rounded-[14px] border border-dw-line bg-white p-5 shadow-[0_1px_2px_rgba(4,36,27,.03)] sm:p-6">
-    <form method="post" novalidate>
+  <div class="grid items-start gap-5 {% if not is_create %}xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,.65fr)]{% else %}max-w-[820px]{% endif %}">
+    <form method="post" novalidate class="overflow-hidden rounded-[14px] border border-dw-line bg-white shadow-[0_1px_2px_rgba(4,36,27,.03)]">
       {% csrf_token %}
-      {% include "team/_form_fields.html" %}
-      <div class="mt-4 flex items-center justify-end gap-2.5">
-        <a href="{% url 'catalog:service_list' %}" class="inline-flex min-h-[38px] items-center rounded-[10px] px-4 text-[13px] font-bold text-dw-muted no-underline hover:text-dw-ink">Cancel</a>
-        <button type="submit" class="inline-flex min-h-[38px] items-center rounded-[10px] bg-dw-700 px-5 text-[13px] font-bold text-white hover:bg-dw-800">{% if is_create %}Add service{% else %}Save changes{% endif %}</button>
+      {{ form.non_field_errors }}
+
+      <section aria-labelledby="service-details-heading" class="px-5 py-5 sm:px-6">
+        <div class="mb-4 flex items-start gap-3">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-dw-50 text-dw-700" aria-hidden="true">
+            <svg class="h-[17px] w-[17px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5h12v11H4zM7 2.5v4M13 2.5v4M7 9h6M7 12h4"/></svg>
+          </span>
+          <div>
+            <h2 id="service-details-heading" class="text-[14.5px] font-extrabold text-dw-ink">Service details</h2>
+            <p class="mt-0.5 text-[11.5px] text-dw-muted">Name the offer and the client problems it is designed to solve.</p>
+          </div>
+        </div>
+
+        <div class="grid gap-x-4 sm:grid-cols-[minmax(0,.7fr)_minmax(0,1.3fr)]">
+          <div class="dw-field">
+            {{ form.category.label_tag }}{{ form.category }}{{ form.category.errors }}
+            {% if form.category.help_text %}<p class="dw-hint">{{ form.category.help_text }}</p>{% endif %}
+            {% if is_create and not categories %}<p class="dw-hint">No categories yet — <a href="{% url 'catalog:category_add' %}" class="font-bold text-dw-700 hover:underline">add your first category</a>.</p>{% endif %}
+          </div>
+          <div class="dw-field">
+            {{ form.name.label_tag }}{{ form.name }}{{ form.name.errors }}
+            {% if form.name.help_text %}<p class="dw-hint">{{ form.name.help_text }}</p>{% endif %}
+          </div>
+        </div>
+        <div class="dw-field mb-0">
+          {{ form.tags_text.label_tag }}{{ form.tags_text }}{{ form.tags_text.errors }}
+          <p class="dw-hint">{{ form.tags_text.help_text }}</p>
+        </div>
+      </section>
+
+      <section aria-labelledby="pricing-heading" class="border-t border-dw-line bg-dw-canvas/35 px-5 py-5 sm:px-6">
+        <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div class="flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-white text-dw-700" aria-hidden="true">
+              <svg class="h-[17px] w-[17px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><path d="M12.8 7.1H8.9a1.8 1.8 0 0 0 0 3.6h2.2a1.8 1.8 0 0 1 0 3.6H7M10 5.3v9.4"/></svg>
+            </span>
+            <div>
+              <h2 id="pricing-heading" class="text-[14.5px] font-extrabold text-dw-ink">Pricing</h2>
+              <p class="mt-0.5 text-[11.5px] text-dw-muted">Setup and retainer ranges are stored exactly as entered—no currency conversion.</p>
+            </div>
+          </div>
+          <div class="w-full sm:w-[150px]">
+            {{ form.currency.label_tag }}{{ form.currency }}{{ form.currency.errors }}
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <fieldset class="rounded-xl border border-dw-line bg-white p-4">
+            <legend class="px-1 text-[11px] font-extrabold uppercase tracking-[.6px] text-dw-muted">Setup price</legend>
+            <div class="grid gap-x-3 sm:grid-cols-2">
+              <div class="dw-field mb-0">{{ form.setup_low.label_tag }}{{ form.setup_low }}{{ form.setup_low.errors }}</div>
+              <div class="dw-field mb-0">{{ form.setup_high.label_tag }}{{ form.setup_high }}{{ form.setup_high.errors }}</div>
+            </div>
+          </fieldset>
+          <fieldset class="rounded-xl border border-dw-line bg-white p-4">
+            <legend class="px-1 text-[11px] font-extrabold uppercase tracking-[.6px] text-dw-muted">Monthly retainer</legend>
+            <div class="grid gap-x-3 sm:grid-cols-2">
+              <div class="dw-field mb-0">{{ form.monthly_low.label_tag }}{{ form.monthly_low }}{{ form.monthly_low.errors }}</div>
+              <div class="dw-field mb-0">{{ form.monthly_high.label_tag }}{{ form.monthly_high }}{{ form.monthly_high.errors }}</div>
+            </div>
+          </fieldset>
+        </div>
+
+        <label for="{{ form.custom_quote.id_for_label }}" class="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-dw-line bg-white px-4 py-3">
+          <span class="pt-0.5">{{ form.custom_quote }}</span>
+          <span>
+            <span class="block text-[12px] font-bold text-dw-ink">Custom quote</span>
+            <span class="mt-0.5 block text-[10.5px] leading-[1.45] text-dw-muted">Use engagement-specific pricing instead of the stored ranges above.</span>
+          </span>
+        </label>
+        {{ form.custom_quote.errors }}
+      </section>
+
+      <section aria-labelledby="delivery-heading" class="border-t border-dw-line px-5 py-5 sm:px-6">
+        <div class="mb-4 flex items-start gap-3">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-dw-50 text-dw-700" aria-hidden="true">
+            <svg class="h-[17px] w-[17px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><path d="M10 5.7V10l3 1.8"/></svg>
+          </span>
+          <div>
+            <h2 id="delivery-heading" class="text-[14.5px] font-extrabold text-dw-ink">Delivery window</h2>
+            <p class="mt-0.5 text-[11.5px] text-dw-muted">Set the realistic minimum and maximum turnaround in days.</p>
+          </div>
+        </div>
+        <div class="grid max-w-[420px] gap-x-3 sm:grid-cols-2">
+          <div class="dw-field mb-0">{{ form.delivery_days_min.label_tag }}{{ form.delivery_days_min }}{{ form.delivery_days_min.errors }}</div>
+          <div class="dw-field mb-0">{{ form.delivery_days_max.label_tag }}{{ form.delivery_days_max }}{{ form.delivery_days_max.errors }}</div>
+        </div>
+      </section>
+
+      <div class="flex flex-col-reverse gap-2 border-t border-dw-line bg-dw-canvas/45 px-5 py-4 sm:flex-row sm:items-center sm:justify-end sm:px-6">
+        <a href="{% url 'catalog:service_list' %}" class="inline-flex min-h-10 items-center justify-center rounded-[10px] px-4 text-[13px] font-bold text-dw-muted no-underline hover:text-dw-ink">Cancel</a>
+        <button type="submit" class="inline-flex min-h-10 cursor-pointer items-center justify-center rounded-[10px] border-0 bg-dw-700 px-5 text-[13px] font-bold text-white shadow-[0_1px_2px_rgba(4,36,27,.14)] hover:bg-dw-800">{% if is_create %}Add service{% else %}Save changes{% endif %}</button>
       </div>
     </form>
-  </section>
 
-  {% if not is_create %}
-  <section class="overflow-hidden rounded-[14px] border border-dw-line bg-white shadow-[0_1px_2px_rgba(4,36,27,.03)]">
-    <div class="border-b border-dw-line bg-dw-50 px-5 py-3.5 sm:px-6">
-      <h2 class="text-[14px] font-extrabold text-dw-ink">Required skills</h2>
-      <p class="mt-0.5 text-[11.5px] text-dw-muted">Minimum level a person needs to deliver this — matched against your skills and team in Card 5.</p>
-    </div>
+    {% if not is_create %}
+    <aside class="flex flex-col gap-4">
+      <section aria-labelledby="required-skills-heading" class="overflow-hidden rounded-[14px] border border-dw-line bg-white shadow-[0_1px_2px_rgba(4,36,27,.03)]">
+        <div class="border-b border-dw-line px-5 py-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h2 id="required-skills-heading" class="text-[14px] font-extrabold text-dw-ink">Required skills</h2>
+              <p class="mt-0.5 text-[11.5px] leading-[1.5] text-dw-muted">Minimum capabilities needed to deliver this service.</p>
+            </div>
+            <span class="rounded-full bg-dw-50 px-2.5 py-1 text-[9.5px] font-bold text-dw-700">{{ required_skills|length }}</span>
+          </div>
+        </div>
 
-    {% if required_skills %}
-    <ul class="border-b border-dw-line">
-      {% for rs in required_skills %}
-      <li class="flex items-center gap-3 border-b border-dw-line px-5 py-2.5 last:border-b-0 sm:px-6">
-        <span class="font-bold text-dw-ink">{{ rs.skill }}</span>
-        <span class="rounded-full bg-dw-100 px-2 py-px text-[10px] font-bold text-dw-800">≥ {{ rs.get_min_level_display }}</span>
-        <form method="post" action="{% url 'catalog:skill_delete' service.category|slugify service.slug rs.slug %}" class="ml-auto">
+        {% if required_skills %}
+        <ul class="divide-y divide-dw-line">
+          {% for rs in required_skills %}
+          <li class="flex items-center gap-3 px-5 py-3">
+            <span class="min-w-0 flex-1 truncate text-[12px] font-bold text-dw-ink">{{ rs.skill }}</span>
+            <span class="shrink-0 rounded-full bg-dw-teal-bg px-2 py-px text-[9.5px] font-bold text-dw-teal">≥ {{ rs.get_min_level_display }}</span>
+            <form method="post" action="{% url 'catalog:skill_delete' service.category|slugify service.slug rs.slug %}" class="m-0 shrink-0">
+              {% csrf_token %}
+              <button type="submit" aria-label="Remove {{ rs.skill }} requirement" class="cursor-pointer border-0 bg-transparent p-1 text-[10.5px] font-bold text-dw-red hover:underline">Remove</button>
+            </form>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <div class="px-5 py-4">
+          <p class="rounded-xl border border-dashed border-dw-line bg-dw-canvas/60 px-3 py-3 text-[11.5px] leading-[1.5] text-dw-muted">No required skills yet. Any team member can be considered.</p>
+        </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'catalog:skill_add' service.category|slugify service.slug %}" class="border-t border-dw-line bg-dw-canvas/45 px-5 py-4">
           {% csrf_token %}
-          <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[11.5px] font-bold text-dw-red underline hover:opacity-70">Remove</button>
+          <h3 class="mb-3 text-[12.5px] font-extrabold text-dw-ink">Add requirement</h3>
+          <div class="dw-field">{{ skill_form.skill.label_tag }}{{ skill_form.skill }}{{ skill_form.skill.errors }}</div>
+          <div class="dw-field">{{ skill_form.min_level.label_tag }}{{ skill_form.min_level }}{{ skill_form.min_level.errors }}</div>
+          <button type="submit" class="inline-flex min-h-10 w-full cursor-pointer items-center justify-center rounded-[10px] border-[1.5px] border-dw-700 bg-white px-4 text-[13px] font-bold text-dw-700 hover:bg-dw-50">Add required skill</button>
         </form>
-      </li>
-      {% endfor %}
-    </ul>
+      </section>
+
+      <details class="group overflow-hidden rounded-[14px] border border-dw-line bg-white">
+        <summary class="flex cursor-pointer list-none items-center gap-3 px-5 py-4 [&::-webkit-details-marker]:hidden">
+          <span class="min-w-0 flex-1">
+            <span class="block text-[12.5px] font-extrabold text-dw-red">Danger zone</span>
+            <span class="mt-0.5 block text-[10.5px] text-dw-muted">Remove this service from your catalog.</span>
+          </span>
+          <svg class="h-3.5 w-3.5 shrink-0 text-dw-muted transition-transform group-open:rotate-180" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
+        </summary>
+        <div class="border-t border-dw-line bg-dw-red-bg/40 px-5 py-4">
+          <p class="mb-3 text-[11px] leading-[1.5] text-dw-muted">This removes the service and its skill requirements. This action cannot be undone.</p>
+          <form method="post" action="{% url 'catalog:service_delete' service.category|slugify service.slug %}" class="m-0">
+            {% csrf_token %}
+            <button type="submit" class="inline-flex min-h-10 w-full cursor-pointer items-center justify-center rounded-[10px] border border-dw-red bg-white px-4 text-[12px] font-bold text-dw-red hover:bg-dw-red-bg">Remove service</button>
+          </form>
+        </div>
+      </details>
+    </aside>
     {% endif %}
-
-    <form method="post" action="{% url 'catalog:skill_add' service.category|slugify service.slug %}" class="flex flex-col gap-2.5 px-5 py-4 sm:flex-row sm:items-center sm:px-6">
-      {% csrf_token %}
-      {{ skill_form.skill.label_tag }}{{ skill_form.skill }}
-      {{ skill_form.min_level.label_tag }}{{ skill_form.min_level }}
-      <button type="submit" class="min-h-[38px] shrink-0 cursor-pointer rounded-[10px] border-[1.5px] border-dw-700 bg-white px-4 text-[13px] font-bold text-dw-700 hover:bg-dw-50">Add</button>
-    </form>
-  </section>
-
-  <div class="mt-5 flex justify-end">
-    <form method="post" action="{% url 'catalog:service_delete' service.category|slugify service.slug %}">
-      {% csrf_token %}
-      <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[12px] font-bold text-dw-red underline hover:opacity-70">Remove this service from my catalog</button>
-    </form>
   </div>
-  {% endif %}
-
 </div>
 {% endblock %}
