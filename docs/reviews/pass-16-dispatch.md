@@ -41,3 +41,25 @@ Rationale: ...
 ```
 
 Do not edit files. A blocking finding requires a fix and a fresh reviewer pass. The builder must record the verdict and disposition here before this pass is closed.
+
+---
+
+## Verdict — pass 16 (recorded 2026-10-01)
+
+Fresh GLM-5.3 reviewer (read-only, independent session) reran all gates matching recorded evidence (195 passed / 92 warnings, ruff clean, `makemigrations --check` clean, `git diff --check` clean) plus the clean-HEAD worktree gate (195 passed at the commit excluding Robb's hand edits; every utility class the committed template uses exists in committed `app.css`). Checklist verified hands-on via test client: all three links reverse to real allauth views; anonymous access redirects to login; chip states flip exactly per locked semantics (green `bg-dw-700` only with a TOTP authenticator; a recovery-codes-only user correctly stays "Not set up"); selector is a single tenancy-safe `.exists()` on the right model/type; profile-form path unchanged (test delta = exactly the two new tests).
+
+```text
+Verdict: APPROVED
+Blocking findings:
+1. None.
+Minor findings:
+1. team/selectors.py: function-local import of allauth.mfa.models.Authenticator inside is_mfa_enabled — unidiomatic vs the file's module-level imports; no circular-import need. Disposition: cosmetic, fold into a later card if touched again.
+2. team/tests/test_views.py: MFA-on test fabricates the TOTP secret directly via ORM — card explicitly scopes this to an existence check (allauth's flows own crypto). Disposition: accepted as scoped.
+Rationale: All four gates re-run and match builder evidence (195 passed / 92 warnings, ruff clean, no migrations, diff --check clean), and the clean-HEAD worktree gate proves no committed test depends on the uncommitted hand edits (195 passed at f3265e2; all template utility classes present in committed app.css). Checklist verified hands-on via the test client: all three links reverse and resolve to real allauth views, anonymous access redirects to login, the chip states flip exactly per the locked chip semantics (green bg-dw-700 only when a TOTP authenticator exists; neutral border chip when off; tokens-only), the selector is a single tenancy-safe .exists() on the correct model/type (recovery-codes-only correctly does not flip it), and the profile-form path is unchanged with the baseline→HEAD test delta exactly the two new tests.
+```
+
+**Disposition of minors:**
+1. Function-local import → **applied directly** (module-level in `team/selectors.py`; gates rerun green) — no need to wait for a later card.
+2. ORM-fabricated TOTP secret → accepted as scoped: the test asserts existence/state, not crypto; allauth's flows own that.
+
+**Pass closed.** Scope commits `2d59841` (+ minor follow-up) stand as reviewed.

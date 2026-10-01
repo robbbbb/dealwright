@@ -2,6 +2,7 @@
 
 from typing import Any
 
+from allauth.mfa.models import Authenticator
 from django.db.models import Count, Q, QuerySet
 
 from .models import Capability, ProviderProfile, Skill, VAProfile
@@ -50,8 +51,6 @@ def get_capability_for_owner(owner: Any, cap_slug: str) -> Capability | None:
 
 def is_mfa_enabled(user: Any) -> bool:
     """A TOTP authenticator exists for this account (allauth.mfa; settings page)."""
-    from allauth.mfa.models import Authenticator
-
     return Authenticator.objects.filter(
         user=user, type=Authenticator.Type.TOTP
     ).exists()
