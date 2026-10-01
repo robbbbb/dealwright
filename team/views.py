@@ -109,7 +109,15 @@ def provider_settings(request: HttpRequest) -> HttpResponse:
             return redirect("team:provider_settings")
     else:
         form = ProviderProfileForm(instance=profile)
-    return render(request, "team/provider_settings.html", {"form": form, "profile": profile})
+    return render(
+        request,
+        "team/provider_settings.html",
+        {
+            "form": form,
+            "profile": profile,
+            "mfa_enabled": selectors.is_mfa_enabled(request.user),
+        },
+    )
 
 
 @login_required

@@ -7,11 +7,46 @@
   <p class="mb-4 text-[12px] text-dw-muted">How you deliver — proposals and matching read these.</p>
 
   <div class="card">
+    <h2 class="mb-2 text-[13px] font-extrabold text-dw-ink">Profile &amp; delivery terms</h2>
     <form method="post" class="m-0">
       {% csrf_token %}
       {% include "team/_form_fields.html" %}
       <button type="submit" class="btn-primary">Save settings</button>
     </form>
+  </div>
+
+  <div class="card mt-4">
+    <h2 class="text-[13px] font-extrabold text-dw-ink">Security</h2>
+    <ul class="mt-1 divide-y divide-dw-line">
+      <li class="flex items-center justify-between gap-3 py-2.5">
+        <div class="min-w-0">
+          <p class="truncate text-[13px] font-bold text-dw-ink">{{ user.email }}</p>
+          <p class="text-[11px] text-dw-muted">Account email — how you sign in.</p>
+        </div>
+        <a href="{% url 'account_email' %}" class="shrink-0 text-[12px] font-bold text-dw-700 no-underline hover:underline">Manage</a>
+      </li>
+      <li class="flex items-center justify-between gap-3 py-2.5">
+        <div>
+          <p class="text-[13px] font-bold text-dw-ink">Password</p>
+          <p class="text-[11px] text-dw-muted">Use a long, unique password.</p>
+        </div>
+        <a href="{% url 'account_change_password' %}" class="shrink-0 text-[12px] font-bold text-dw-700 no-underline hover:underline">Change</a>
+      </li>
+      <li class="flex items-center justify-between gap-3 py-2.5">
+        <div>
+          <p class="flex items-center gap-2 text-[13px] font-bold text-dw-ink">
+            Two-factor authentication
+            {% if mfa_enabled %}
+              <span class="inline-flex items-center rounded-full bg-dw-700 px-2 py-px text-[9.5px] font-bold text-white">MFA on</span>
+            {% else %}
+              <span class="inline-flex items-center rounded-full border border-dw-line px-2 py-px text-[9.5px] font-bold text-dw-muted">Not set up</span>
+            {% endif %}
+          </p>
+          <p class="text-[11px] text-dw-muted">Authenticator app + one-time recovery codes.</p>
+        </div>
+        <a href="{% url 'mfa_index' %}" class="shrink-0 text-[12px] font-bold text-dw-700 no-underline hover:underline">{% if mfa_enabled %}Manage{% else %}Set up{% endif %}</a>
+      </li>
+    </ul>
   </div>
 </div>
 {% endblock %}

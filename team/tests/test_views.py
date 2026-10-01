@@ -450,6 +450,34 @@ def test_provider_settings_number_inputs_carry_min_zero(client, user) -> None:
     assert response.content.count(b'min="0"') == 3  # rate_per_hour, project_rate, availability
 
 
+def test_provider_settings_security_card(client, user) -> None:
+    """Security section links the existing allauth surfaces; email is the login method."""
+    _login(client, user)
+
+    response = client.get(reverse("team:provider_settings"))
+    content = response.content
+
+    assert user.email.encode() in content
+    assert b'href="/accounts/email/"' in content
+    assert b'href="/accounts/password/change/"' in content
+    assert b'href="/accounts/2fa/"' in content
+    assert b"Not set up" in content  # MFA off by default
+
+
+def test_provider_settings_shows_mfa_on(client, user) -> None:
+    from allauth.mfa.models import Authenticator
+
+    Authenticator.objects.create(
+        user=user, type=Authenticator.Type.TOTP, data={"secret": "a" * 32}
+    )
+    _login(client, user)
+
+    response = client.get(reverse("team:provider_settings"))
+
+    assert b"MFA on" in response.content
+    assert b"Not set up" not in response.content
+
+
 def test_provider_settings_post_saves_terms(client, user, provider_profile) -> None:
     _login(client, user)
 

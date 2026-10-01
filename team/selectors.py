@@ -46,3 +46,12 @@ def get_capability_for_owner(owner: Any, cap_slug: str) -> Capability | None:
         )
         .first()
     )
+
+
+def is_mfa_enabled(user: Any) -> bool:
+    """A TOTP authenticator exists for this account (allauth.mfa; settings page)."""
+    from allauth.mfa.models import Authenticator
+
+    return Authenticator.objects.filter(
+        user=user, type=Authenticator.Type.TOTP
+    ).exists()
