@@ -38,3 +38,23 @@ Rationale: ...
 ```
 
 Do not edit files. A blocking finding requires a fix and a fresh reviewer pass. The builder must record the verdict and disposition here before this pass is closed.
+
+---
+
+## Verdict — pass 19 (recorded 2026-10-01)
+
+Fresh GLM-5.3 reviewer (read-only, independent session) reran all gates matching recorded evidence (205 passed / 102 warnings on the working tree AND a clean-HEAD worktree at `22aa898` — no committed test depends on Robb's uncommitted edits; ruff clean; `git diff --check` clean) and adjudicated every checklist item by live test-client rendering: settings row branches on `has_usable_password` in both directions; set-password page themed with `password1`/`password2` and no `oldpassword`; allauth cross-path redirects confirmed both ways (password-ful → set redirects to change, passwordless → change redirects to set); round-trip hashes the password with session intact; tokens-only markup; backlog updated accurately (password_set themed; reauthenticate-403 passwordless edge recorded).
+
+```text
+Verdict: APPROVED
+Blocking findings:
+1. None.
+Minor findings:
+1. test_password_set_round_trip doesn't assert the redirect target or post-POST session persistence (manually verified: 302 → /accounts/password/change/, session intact) — cosmetic test depth, no fix required.
+2. Settings-row test asserts raw href byte-strings instead of reverse()-derived URLs — mildly brittle, acceptable.
+Rationale: All gates re-run and pass (pytest 205/102 warnings on working tree AND on a clean-HEAD worktree of 22aa898 — no committed test depends on Robb's uncommitted edits; ruff and git diff --check clean). Every checklist item verified by live test-client rendering: settings row branches correctly on has_usable_password in both directions, set-password page is themed with password1/password2 and no oldpassword, allauth cross-path redirects confirmed both ways, round-trip hashes the password with the session intact. Diff is presentation-only (2 templates + 2 test files); no view/form/URL changes; tokens-only markup matching the password_change.html precedent; backlog updated accurately.
+```
+
+**Disposition of minors:** both accepted as-is — smoke-tier depth choices that assert exactly the user-facing behavior; no action.
+
+**Pass closed.** Scope commit `22aa898` stands as reviewed.
