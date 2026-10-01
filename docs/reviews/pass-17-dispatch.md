@@ -34,3 +34,23 @@ Rationale: ...
 ```
 
 Do not edit files. A blocking finding requires a fix and a fresh reviewer pass. The builder must record the verdict and disposition here before this pass is closed.
+
+---
+
+## Verdict — pass 17 (recorded 2026-10-01)
+
+Fresh GLM-5.3 reviewer (read-only, independent session) reran all gates matching recorded evidence (199 passed / 96 warnings, ruff clean, `git diff --check` clean; clean-HEAD worktree at `3ae2013` — no committed test depends on Robb's uncommitted edits) and adjudicated the checklist by **actually rendering the page**: themed auth-base card with allauth's own labels (Current / New / New again) and form contract (same action, csrf, redirect field); correct POST → 302 with `check_password` confirming the change and the success flash rendering via auth-base's messages block; wrong current password → 200 inline re-render with the password provably unchanged; anonymous → login redirect. Presentation-only diff; set-password deferral is the recorded backlog decision.
+
+```text
+Verdict: APPROVED
+Blocking findings:
+1. None.
+Minor findings:
+1. The committed success-path test asserts the 302 + password change but not the success flash text; reviewer probe confirmed the flash ("Password successfully changed.") renders via auth-base's messages block. Disposition: acceptable as-is — smoke tier; no action required.
+Rationale: All four gates re-run and match builder evidence exactly, including a clean-HEAD worktree at 3ae2013 (199 passed / 96 warnings, ruff clean) proving no committed test depends on the uncommitted hand edits. Checklist item 1 verified by actually rendering the page logged-in via test client (GET, correct POST, wrong-password POST, anonymous): the themed override honors allauth's default template contract (same action, same three fields with allauth's labels, csrf + redirect field), the success flash lands back on the page, and wrong current password re-renders inline with the password provably unchanged. Template is tokens-only with all classes defined in committed CSS and mirrors the email.html/password_reset.html precedent. The diff is presentation-only — no view/form/URL/tenancy surface touched — and the password-set deferral is a recorded backlog decision.
+```
+
+**Disposition of minors:**
+1. Success-flash assertion → accepted as-is: smoke tier covers the state change (302 + new password hashes); the reviewer's own probe confirmed the flash renders. No action.
+
+**Pass closed.** Scope commit `3ae2013` stands as reviewed.
