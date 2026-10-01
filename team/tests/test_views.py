@@ -518,3 +518,23 @@ def test_settings_url_beats_member_slug(client, user) -> None:
     _login(client, user)
 
     assert client.get("/team/settings/").status_code == 200
+
+
+def test_member_engagement_negative_rate_writes_nothing(client, user, va) -> None:
+    """Same friendly-rejection guarantee as settings: PRG + flash, zero writes."""
+    _login(client, user)
+
+    response = client.post(
+        reverse("team:member_engagement", args=[va.slug]),
+        {
+            "rate_basis": "hourly",
+            "rate_per_hour": "-1",
+            "currency": "PHP",
+            "availability_hours_per_week": "40",
+            "timezone": "Asia/Manila",
+        },
+    )
+
+    assert response.status_code == 302
+    va.refresh_from_db()
+    assert va.rate_per_hour == 250
