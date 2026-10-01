@@ -60,7 +60,6 @@ class ProviderProfileForm(forms.ModelForm):
     class Meta:
         model = ProviderProfile
         fields = [
-            "delivery_mode",
             "branding_name",
             "persona",
             "rate_basis",
@@ -72,7 +71,6 @@ class ProviderProfileForm(forms.ModelForm):
             "languages",
         ]
         widgets = {
-            "delivery_mode": forms.Select(attrs={"class": _SELECT_CLASS}),
             "rate_basis": forms.Select(attrs={"class": _SELECT_CLASS}),
             "currency": forms.Select(
                 attrs={"class": _SELECT_CLASS},

@@ -24,6 +24,7 @@ from typing import cast
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q
 from django.utils.text import slugify
@@ -94,6 +95,7 @@ class EngagementTermsMixin(models.Model):
         max_digits=6,
         decimal_places=2,
         default=0,
+        validators=[MinValueValidator(0)],
         help_text="Used when rate basis is hourly; Q3 currency passthrough, no FX.",
     )
     project_rate = models.DecimalField(
@@ -102,12 +104,14 @@ class EngagementTermsMixin(models.Model):
         decimal_places=2,
         null=True,
         blank=True,
+        validators=[MinValueValidator(0)],
         help_text="One-time fixed price per engagement; used when rate basis is project.",
     )
     currency = models.CharField("currency", max_length=3, default="PHP")
     availability_hours_per_week = models.PositiveSmallIntegerField(
         "availability (hrs/week)",
         default=40,
+        validators=[MinValueValidator(0)],
     )
     timezone = models.CharField("timezone", max_length=64, default="Asia/Manila")
     languages = models.CharField(

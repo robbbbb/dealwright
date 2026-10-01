@@ -169,6 +169,10 @@ Full MVP card breakdown: `mvp-build-plan.md` — 12 cards (0–11), one per fres
 ## Vocabulary: catalog "monthly" = retainer (Robb, 2026-09-30)
 - The Service monthly price fields are labelled **retainer** (VA industry vocabulary, matches how providers sell reserved monthly capacity; precedent: bench→team rename). Internal code names stay `monthly_low/high` (stable, no churn); verbose names, admin labels, and `price_summary()` now say retainer (e.g. "setup ₱4,000–8,000 · retainer ₱1,500–3,000/mo"). Draft rule 2 annotated.
 
+## Robb decision: delivery mode is chosen at proposal time, not stored as a setting (2026-10-01)
+- The provider settings page no longer offers the delivery_mode toggle — the solo-vs-team choice happens in the proposal/LLM flow when generating (Card 7/8 scope). `ProviderProfile.delivery_mode` stays as the stored field (solo default) that guardrails and Cards 5/8 read; until the flow supplies a per-session choice it remains solo-by-default. Pass 13's settings page shipped the toggle; removed in pass 14 before any flow depended on it. Backlog carries the Card 7/8 note.
+- Same pass: negative money/hours on the engagement fields now fail `full_clean()` with a friendly field error (MinValueValidator on rate_per_hour, project_rate, availability_hours_per_week) instead of tripping the DB CHECK constraint as a 500 — the constraints stay as the last-resort backstop. Catalog `Service` price fields have the same hole (no validators); recorded in backlog for the next catalog card.
+
 ## Q3 refinement: per-service currency on the catalog (Robb, 2026-09-30)
 - Robb serves clients worldwide → `Service.currency` (ISO 4217, default PHP, validated 3 uppercase letters) declares each row's currency. **Still no FX ever**: prices are per-currency declarations (one row per market when charging several currencies), never converted; `price_summary()` maps common codes to symbols (₱ $ € £ A$ C$ S$) with an honest code fallback. Mirrors `team.VAProfile.currency`. **Card 5 rule:** matching compares same-currency only (like rate_basis) — cross-currency comparisons surface as a flagged mismatch, never a converted number.
 

@@ -447,7 +447,7 @@ def test_provider_settings_post_saves_terms(client, user, provider_profile) -> N
     response = client.post(
         reverse("team:provider_settings"),
         {
-            "delivery_mode": "team",
+            # no delivery_mode — solo/team choice lives in the proposal flow
             "branding_name": "Rodriguez VA Services",
             "persona": "Podcast workflows for creators.",
             "rate_basis": "hourly",
@@ -461,10 +461,35 @@ def test_provider_settings_post_saves_terms(client, user, provider_profile) -> N
 
     assert response.status_code == 302
     provider_profile.refresh_from_db()
-    assert provider_profile.delivery_mode == "team"
+    assert provider_profile.branding_name == "Rodriguez VA Services"
     assert provider_profile.rate_per_hour == 350
     assert provider_profile.availability_hours_per_week == 30
     assert provider_profile.languages == "English, Tagalog"
+
+
+def test_provider_settings_post_negative_rate_writes_nothing(
+    client, user, provider_profile
+) -> None:
+    """Negative money must get a friendly form error — never a 500 constraint trip."""
+    _login(client, user)
+
+    response = client.post(
+        reverse("team:provider_settings"),
+        {
+            "branding_name": "Rodriguez VA Services",
+            "rate_basis": "project",
+            "project_rate": "-500",
+            "rate_per_hour": "0",
+            "currency": "PHP",
+            "availability_hours_per_week": "40",
+            "timezone": "Asia/Manila",
+        },
+    )
+
+    assert response.status_code == 200
+    assert "project_rate" in response.context["form"].errors
+    provider_profile.refresh_from_db()
+    assert provider_profile.branding_name != "Rodriguez VA Services"
 
 
 def test_provider_settings_post_invalid_writes_nothing(
@@ -475,7 +500,6 @@ def test_provider_settings_post_invalid_writes_nothing(
     response = client.post(
         reverse("team:provider_settings"),
         {
-            "delivery_mode": "solo",
             "rate_basis": "project",  # project_rate missing → clean() rejects
             "rate_per_hour": "0",
             "currency": "PHP",

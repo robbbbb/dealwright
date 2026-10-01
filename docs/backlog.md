@@ -112,9 +112,11 @@ Live call transcription · automated interviews · marketplace payments · publi
 
 No Settings screen exists in mocks or cards; the MVP surface folds into existing cards as follows:
 
-- **Profile & delivery terms** — name, branding_name, persona (solo/team), delivery_mode — this is where the pre-Card 5 "My delivery terms" provider-profile edit item lands. Status: resolved 2026-10-01 (`/team/settings/`, sidebar-wired; engagement terms included).
+- **Profile & delivery terms** — name, branding_name, persona, engagement terms — resolved 2026-10-01 (`/team/settings/`, sidebar-wired). **Delivery_mode toggle removed (Robb, 2026-10-01):** the solo/team choice moves into the proposal/LLM flow — see design-log 2026-10-01; `ProviderProfile.delivery_mode` remains the stored solo-default that Cards 5/8 read. Status: resolved; review pass 14 pending.
 - **Integrations** — webhook URL + token mint/regenerate/revoke, "send test event" button, n8n docs link — the only new UI Card 10 forces. Status: open (Card 10 scope).
 - **Security** — links to the already-built allauth surfaces (password change, email manage, MFA + recovery codes). Status: open (Card 9 wiring).
 - **Billing** — placeholder only; post-pilot per pre-launch checklist. Status: deferred.
 - **~~Account default currency~~ declined for MVP (Robb: "don't see the purpose for now")** — no account-level currency setting; per-service/VA ISO 4217 declarations (shipped, Q3 no-FX) already carry all money. Currency-per-account stays a post-pilot idea at most (existing deferred line); if ever built, guardrail: form preselection only — never conversion, never cross-currency sums. Status: declined (recorded).
 - **Never settings material:** prices/retainers (catalog), guardrails/banned-phrases/disclaimers (versioned data, always on), model routing + API keys (Railway env vars), quality-mode toggle (post-pilot decision).
+- **Delivery-mode selection UI in the proposal flow (Cards 7/8)** — Robb decision 2026-10-01 (design-log): the user picks solo vs team when generating, not in settings. Card 7/8 must present the choice and source guardrails from it. Status: open (card scope).
+- **Catalog `Service` price fields lack MinValueValidator** — same negative-input hole fixed in team pass 14 (validator now catches negatives as friendly form errors before the DB CHECK trips a 500). Fix the four price fields (setup_low/high, monthly_low/high) with the next catalog card. Status: open (small).

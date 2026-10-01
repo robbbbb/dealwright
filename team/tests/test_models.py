@@ -253,6 +253,33 @@ class TestProviderEngagementTerms:
             ("availability_hours_per_week", -5),
         ],
     )
+    def test_negative_money_and_hours_rejected_before_db(
+        self, provider_profile, field, value
+    ) -> None:
+        """Friendly ValidationError from full_clean — not a 500 from the constraint."""
+        setattr(provider_profile, field, value)
+
+        with pytest.raises(ValidationError) as err:
+            provider_profile.full_clean()
+
+        assert field in err.value.message_dict
+
+    def test_negative_values_rejected_on_team_side_too(self, va) -> None:
+        va.rate_per_hour = -1
+
+        with pytest.raises(ValidationError) as err:
+            va.full_clean()
+
+        assert "rate_per_hour" in err.value.message_dict
+
+    @pytest.mark.parametrize(
+        ("field", "value"),
+        [
+            ("rate_per_hour", -1),
+            ("project_rate", -500),
+            ("availability_hours_per_week", -5),
+        ],
+    )
     def test_negative_money_and_hours_blocked_at_db(
         self, user, field, value
     ) -> None:
