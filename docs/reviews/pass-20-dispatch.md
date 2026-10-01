@@ -54,3 +54,27 @@ Rationale: ...
 ```
 
 Do not edit files. A blocking finding requires a fix and a fresh reviewer pass. The builder must record the verdict and disposition here before this pass is closed.
+
+---
+
+## Verdict — pass 20 (recorded 2026-10-01)
+
+Fresh GLM-5.3 reviewer (read-only, independent session) re-ran all gates and adjudicated all checklist items, including an engine-level escaping proof with hostile names.
+
+```text
+Verdict: APPROVED
+Blocking findings:
+1. None.
+Minor findings:
+1. base.html gate is inert: no template extends/renders base.html and it has no script block, so its data-confirm can never fire; the dispatch card's "gated form #2 (auth-flows nav logout)" claim is functionally inaccurate. Suggest deleting the dead base.html or dropping the attribute, and correcting the wording in the pass-20 disposition.
+2. socialaccount/connections.html "Remove selected" is an un-gated remove-type POST on auth-base, which has no confirm listener; reversible and multi-step, but it warrants a backlog line under the card's "every destructive or one-way form" standard.
+Rationale: All gates re-run and green, matching builder evidence (210 passed/107 warnings; ruff clean; git diff --check clean; no app-code changes in scope). All 9 claimed gates verified present with no over-gating of non-destructive forms; handler verified capture-phase, getAttribute-guarded, preventDefault-on-decline, no bypass via inline handlers or programmatic submit; escaping proven safe by engine-level render (hostile names entity-encoded, no attribute break-out in any of the 4 shapes); the two touched tests preserve their original intent (two logout buttons); the no-JS residual is documented in backlog. The two minors are record-keeping/coverage-edge issues with no user-facing impact today and can ride with a recorded disposition.
+```
+
+**Disposition of minors:**
+1. Card correction accepted: `base.html` is an unused scaffold layout — the "gated form #2" claim was functionally false; real nav coverage is `app-base.html` (both forms verified gated). Dead-file cleanup backlogged rather than churned mid-pass.
+2. Social-app remove → backlogged (extend pattern to auth-base or accept at next auth card).
+
+**Correction to this card:** "Gated forms (9)" should read "8 live gates" — items 1 and 2 collapse to app-base's two nav forms; `base.html`'s attribute is inert (see minor 1).
+
+**Pass closed.** Commit `5781edd` stands as reviewed.
