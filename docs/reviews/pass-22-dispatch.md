@@ -66,3 +66,18 @@ Rationale: ...
 ```
 
 Do not edit files. A blocking finding requires a fix and a fresh reviewer pass. The builder must record the verdict and disposition here before this pass is closed.
+
+---
+
+## Verdict — pass 22 (recorded 2026-10-01)
+
+```text
+Verdict: APPROVED
+Blocking findings:
+None.
+Minor findings:
+1. docs/mockups/proposal-output-mockup.html:182-184 still shows the stale, internally inconsistent LF row (13,860 − 4,160 = 9,700 ≠ 9,688 displayed) — the third of the three LF-case mockups; the pass-22 card names only the other two (accurate), and pass-21's accepted disposition deferred regeneration to Cards 7/8, but the design-log entry's "Mockup tables corrected to engine output" overstates scope, and the deferred residual is not recorded in docs/backlog.md (only in the pass-21 review card). Disposition: add a backlog line or regenerate the table at the next docs/templating touch or at Cards 7–8; not approval-blocking.
+Rationale: All four gates pass with numbers I reproduced independently (250 passed / 108 warnings; ruff clean; manage.py check clean; git diff --check clean; all scope commits reachable, no post-dispatch amend). All three pass-21 blockers are genuinely fixed: the backlog pytest-cov line exists in a committed file, the pass-21 card corrections are recorded, and this dispatch card's evidence claims match the actual diff exactly. My own settrace/AST harness measures core/roi/engine.py at 112/112 statements (100.0%) with every named negative path exercised by an exact-assertion test (payback None ×3, missing-data raises ×2, monthly_hours None, negative VA rate, non-numeric band, mixed-currency rollup), the dead ModeEstimate.rollup() is deleted, and the design-log entry accurately records the settings-config decision superseding §C5's BenchmarkBand-table direction along with the quantize rule, both engine-true anchors, and the sidebar removal. Both design-doc anchors reproduce digit-for-digit and both corrected mockup tables are internally consistent. The tautology→structural quarantine swap is a meaningful tripwire. One minor residual: the third LF mockup still carries the stale inconsistent row and is absent from the backlog ledger — recorded above with disposition; it does not break any gate or evidence claim.
+```
+
+**Builder disposition (2026-10-01):** APPROVED. Minor 1 resolved immediately rather than deferred — `proposal-output-mockup.html:182–183` corrected to the engine-true figures (₱13,840 / ₱4,152), making the design-log sentence true across all three LF mockups; no backlog entry needed since no residual remains. Card 3 core is closed at this verdict.
