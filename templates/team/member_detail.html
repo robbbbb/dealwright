@@ -1,62 +1,163 @@
 {% extends "app-base.html" %}
+{% load dw_money %}
 {% block title %}{{ va.display_name }} — team — Dealwright{% endblock %}
 {% block app_content %}
-<a href="{% url 'team:team_home' %}" class="text-[12px] font-bold text-dw-700 no-underline hover:underline">← Back to team</a>
-<h1 class="mt-2 mb-4 flex items-center gap-2 text-[21px] font-extrabold leading-tight text-dw-ink">
-  {{ va.display_name }}
-  {% if va.is_active %}
-    <span class="inline-flex items-center rounded-full bg-dw-teal-bg px-2 py-px text-[9.5px] font-bold text-dw-teal">Active</span>
-  {% else %}
-    <span class="inline-flex items-center rounded-full border border-dw-line px-2 py-px text-[9.5px] font-bold text-dw-muted">Inactive</span>
-  {% endif %}
-</h1>
+<div class="mx-auto max-w-[1320px]">
+  <a href="{% url 'team:team_home' %}" class="inline-flex items-center gap-1 text-[11.5px] font-bold text-dw-700 no-underline hover:underline"><span aria-hidden="true">←</span> Back to team</a>
 
-<div class="flex flex-col gap-5">
+  <header class="mb-5 mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div class="flex min-w-0 items-center gap-3.5">
+      <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-dw-50 text-[15px] font-extrabold uppercase text-dw-700">{{ va.display_name|slice:":1" }}</span>
+      <div class="min-w-0">
+        <p class="mb-1 text-[10.5px] font-extrabold uppercase tracking-[1.1px] text-dw-600">Team member</p>
+        <div class="flex flex-wrap items-center gap-2">
+          <h1 class="truncate text-[26px] font-extrabold leading-tight tracking-[-.45px] text-dw-ink">{{ va.display_name }}</h1>
+          {% if va.is_active %}
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-dw-teal-bg px-2.5 py-1 text-[9.5px] font-bold text-dw-teal"><span class="h-1.5 w-1.5 rounded-full bg-dw-teal"></span>Active</span>
+          {% else %}
+            <span class="inline-flex items-center rounded-full border border-dw-line px-2.5 py-1 text-[9.5px] font-bold text-dw-muted">Inactive</span>
+          {% endif %}
+        </div>
+        <p class="mt-1.5 text-[12px] text-dw-muted">Identity, commercial terms, and delivery capabilities.</p>
+      </div>
+    </div>
+    {% if va.engagement_incomplete %}
+      <span class="inline-flex self-start items-center gap-2 rounded-[10px] bg-dw-teal-bg px-3 py-2 text-[11px] font-bold text-dw-teal lg:self-auto"><span class="h-1.5 w-1.5 rounded-full bg-dw-teal"></span>Terms incomplete</span>
+    {% else %}
+      <span class="inline-flex self-start items-center gap-2 rounded-[10px] bg-dw-teal-bg px-3 py-2 text-[11px] font-bold text-dw-teal lg:self-auto"><span class="h-1.5 w-1.5 rounded-full bg-dw-teal"></span>Ready for matching</span>
+    {% endif %}
+  </header>
 
-  <section class="card">
-    <h2 class="mb-3 text-[14.5px] font-extrabold text-dw-ink">Member</h2>
-    <form method="post" class="m-0">
-      {% csrf_token %}
-      {% include "team/_form_fields.html" %}
-      <button type="submit" class="btn-primary">Save changes</button>
-    </form>
-  </section>
+  <dl class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+    <div class="rounded-xl border border-dw-line bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(4,36,27,.04)]">
+      <dt class="text-[9.5px] font-bold uppercase tracking-[.7px] text-dw-muted">Rate</dt>
+      <dd class="mt-1 text-[13px] font-extrabold text-dw-ink">
+        {% if va.engagement_incomplete %}<span class="text-dw-teal">Not set</span>{% elif va.rate_basis == "project" %}{{ va.currency|dw_symbol }}{{ va.project_rate|floatformat:"-2" }} <span class="text-[10.5px] font-normal text-dw-muted">/ project</span>{% else %}{{ va.currency|dw_symbol }}{{ va.rate_per_hour|floatformat:"-2" }} <span class="text-[10.5px] font-normal text-dw-muted">/ hour</span>{% endif %}
+      </dd>
+    </div>
+    <div class="rounded-xl border border-dw-line bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(4,36,27,.04)]">
+      <dt class="text-[9.5px] font-bold uppercase tracking-[.7px] text-dw-muted">Availability</dt>
+      <dd class="mt-1 text-[13px] font-extrabold text-dw-ink">{{ va.availability_hours_per_week }} <span class="text-[10.5px] font-normal text-dw-muted">hours / week</span></dd>
+    </div>
+    <div class="rounded-xl border border-dw-line bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(4,36,27,.04)]">
+      <dt class="text-[9.5px] font-bold uppercase tracking-[.7px] text-dw-muted">Capabilities</dt>
+      <dd class="mt-1 text-[13px] font-extrabold text-dw-ink">{{ skills|length }} <span class="text-[10.5px] font-normal text-dw-muted">skill{{ skills|length|pluralize }}</span></dd>
+    </div>
+  </dl>
 
-  <section class="card">
-    <h2 class="mb-1 text-[14.5px] font-extrabold text-dw-ink">Rates &amp; availability</h2>
-    <p class="mb-4 text-[12px] text-dw-muted">Matching skips members whose terms aren't set yet — fill these in before quoting work.</p>
-    <form method="post" action="{% url 'team:member_engagement' va.slug %}" class="m-0">
-      {% csrf_token %}
-      {% include "team/_form_fields.html" with form=engagement_form %}
-      <button type="submit" class="btn-primary">Save rates &amp; availability</button>
-    </form>
-  </section>
+  <div class="grid items-start gap-5 xl:grid-cols-[minmax(0,.72fr)_minmax(0,1.28fr)]">
+    <section aria-labelledby="member-profile-heading" class="overflow-hidden rounded-[14px] border border-dw-line bg-white shadow-[0_1px_2px_rgba(4,36,27,.03)]">
+      <div class="flex items-start gap-3 border-b border-dw-line px-5 py-4 sm:px-6">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-dw-50 text-dw-700" aria-hidden="true">
+          <svg class="h-[17px] w-[17px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="6.7" r="3.2"/><path d="M4.2 17a5.8 5.8 0 0 1 11.6 0"/></svg>
+        </span>
+        <div>
+          <h2 id="member-profile-heading" class="text-[14.5px] font-extrabold text-dw-ink">Member profile</h2>
+          <p class="mt-0.5 text-[11.5px] text-dw-muted">The identity and internal context for this person.</p>
+        </div>
+      </div>
 
-  <section class="card">
-    <h2 class="mb-1 text-[14.5px] font-extrabold text-dw-ink">Skills</h2>
-    <p class="mb-4 text-[12px] text-dw-muted">The Tasks line is what proposals quote ("Advanced: Klaviyo flows, campaign copy").</p>
+      <form method="post" class="px-5 py-5 sm:px-6">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="dw-field">{{ form.display_name.label_tag }}{{ form.display_name }}{{ form.display_name.errors }}</div>
+        <label for="{{ form.is_active.id_for_label }}" class="mb-4 flex cursor-pointer items-start gap-3 rounded-xl border border-dw-line bg-dw-canvas/55 px-4 py-3">
+          <span class="pt-0.5">{{ form.is_active }}</span>
+          <span>
+            <span class="block text-[12px] font-bold text-dw-ink">Active member</span>
+            <span class="mt-0.5 block text-[10.5px] leading-[1.45] text-dw-muted">Inactive members remain on your roster but never appear in matching results.</span>
+          </span>
+        </label>
+        {{ form.is_active.errors }}
+        <div class="dw-field mb-0">
+          {{ form.notes.label_tag }}{{ form.notes }}{{ form.notes.errors }}
+          <p class="dw-hint">Private context for you—never shown in client proposals.</p>
+        </div>
+        <button type="submit" class="mt-4 inline-flex min-h-10 w-full cursor-pointer items-center justify-center rounded-[10px] border-0 bg-dw-700 px-5 text-[13px] font-bold text-white shadow-[0_1px_2px_rgba(4,36,27,.14)] hover:bg-dw-800 sm:w-auto">Save profile</button>
+      </form>
+    </section>
+
+    <section aria-labelledby="engagement-heading" class="overflow-hidden rounded-[14px] border border-dw-line bg-white shadow-[0_1px_2px_rgba(4,36,27,.03)]">
+      <div class="flex items-start justify-between gap-3 border-b border-dw-line px-5 py-4 sm:px-6">
+        <div class="flex items-start gap-3">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-dw-50 text-dw-700" aria-hidden="true">
+            <svg class="h-[17px] w-[17px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><path d="M12.8 7.1H8.9a1.8 1.8 0 0 0 0 3.6h2.2a1.8 1.8 0 0 1 0 3.6H7M10 5.3v9.4"/></svg>
+          </span>
+          <div>
+            <h2 id="engagement-heading" class="text-[14.5px] font-extrabold text-dw-ink">Engagement terms</h2>
+            <p class="mt-0.5 text-[11.5px] leading-[1.5] text-dw-muted">Commercial terms and hard-filter inputs used during matching.</p>
+          </div>
+        </div>
+        {% if va.engagement_incomplete %}<span class="shrink-0 rounded-full bg-dw-teal-bg px-2.5 py-1 text-[9.5px] font-bold text-dw-teal">Needs rates</span>{% endif %}
+      </div>
+
+      <form method="post" action="{% url 'team:member_engagement' va.slug %}" class="px-5 py-5 sm:px-6">
+        {% csrf_token %}
+        {{ engagement_form.non_field_errors }}
+        <fieldset>
+          <legend class="mb-3 text-[10px] font-extrabold uppercase tracking-[.7px] text-dw-muted">Billing</legend>
+          <div class="grid gap-x-3 sm:grid-cols-2">
+            <div class="dw-field">{{ engagement_form.rate_basis.label_tag }}{{ engagement_form.rate_basis }}{{ engagement_form.rate_basis.errors }}</div>
+            <div class="dw-field">{{ engagement_form.currency.label_tag }}{{ engagement_form.currency }}{{ engagement_form.currency.errors }}</div>
+          </div>
+          <div class="grid gap-x-3 sm:grid-cols-2">
+            <div class="dw-field">{{ engagement_form.rate_per_hour.label_tag }}{{ engagement_form.rate_per_hour }}{{ engagement_form.rate_per_hour.errors }}<p class="dw-hint">Used only for hourly engagements.</p></div>
+            <div class="dw-field">{{ engagement_form.project_rate.label_tag }}{{ engagement_form.project_rate }}{{ engagement_form.project_rate.errors }}<p class="dw-hint">Used only for fixed-price engagements.</p></div>
+          </div>
+        </fieldset>
+
+        <fieldset class="mt-2 border-t border-dw-line pt-4">
+          <legend class="mb-3 text-[10px] font-extrabold uppercase tracking-[.7px] text-dw-muted">Capacity &amp; fit</legend>
+          <div class="grid gap-x-3 sm:grid-cols-2">
+            <div class="dw-field">{{ engagement_form.availability_hours_per_week.label_tag }}{{ engagement_form.availability_hours_per_week }}{{ engagement_form.availability_hours_per_week.errors }}</div>
+            <div class="dw-field">{{ engagement_form.timezone.label_tag }}{{ engagement_form.timezone }}{{ engagement_form.timezone.errors }}</div>
+          </div>
+          <div class="grid gap-x-3 sm:grid-cols-2">
+            <div class="dw-field mb-0">{{ engagement_form.languages.label_tag }}{{ engagement_form.languages }}{{ engagement_form.languages.errors }}<p class="dw-hint">Comma-separated; treated as a matching hard filter.</p></div>
+            <div class="dw-field mb-0">{{ engagement_form.industry_experience.label_tag }}{{ engagement_form.industry_experience }}{{ engagement_form.industry_experience.errors }}<p class="dw-hint">Comma-separated; used as matching context.</p></div>
+          </div>
+        </fieldset>
+
+        <button type="submit" class="mt-4 inline-flex min-h-10 w-full cursor-pointer items-center justify-center rounded-[10px] border-0 bg-dw-700 px-5 text-[13px] font-bold text-white shadow-[0_1px_2px_rgba(4,36,27,.14)] hover:bg-dw-800 sm:w-auto">Save engagement terms</button>
+      </form>
+    </section>
+  </div>
+
+  <section aria-labelledby="capabilities-heading" class="mt-5 overflow-hidden rounded-[14px] border border-dw-line bg-white shadow-[0_1px_2px_rgba(4,36,27,.03)]">
+    <div class="flex items-start justify-between gap-3 border-b border-dw-line px-5 py-4 sm:px-6">
+      <div class="flex items-start gap-3">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-dw-50 text-dw-700" aria-hidden="true">
+          <svg class="h-[17px] w-[17px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 10 1.6 1.7 3.5-4"/><path d="M10 2.7 12 4l2.4-.1.7 2.3 2 1.4-.9 2.3.6 2.4-2.1 1.2-.9 2.2-2.4-.3-1.8 1.6-1.8-1.6-2.4.3-.9-2.2-2.1-1.2.6-2.4-.9-2.3 2-1.4.7-2.3L7.2 4 10 2.7Z"/></svg>
+        </span>
+        <div>
+          <h2 id="capabilities-heading" class="text-[14.5px] font-extrabold text-dw-ink">Capabilities</h2>
+          <p class="mt-0.5 text-[11.5px] leading-[1.5] text-dw-muted">Specific skills and task lines Dealwright can use in matching and proposals.</p>
+        </div>
+      </div>
+      <span class="rounded-full bg-dw-50 px-2.5 py-1 text-[9.5px] font-bold text-dw-700">{{ skills|length }}</span>
+    </div>
 
     {% if skills %}
-    <div class="mb-5 overflow-hidden rounded-xl border border-dw-line bg-white">
-      <table class="w-full text-[13px]">
+    <div class="hidden overflow-x-auto md:block">
+      <table class="w-full min-w-[720px] text-[13px]">
         <thead>
-          <tr class="border-b border-dw-line bg-dw-50 text-left text-[11px] uppercase tracking-[.6px] text-dw-muted">
-            <th class="px-4 py-2.5 font-bold">Skill</th>
+          <tr class="border-b border-dw-line bg-dw-canvas/45 text-left text-[10px] uppercase tracking-[.65px] text-dw-muted">
+            <th class="px-6 py-2.5 font-bold">Skill</th>
             <th class="px-4 py-2.5 font-bold">Level</th>
             <th class="px-4 py-2.5 font-bold">Tasks</th>
-            <th class="px-4 py-2.5 font-bold"></th>
+            <th class="px-6 py-2.5 text-right font-bold"><span class="sr-only">Actions</span></th>
           </tr>
         </thead>
         <tbody>
           {% for cap in skills %}
           <tr class="border-b border-dw-line last:border-b-0">
-            <td class="px-4 py-2.5 font-bold text-dw-ink">{{ cap.skill }}</td>
-            <td class="px-4 py-2.5">{% include "team/_level_chip.html" %}</td>
-            <td class="px-4 py-2.5 text-[12px] text-dw-muted">{{ cap.tasks|linebreaksbr|default:"—" }}</td>
-            <td class="px-4 py-2.5">
+            <td class="px-6 py-3.5 font-bold text-dw-ink">{{ cap.skill }}</td>
+            <td class="px-4 py-3.5">{% include "team/_level_chip.html" %}</td>
+            <td class="px-4 py-3.5 text-[12px] leading-[1.55] text-dw-muted">{{ cap.tasks|linebreaksbr|default:"No tasks described yet" }}</td>
+            <td class="px-6 py-3.5 text-right">
               <form method="post" action="{% url 'team:skill_delete' cap.slug %}" class="m-0">
                 {% csrf_token %}
-                <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[11.5px] font-bold text-dw-red hover:underline">Remove</button>
+                <button type="submit" aria-label="Remove {{ cap.skill }} from {{ va.display_name }}" class="cursor-pointer border-0 bg-transparent p-1 text-[10.5px] font-bold text-dw-red hover:underline">Remove</button>
               </form>
             </td>
           </tr>
@@ -64,20 +165,40 @@
         </tbody>
       </table>
     </div>
+
+    <div class="divide-y divide-dw-line md:hidden">
+      {% for cap in skills %}
+      <article class="px-5 py-4">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2"><h3 class="font-bold text-dw-ink">{{ cap.skill }}</h3>{% include "team/_level_chip.html" %}</div>
+            <p class="mt-1.5 text-[11.5px] leading-[1.55] text-dw-muted">{{ cap.tasks|linebreaksbr|default:"No tasks described yet" }}</p>
+          </div>
+          <form method="post" action="{% url 'team:skill_delete' cap.slug %}" class="m-0 shrink-0">
+            {% csrf_token %}
+            <button type="submit" aria-label="Remove {{ cap.skill }} from {{ va.display_name }}" class="cursor-pointer border-0 bg-transparent p-1 text-[10.5px] font-bold text-dw-red hover:underline">Remove</button>
+          </form>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
     {% else %}
-    <p class="mb-4 text-[12.5px] text-dw-muted">No skills recorded for {{ va.display_name }} yet.</p>
+    <div class="px-5 py-5 sm:px-6">
+      <p class="rounded-xl border border-dashed border-dw-line bg-dw-canvas/60 px-4 py-3.5 text-[11.5px] text-dw-muted">No capabilities recorded yet. Add the first one below.</p>
+    </div>
     {% endif %}
 
-    <form method="post" action="{% url 'team:member_skill_add' va.slug %}" class="m-0">
+    <form method="post" action="{% url 'team:member_skill_add' va.slug %}" class="border-t border-dw-line bg-dw-canvas/45 px-5 py-4 sm:px-6">
       {% csrf_token %}
-      <div class="grid gap-3 md:grid-cols-[1fr_150px_1fr_auto] md:items-start">
+      <h3 class="text-[12.5px] font-extrabold text-dw-ink">Add capability</h3>
+      <p class="mb-3 mt-0.5 text-[10.5px] text-dw-muted">Choose from your shared skill list and describe the work this person can own.</p>
+      <div class="grid gap-x-3 lg:grid-cols-[minmax(190px,.8fr)_150px_minmax(280px,1.4fr)_auto] lg:items-start">
         <div class="dw-field">{{ skill_form.skill.label_tag }}{{ skill_form.skill }}{{ skill_form.skill.errors }}</div>
         <div class="dw-field">{{ skill_form.level.label_tag }}{{ skill_form.level }}{{ skill_form.level.errors }}</div>
         <div class="dw-field">{{ skill_form.tasks.label_tag }}{{ skill_form.tasks }}{{ skill_form.tasks.errors }}</div>
-        <button type="submit" class="mt-[22px] cursor-pointer rounded-[10px] border-0 bg-dw-700 px-[18px] py-2.5 text-[13px] font-bold text-white hover:bg-dw-800">Add skill</button>
+        <button type="submit" class="inline-flex min-h-10 w-full cursor-pointer items-center justify-center rounded-[10px] border-0 bg-dw-700 px-5 text-[13px] font-bold text-white shadow-[0_1px_2px_rgba(4,36,27,.14)] hover:bg-dw-800 lg:mt-[22px] lg:w-auto">Add capability</button>
       </div>
     </form>
   </section>
-
 </div>
 {% endblock %}
