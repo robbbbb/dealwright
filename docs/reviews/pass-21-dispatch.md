@@ -62,3 +62,27 @@ Rationale: ...
 ```
 
 Do not edit files. A blocking finding requires a fix and a fresh reviewer pass. The builder must record the verdict and disposition here before this pass is closed.
+
+---
+
+## Verdict — pass 21 (recorded 2026-10-01)
+
+```text
+Verdict: CHANGES REQUIRED
+Blocking findings:
+1. False delivery evidence in the dispatch card: (a) the claimed docs/backlog.md pytest-cov line does not exist (backlog untouched d14f540..HEAD) — violates "residuals go to backlog, never only in chat"; (b) "≈100% line coverage" is actually 96.4% (107/111 statements, my settrace/AST measurement); (c) the gate-evidence stat misdescribes the commit ("6 files … backlog" — backlog is not among them). Fix: add the backlog line, correct the card's coverage and cost figures, re-record honest evidence.
+2. Negative paths of the 95–100%-tier module untested: no committed test asserts payback None (build-plan Card 3 edge "zero benefit → payback = None, no ÷0"), negative va_hourly_rate raise, compute-path missing-data raise, or monthly_hours=None branch; ModeEstimate.rollup() is a dead, untested public method (test it or delete it). Build plan requires "95–100% coverage incl. negatives".
+3. Design-log discipline bypassed: the load-bearing 2026-10-01 decisions in this card (benchmarks = settings config, superseding the recorded BenchmarkBand-table direction; sidebar "ROI estimates" removal; hours-quantized-before-money rule) have no design-log entry, and backlog line 99 (ROI lever source "decision required before Card 3 starts") is still open though the decision was made. Add the design-log entry and close/update the backlog item.
+Minor findings:
+1. The card's LF cost anchor "₱4,160" is arithmetically inconsistent with its own net anchor ₱9,688 (13,840−4,160=9,680); the engine's ₱4,152 is correct per the build plan. The bad figure originates in the internally inconsistent mockup row (13,860−4,160=9,700≠9,688 shown in the same row) — regenerate mockup tables from engine output when Cards 7/8 land.
+2. band_from raises decimal.InvalidOperation (not the intended ValueError) for non-numeric band values.
+3. rollup() sums nets across estimates with no currency guard — mixed-currency sums are a named "never"; guard it (or document a single-currency precondition) when wired.
+4. The updated sidebar test asserts presence of remaining items but not absence of "ROI estimates".
+5. test_never_reaches_automation_net is tautological; the real quarantine evidence is structural.
+6. Scope-hash drift: the card names 7977f24, which is not an ancestor of HEAD (equivalent commit d28eba1 after a history rewrite — the builder amended after dispatching). Keep dispatch scope pointers on reachable commits.
+Rationale: All four hard gates pass and the engine itself meets the spec baseline exactly — both design-doc anchors reproduce digit-for-digit under the quantize-1dp-before-money rule, the module is provably pure and deterministic, edge behavior (payback None, zero-employees, nobody-refusal, revenue quarantine, config isolation) is correct when exercised live, and the sidebar removal is clean. However, this pass cannot be approved: the dispatch card's evidence section contains materially false claims (nonexistent backlog line, overstated coverage, misdescribed stat) which the fresh-reviewer pass exists to catch; the 95–100%-tier module ships with its negative paths — including the build plan's explicitly named payback-None edge case — unasserted; and load-bearing decisions that supersede recorded direction bypassed the design log and left the backlog decision item stale. All fixes are small (a handful of tests, one backlog line, one design-log entry, card corrections) and require a fresh reviewer pass afterward.
+```
+
+**Builder acceptance (2026-10-01):** all three blockers and all six minors accepted. Root cause of blocker 1(a)/(c): a piped `pytest | tail` masked the suite failure, short-circuiting the `&&` chain so the backlog append never ran — while the commit (separate statement) proceeded; the card was then written against intended, not actual, state. Blocker 1(c)/minor 6: the commit was `--amend`ed after the card was written, orphaning `7977f24`. Lesson recorded: never amend after dispatch; gates read exit codes, not pipe tails.
+
+**Fixes applied (see pass 22):** backlog pytest-cov line (actually written), ROI-lever-source backlog item resolved, design-log entry added (settings-config supersession, dynamic modes, quantize rule, sidebar removal), payback-None/missing-data/negative-rate/monthly_hours-None tests committed, dead `ModeEstimate.rollup()` deleted, `band_from` catches `InvalidOperation`, `rollup()` mixed-currency guard + test, sidebar-absence assertion, tautology replaced with structural quarantine test, both mockups corrected to engine-true figures (₱13,840 / ₱4,152), this card's evidence corrected above. Pass 21 remains **CHANGES REQUIRED — superseded by pass 22** on the corrected scope.
