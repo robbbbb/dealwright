@@ -34,3 +34,25 @@ Rationale: ...
 ```
 
 Do not edit files. A blocking finding requires a fix and a fresh reviewer pass. The builder must record the verdict and disposition here before this pass is closed.
+
+---
+
+## Verdict — pass 18 (recorded 2026-10-01)
+
+Fresh GLM-5.3 reviewer (read-only, independent session) reran all gates matching recorded evidence (202 passed / 99 warnings, ruff clean, `git diff --check` clean; clean-HEAD worktree at `80a1398` — no committed test depends on Robb's uncommitted edits) and adjudicated the checklist by **live render**: themed GET with the hidden `next` field present verbatim; correct-password POST → 302 to `/accounts/2fa/totp/activate/`; wrong-password POST → themed 200 re-render with inline error and `next` preserved; URL resolves to allauth's own `ReauthenticateView` (override path correct); template matches the `email.html`/`password_change.html` structure token-for-token with all classes present in HEAD CSS.
+
+```text
+Verdict: APPROVED
+Blocking findings:
+1. None.
+Minor findings:
+1. Backlog line docs/backlog.md:41 still lists "reauthenticate (account + MFA)" on the intentionally-default list; per the card, the account variant is now themed and only the MFA-app variant (/accounts/2fa/reauthenticate/) remains default — that line must be updated when this verdict is recorded, as the card already commits.
+2. The h1/dw-sub copy is hardcoded English while the submit button uses {% trans %} — consistent with email.html/password_change.html precedent, so no change requested; noting for any future i18n pass.
+Rationale: All three gates re-run and pass exactly as recorded (202 passed / 99 warnings in the working tree and in a clean-HEAD worktree at 80a1398 — proving no committed test depends on Robb's uncommitted edits; ruff and diff-check clean). Live test-client render confirms every checklist item: themed GET with the hidden next field present verbatim, correct-password POST → 302 to /accounts/2fa/totp/activate/, wrong-password POST → themed 200 re-render with inline error and next preserved. The diff is presentation-only (template + smoke tests), matches the email.html/password_change.html structure token-for-token with all classes present in HEAD CSS, and leaves allauth's flow untouched.
+```
+
+**Disposition of minors:**
+1. Backlog line → **updated now** (this recording): account reauthenticate themed (pass 18); only the MFA-app variant remains on the default list.
+2. i18n copy note → accepted: matches the established auth-page precedent; whole-surface i18n is already a post-MVP backlog line ("i18n: EN-only for MVP").
+
+**Pass closed.** Scope commit `80a1398` stands as reviewed.
