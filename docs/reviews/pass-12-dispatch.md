@@ -69,3 +69,27 @@ Rationale: ...
 ```
 
 Do not edit files. A blocking finding requires a fix and a fresh reviewer pass. The builder must record the verdict and disposition here before this pass is closed.
+
+---
+
+## Verdict — pass 12 (recorded 2026-10-01)
+
+Fresh GLM-5.3 reviewer (read-only, independent session) ran all gates including the clean-HEAD worktree check that failed pass 11.
+
+```text
+Verdict: APPROVED
+Blocking findings:
+1. None.
+Minor findings:
+1. Edit-path cross-owner category pk probe is not committed as a test (create path is); behavior verified correct live by this review (invalid choice, no write, control POST succeeds). Commit it with the next catalog card.
+2. Weak type hints on ServiceForm.__init__ (owner: object, *args: object) — matches existing file convention; cosmetic.
+3. Migration 0008 reverse is a documented noop (irreversible data migration) — disclosed, acceptable.
+Rationale: All gates rerun and green, including the pass-11 failure mode itself: a clean-HEAD worktree at 94515e9 passes the full suite (167) and ruff, the coupled test is removed with an explanatory NOTE, and green-on-committed-templates proves no committed test depends on uncommitted markup. The 0006→0009 chain was verified by adversarial replay on legacy data (duplicate owner+strings, slug-collision pairs, empty strings, cross-owner reuse): zero NULLs, exact legacy strings preserved, one row per distinct pair, all constraints and FK PROTECT enforced at DB level. Tenancy verified live on both create and edit POSTs (invalid choice, no writes) plus GET surfaces; route shadowing verified via resolve(); the bundled polish is confirmed presentation-only with dw-* tokens and unchanged chip semantics; styleguide and locked decisions 1–6 preserved; builder evidence matched every reproduction.
+```
+
+**Disposition of minors:**
+1. Edit-path probe → backlog ("Edit-path cross-owner category pk probe"); to be committed with the next catalog card.
+2. Loose `owner: object` hint → accepted as-is; matches the established convention across `forms.py` (same shape as `RequiredSkillForm.__init__`).
+3. Irreversible 0008 reverse → accepted; one-way column swap, documented in the migration docstring.
+
+**Pass closed.** Scope commits `6db1b3c`, `a36caaf`, `592254f`, `94515e9` stand as reviewed.
