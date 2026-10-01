@@ -225,6 +225,19 @@ class TestServiceEdit:
         assert "Danger zone" in html
         assert html.index("Required skills") < html.index("Danger zone")
 
+    def test_destructive_actions_ask_for_confirmation(self, client) -> None:
+        pro = _client_for(client)
+        service = make_service(pro)
+        skill = Skill.objects.create(owner=pro, name="CRM management")
+        services.add_required_skill(service=service, skill=skill, min_level="beginner")
+
+        html = client.get(_url("service_edit", service)).content.decode()
+
+        assert (
+            "data-confirm='Delete \"Test service\"? This cannot be undone.'" in html
+        )
+        assert "data-confirm='Remove the \"CRM management\" requirement?'" in html
+
 
 class TestServiceDelete:
     def test_post_deletes_own(self, client) -> None:

@@ -133,6 +133,46 @@ def test_member_list_is_scoped_to_owner(client, user) -> None:
     assert "Maria" not in content
 
 
+# --- destructive actions ask for confirmation (2026-10-01) ---------------------------
+
+
+def test_logout_forms_ask_for_confirmation(client, user) -> None:
+    _login(client, user)
+
+    content = client.get(reverse("team:team_home")).content.decode()
+
+    assert content.count('data-confirm="Log out of Dealwright?"') == 2  # nav (mobile + desktop)
+
+
+def test_my_skill_remove_has_confirmation(client, user, skill) -> None:
+    profile = get_provider_profile(user)
+    add_capability(holder=profile, skill=skill)
+    _login(client, user)
+
+    content = client.get(reverse("team:team_home")).content.decode()
+
+    assert 'data-confirm="Remove this skill?"' in content
+
+
+def test_registry_skill_remove_confirms_with_name(client, user) -> None:
+    get_or_create_skill(owner=user, name="Unused skill")  # zero uses → removable
+    _login(client, user)
+
+    content = client.get(reverse("team:team_home")).content.decode()
+
+    assert "data-confirm='Remove \"Unused skill\" from your skill list?'" in content
+
+
+def test_member_skill_removal_has_confirmation(client, user, va, skill) -> None:
+    add_capability(holder=va, skill=skill)
+    _login(client, user)
+
+    content = client.get(reverse("team:member_detail", args=[va.slug])).content.decode()
+
+    assert content.count("data-confirm='Remove") == 2  # desktop + mobile removal forms
+    assert content.count('data-confirm="Log out of Dealwright?"') == 2  # nav
+
+
 def test_add_my_skill_from_team_page(client, user, skill) -> None:
     _login(client, user)
 

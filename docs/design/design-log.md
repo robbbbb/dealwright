@@ -211,3 +211,10 @@ Full MVP card breakdown: `mvp-build-plan.md` — 12 cards (0–11), one per fres
 - Data-preserving migration chain 0006–0009: create model → nullable FK → **0008 backfill** (one category row per distinct owner+category string, slug-deduped) → swap columns, NOT NULL, rebuild the per-owner unique constraint. Constraint is dropped before the column swap (SQLite rebuilds the table per column op — a constraint referencing a removed field breaks the rebuild).
 - Seed path (`seed_default_catalog`) creates category rows via the same `get_or_create_category`; natural key (owner, category name, service name) unchanged, so re-seeds stay edit-safe.
 - Service.create/edit views pass the owner into `ServiceForm` (queryset scoping — same shape as `RequiredSkillForm`). Category management beyond "add" (rename/delete UI) stays admin-only for MVP (backlog).
+
+## Confirmation gates on destructive actions (Robb request, 2026-10-01)
+
+- Every destructive or one-way form now asks before acting: **logout** (both nav forms + the auth-base nav form), **remove my skill** (team home), **remove registry skill** (names the skill in the dialog), **remove member skill** (member page, desktop + mobile, names skill and member), **remove required skill** (names the skill), and **delete service** (danger zone — names the service, says it cannot be undone). Allauth's own `/accounts/logout/` page already is a POST-only confirmation — untouched.
+- Pattern: one delegated `submit` listener in `app-base.html` (capture phase); forms opt in via a `data-confirm` attribute carrying the message. No new dependency, no inline handlers — extends the existing vanilla-JS menu script.
+- Accepted residual: with JS disabled, forms submit directly (the noscript fallback has no dialog layer); native `confirm()` is the dialog. Recorded in backlog.
+- Two pre-existing tests counted the `"Log out"` substring in rendered pages; updated to count the rendered buttons (`>Log out</button>`) so dialog text can never skew them again.

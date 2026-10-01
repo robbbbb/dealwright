@@ -155,7 +155,7 @@
             <td class="px-4 py-3.5">{% include "team/_level_chip.html" %}</td>
             <td class="px-4 py-3.5 text-[12px] leading-[1.55] text-dw-muted">{{ cap.tasks|linebreaksbr|default:"No tasks described yet" }}</td>
             <td class="px-6 py-3.5 text-right">
-              <form method="post" action="{% url 'team:skill_delete' cap.slug %}" class="m-0">
+              <form method="post" action="{% url 'team:skill_delete' cap.slug %}" data-confirm='Remove "{{ cap.skill }}" from {{ va.display_name }}?' class="m-0">
                 {% csrf_token %}
                 <button type="submit" aria-label="Remove {{ cap.skill }} from {{ va.display_name }}" class="cursor-pointer border-0 bg-transparent p-1 text-[10.5px] font-bold text-dw-red hover:underline">Remove</button>
               </form>
@@ -174,7 +174,7 @@
             <div class="flex flex-wrap items-center gap-2"><h3 class="font-bold text-dw-ink">{{ cap.skill }}</h3>{% include "team/_level_chip.html" %}</div>
             <p class="mt-1.5 text-[11.5px] leading-[1.55] text-dw-muted">{{ cap.tasks|linebreaksbr|default:"No tasks described yet" }}</p>
           </div>
-          <form method="post" action="{% url 'team:skill_delete' cap.slug %}" class="m-0 shrink-0">
+          <form method="post" action="{% url 'team:skill_delete' cap.slug %}" data-confirm='Remove "{{ cap.skill }}" from {{ va.display_name }}?' class="m-0 shrink-0">
             {% csrf_token %}
             <button type="submit" aria-label="Remove {{ cap.skill }} from {{ va.display_name }}" class="cursor-pointer border-0 bg-transparent p-1 text-[10.5px] font-bold text-dw-red hover:underline">Remove</button>
           </form>

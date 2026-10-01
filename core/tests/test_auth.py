@@ -296,7 +296,7 @@ def test_mfa_authenticate_flow(client: Client) -> None:
     good = client.post(reverse("mfa_authenticate"), {"code": totp_code(secret)})
     assert good.status_code == 302
     home_html = client.get(reverse("home")).content.decode()
-    assert home_html.count("Log out") == 2  # drawer (mobile) + avatar menu (desktop)
+    assert home_html.count(">Log out</button>") == 2  # drawer (mobile) + avatar menu (desktop)
 
 
 # ------------------------------------------------------------------ frame 7: MFA setup + codes

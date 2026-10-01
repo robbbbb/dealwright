@@ -76,7 +76,7 @@
       <div id="dw-who" class="border-t border-white/10 px-4 py-3.5 text-[12px] text-dw-100/75 md:hidden">
         <b class="block text-[13px] text-white">{{ user.get_short_name|default:user.email }}</b>
         <span class="block truncate">{{ user.email }}</span>
-        <form id="dw-who-logout" method="post" action="{% url 'account_logout' %}" class="mt-1.5 md:hidden">
+        <form id="dw-who-logout" method="post" action="{% url 'account_logout' %}" data-confirm="Log out of Dealwright?" class="mt-1.5 md:hidden">
           {% csrf_token %}
           <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[12px] font-bold text-dw-100/80 underline hover:text-white">Log out</button>
         </form>
@@ -102,7 +102,7 @@
             <b class="block text-[13px] text-dw-ink">{{ user.get_short_name|default:user.email }}</b>
             <span class="block truncate text-[11.5px] text-dw-muted">{{ user.email }}</span>
           </div>
-          <form method="post" action="{% url 'account_logout' %}" class="mt-1">
+          <form method="post" action="{% url 'account_logout' %}" data-confirm="Log out of Dealwright?" class="mt-1">
             {% csrf_token %}
             <button type="submit" class="block w-full cursor-pointer rounded-[9px] border-0 bg-transparent px-3 py-2 text-left text-[13px] font-bold text-dw-700 hover:bg-dw-50">Log out</button>
           </form>
@@ -150,6 +150,17 @@
         if (isOpen(m) && !m.panel.contains(e.target) && !m.btn.contains(e.target)) setOpen(m, false);
       });
     });
+  })();
+
+  /* Confirmation gate: destructive forms opt in via a data attribute carrying
+     their dialog message. Capture phase so the dialog fires before any submit
+     handling. No-op without JS (noscript submits directly — accepted residual,
+     see design log 2026-10-01). */
+  (function () {
+    document.addEventListener("submit", function (e) {
+      var msg = e.target.getAttribute && e.target.getAttribute("data-confirm");
+      if (msg && !window.confirm(msg)) e.preventDefault();
+    }, true);
   })();
 </script>
 </body>

@@ -57,7 +57,7 @@
               </div>
               <p class="mt-1.5 text-[12px] leading-[1.55] text-dw-muted">{{ cap.tasks|linebreaksbr|default:"No tasks described yet" }}</p>
             </div>
-            <form method="post" action="{% url 'team:skill_delete' cap.slug %}" class="m-0 shrink-0">
+            <form method="post" action="{% url 'team:skill_delete' cap.slug %}" data-confirm="Remove this skill?" class="m-0 shrink-0">
               {% csrf_token %}
               <button type="submit" class="cursor-pointer border-0 bg-transparent p-1 text-[11px] font-bold text-dw-red hover:underline">Remove</button>
             </form>
@@ -156,7 +156,7 @@
           <span class="text-[12px] font-bold text-dw-ink">{{ rs.name }}</span>
           <span class="rounded-full bg-white px-1.5 py-px text-[9.5px] font-bold text-dw-muted">{{ rs.uses }} use{{ rs.uses|pluralize }}</span>
           {% if rs.uses == 0 %}
-          <form method="post" action="{% url 'team:skill_registry_delete' rs.slug %}" class="m-0">
+          <form method="post" action="{% url 'team:skill_registry_delete' rs.slug %}" data-confirm='Remove "{{ rs.name }}" from your skill list?' class="m-0">
             {% csrf_token %}
             <button type="submit" title="Remove unused skill" aria-label="Remove {{ rs.name }} from skill list" class="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-[10px] font-bold text-dw-red hover:bg-dw-red-bg">✕</button>
           </form>

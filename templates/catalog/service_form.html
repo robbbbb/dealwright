@@ -135,7 +135,7 @@
           <li class="flex items-center gap-3 px-5 py-3">
             <span class="min-w-0 flex-1 truncate text-[12px] font-bold text-dw-ink">{{ rs.skill }}</span>
             <span class="shrink-0 rounded-full bg-dw-teal-bg px-2 py-px text-[9.5px] font-bold text-dw-teal">≥ {{ rs.get_min_level_display }}</span>
-            <form method="post" action="{% url 'catalog:skill_delete' service.category|slugify service.slug rs.slug %}" class="m-0 shrink-0">
+            <form method="post" action="{% url 'catalog:skill_delete' service.category|slugify service.slug rs.slug %}" data-confirm='Remove the "{{ rs.skill }}" requirement?' class="m-0 shrink-0">
               {% csrf_token %}
               <button type="submit" aria-label="Remove {{ rs.skill }} requirement" class="cursor-pointer border-0 bg-transparent p-1 text-[10.5px] font-bold text-dw-red hover:underline">Remove</button>
             </form>
@@ -167,7 +167,7 @@
         </summary>
         <div class="border-t border-dw-line bg-dw-red-bg/40 px-5 py-4">
           <p class="mb-3 text-[11px] leading-[1.5] text-dw-muted">This removes the service and its skill requirements. This action cannot be undone.</p>
-          <form method="post" action="{% url 'catalog:service_delete' service.category|slugify service.slug %}" class="m-0">
+          <form method="post" action="{% url 'catalog:service_delete' service.category|slugify service.slug %}" data-confirm='Delete "{{ service.name }}"? This cannot be undone.' class="m-0">
             {% csrf_token %}
             <button type="submit" class="inline-flex min-h-10 w-full cursor-pointer items-center justify-center rounded-[10px] border border-dw-red bg-white px-4 text-[12px] font-bold text-dw-red hover:bg-dw-red-bg">Remove service</button>
           </form>
