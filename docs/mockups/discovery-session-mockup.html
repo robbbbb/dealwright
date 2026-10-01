@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dealwright — Discovery Session</title>
+<style>
+  :root {
+    --dw-green-950:#04241B; --dw-green-900:#0B3D2E; --dw-green-800:#0E5941; --dw-green-700:#116E4F;
+    --dw-green-600:#15825D; --dw-green-500:#1DA06E; --dw-green-100:#D7F0E4; --dw-green-50:#EFF8F3;
+    --dw-gold-600:#B79121; --dw-gold-100:#FBF3D9;
+    --dw-amber-text:#9A6B13; --dw-amber-bg:#FDF3E2;
+    --dw-red-600:#C0392B; --dw-red-bg:#FBE9E9;
+    --dw-teal-600:#0E7490; --dw-teal-bg:#E0F2F7;
+    --dw-ink:#16241D; --dw-body:#374151; --dw-muted:#6B7280; --dw-line:#E6E8EE; --dw-canvas:#F6F8F7;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--dw-canvas); color:var(--dw-body); font-size:14px; line-height:1.55;
+  }
+  .shell { display:flex; min-height:100vh; }
+
+  /* ===== Sidebar (matches app-base today: no ROI page) ===== */
+  .side { width:228px; background:var(--dw-green-900); color:#fff; flex-shrink:0; display:flex; flex-direction:column; }
+  .side .logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:18px; padding:20px 18px 16px; letter-spacing:-.01em; }
+  .side .logo .mark { width:30px; height:30px; border-radius:8px; background:var(--dw-gold-600); display:flex; align-items:center; justify-content:center; font-weight:300; font-size:12px; letter-spacing:1px; color:#fff; }
+  .nav { padding:6px 10px; flex:1; }
+  .nav .sect { font-size:10px; letter-spacing:1.2px; text-transform:uppercase; opacity:.55; padding:14px 10px 5px; }
+  .nav a { display:flex; align-items:center; gap:10px; color:#DDE7E2; text-decoration:none; font-size:13.5px; padding:8px 10px; border-radius:9px; margin-bottom:2px; }
+  .nav a .ico { width:18px; text-align:center; opacity:.8; }
+  .nav a:hover { background:var(--dw-green-800); }
+  .nav a.active { background:var(--dw-green-700); color:#fff; font-weight:700; }
+  .nav a .cnt { margin-left:auto; font-size:10.5px; background:rgba(255,255,255,.14); border-radius:999px; padding:1px 8px; }
+  .side .who { padding:14px 16px; border-top:1px solid rgba(255,255,255,.1); font-size:12px; opacity:.85; }
+  .side .who b { display:block; font-size:13px; color:#fff; }
+
+  /* ===== Main ===== */
+  .main { flex:1; padding:26px 32px; max-width:1160px; }
+  .top { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
+  .top h1 { font-size:21px; color:var(--dw-ink); margin-right:auto; }
+  .top h1 small { display:block; font-size:12.5px; color:var(--dw-muted); font-weight:400; }
+  .btn { display:inline-block; border-radius:10px; padding:9px 18px; font-weight:700; font-size:13px; border:1.5px solid transparent; text-decoration:none; }
+  .btn.primary { background:var(--dw-green-700); color:#fff; }
+  .btn.ghost { background:#fff; color:var(--dw-green-700); border-color:var(--dw-green-700); }
+  .btn.disabled { background:#E9ECEF; color:#ADB5BD; border-color:transparent; }
+  .avatar { width:36px; height:36px; border-radius:50%; background:var(--dw-green-600); color:#fff; font-weight:800; font-size:14px; display:flex; align-items:center; justify-content:center; }
+
+  .chip { display:inline-block; border-radius:999px; padding:2px 10px; font-size:11px; font-weight:600; white-space:nowrap; }
+  .chip.draft { background:#F2F3F7; color:var(--dw-muted); }
+  .chip.review { background:var(--dw-amber-bg); color:var(--dw-amber-text); }
+  .chip.estimated { background:var(--dw-teal-bg); color:var(--dw-teal-600); }
+  .chip.missing { background:var(--dw-red-bg); color:var(--dw-red-600); }
+  .chip.mode { background:var(--dw-teal-bg); color:var(--dw-teal-600); }
+  .chip.mode.gold { background:var(--dw-gold-100); color:var(--dw-gold-600); }
+  .chip.mode.green { background:var(--dw-green-100); color:var(--dw-green-800); }
+  .chip.estimate { background:var(--dw-amber-bg); color:var(--dw-amber-text); }
+  .chip.skill { background:var(--dw-green-50); color:var(--dw-green-600); border:1px solid var(--dw-green-100); }
+  .chip.info { background:var(--dw-teal-bg); color:var(--dw-teal-600); }
+  .src { display:inline-block; background:#F2F3F7; color:var(--dw-muted); border-radius:8px; padding:4px 10px; font-size:11.5px; font-style:italic; margin-top:5px; max-width:520px; }
+  .money { color:var(--dw-green-600); font-weight:700; white-space:nowrap; }
+
+  .panel { background:#fff; border:1px solid var(--dw-line); border-radius:12px; overflow:hidden; margin-bottom:16px; }
+  .panel .head { display:flex; align-items:center; gap:10px; padding:13px 16px; border-bottom:1px solid var(--dw-line); background:var(--dw-green-50); }
+  .panel .head b { color:var(--dw-ink); font-size:14px; margin-right:auto; }
+  .panel .body { padding:16px; }
+  .panel .body.tight { padding:0; }
+
+  .note { border-left:4px solid var(--dw-teal-600); background:var(--dw-teal-bg); border-radius:0 8px 8px 0; padding:10px 14px; font-size:12.5px; color:#155E75; margin-bottom:16px; }
+  .note.amber { border-color:var(--dw-gold-600); background:var(--dw-amber-bg); color:var(--dw-amber-text); }
+
+  /* form bits */
+  .frow { display:flex; gap:14px; flex-wrap:wrap; }
+  .field { margin:0; flex:1; min-width:150px; }
+  .field label { display:block; font-size:11.5px; font-weight:700; color:var(--dw-ink); margin-bottom:4px; }
+  .field input, .field select, .field textarea {
+    width:100%; border:1.5px solid var(--dw-line); border-radius:9px; padding:8px 11px;
+    font-size:13px; font-family:inherit; color:var(--dw-body); background:#fff;
+  }
+  .field textarea { min-height:190px; line-height:1.6; }
+  .field .why { font-size:11px; color:var(--dw-muted); margin-top:3px; }
+  .field.flag input { border-color:var(--dw-red-600); }
+  .field.flag label::after { content:"missing"; background:var(--dw-red-bg); color:var(--dw-red-600); border-radius:999px; padding:1px 8px; font-size:10px; margin-left:6px; }
+
+  /* workflow rows */
+  .wf { border:1px solid var(--dw-line); border-radius:11px; margin:12px 16px; }
+  .wf .wfhead { display:flex; align-items:center; gap:10px; padding:10px 14px; background:var(--dw-green-50); border-bottom:1px solid var(--dw-line); border-radius:11px 11px 0 0; }
+  .wf .wfhead b { color:var(--dw-ink); font-size:13.5px; margin-right:auto; }
+  .wf .wfgrid { display:flex; gap:12px; flex-wrap:wrap; padding:12px 14px; }
+  .wf .wgap { border-color:var(--dw-red-600); }
+  .seg { display:inline-flex; border:1.5px solid var(--dw-line); border-radius:9px; overflow:hidden; }
+  .seg span { padding:6px 12px; font-size:12px; color:var(--dw-muted); background:#fff; }
+  .seg span.on { background:var(--dw-green-700); color:#fff; font-weight:700; }
+  .seg span.off:hover { background:var(--dw-green-50); }
+
+  /* provenance strip */
+  .prov { display:flex; gap:16px; flex-wrap:wrap; font-size:11.5px; color:var(--dw-muted); padding:9px 16px; border-bottom:1px solid var(--dw-line); background:#FBFCFB; }
+  .prov b { color:var(--dw-ink); font-weight:600; }
+
+  /* estimate table */
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--dw-muted); padding:9px 14px; border-bottom:2px solid var(--dw-line); background:var(--dw-green-50); }
+  th.money, td.money { text-align:right; }
+  td { padding:10px 14px; border-bottom:1px solid var(--dw-line); }
+  tr:last-child td { border-bottom:none; }
+  .scen { display:inline-flex; border:1.5px solid var(--dw-line); border-radius:10px; overflow:hidden; }
+  .scen span { padding:7px 16px; font-size:12.5px; color:var(--dw-muted); background:#fff; }
+  .scen span.on { background:var(--dw-green-700); color:#fff; font-weight:700; }
+
+  /* ===== Doc chrome (flow strip + section headings between states) ===== */
+  .doc-head { background:linear-gradient(135deg,var(--dw-green-800),var(--dw-green-900)); color:#fff; padding:34px 24px 26px; text-align:center; }
+  .doc-head .logo { display:inline-flex; align-items:center; gap:10px; font-weight:800; font-size:20px; }
+  .doc-head .logo .mark { width:30px; height:30px; border-radius:8px; background:var(--dw-gold-600); display:flex; align-items:center; justify-content:center; font-weight:300; font-size:12px; letter-spacing:1px; }
+  .doc-head p { opacity:.85; font-size:13px; margin-top:6px; }
+  .doc { max-width:1160px; margin:0 auto; padding:26px 20px 70px; }
+  .state-h { display:flex; align-items:center; gap:12px; margin:34px 0 4px; }
+  .state-h .n { background:var(--dw-green-700); color:#fff; border-radius:8px; padding:2px 11px; font-size:12.5px; font-weight:700; }
+  .state-h h2 { color:var(--dw-ink); font-size:17px; }
+  .state-sub { color:var(--dw-muted); font-size:12.5px; margin:0 0 14px 46px; }
+  .frame { border:1px solid var(--dw-line); border-radius:14px; overflow:hidden; box-shadow:0 1px 3px rgba(4,36,27,.06); background:var(--dw-canvas); }
+  .frame .shell { min-height:0; }
+  .legend { display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; }
+  .dnote { font-size:12px; color:var(--dw-muted); margin:8px 0 0 46px; max-width:760px; }
+  .cols { display:flex; gap:16px; align-items:flex-start; }
+  .col { flex:1; min-width:0; }
+  .kv { font-size:12.5px; }
+  .kv div { display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-bottom:1px dashed var(--dw-line); }
+  .kv div:last-child { border-bottom:none; }
+  .kv b { color:var(--dw-ink); font-weight:600; }
+</style>
+</head>
+<body>
+
+<header class="doc-head">
+  <div class="logo"><span class="mark">DW</span>Dealwright</div>
+  <p>Discovery session — where facts get captured · mockup v1, 2026-10-01 · tokens per theme.html · chip semantics locked</p>
+</header>
+
+<div class="doc">
+
+  <!-- ============ STATE 1: PASTE NOTES ============ -->
+  <div class="state-h"><span class="n">1</span><h2>New session — paste the notes</h2></div>
+  <p class="state-sub">One screen, one job. Extraction reads the notes only; it can't invent prices or ROI. Sessions attach to a client (new or existing).</p>
+
+  <div class="frame">
+    <div class="shell">
+      <aside class="side">
+        <div class="logo"><span class="mark">DW</span>Dealwright</div>
+        <nav class="nav">
+          <div class="sect">Work</div>
+          <a href="#"><span class="ico">▦</span>Dashboard</a>
+          <a href="#"><span class="ico">👥</span>Clients <span class="cnt">12</span></a>
+          <a href="#" class="active"><span class="ico">🎙</span>Discovery sessions <span class="cnt">5</span></a>
+          <a href="#"><span class="ico">📄</span>Proposals <span class="cnt">8</span></a>
+          <div class="sect">Setup</div>
+          <a href="#"><span class="ico">🧩</span>Service catalog</a>
+          <a href="#"><span class="ico">✅</span>My skills &amp; bench</a>
+          <a href="#"><span class="ico">🔗</span>Integrations</a>
+          <a href="#"><span class="ico">⚙</span>Settings</a>
+        </nav>
+        <div class="who"><b>Robb</b>Dealwright</div>
+      </aside>
+
+      <main class="main">
+        <div class="top">
+          <h1>New discovery session <small>Step 1 of 2 — the client talks, you paste</small></h1>
+          <div class="avatar">R</div>
+        </div>
+
+        <div class="note">Extraction turns notes into <b>facts with receipts</b> — every field it fills keeps the quote it came from. It never prices anything: prices live in your catalog, benchmarks in platform settings.</div>
+
+        <div class="panel">
+          <div class="head"><b>Session details</b></div>
+          <div class="body">
+            <div class="frow">
+              <div class="field">
+                <label>Client</label>
+                <select><option>LF — (new client, add as you go)</option><option>Grace Community Church</option><option>Mika's Café</option></select>
+                <div class="why">Typing a new name creates the client on save.</div>
+              </div>
+              <div class="field" style="max-width:200px;">
+                <label>Session date</label>
+                <input value="2026-10-01">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="head"><b>Call / meeting notes</b><span class="chip info">paste as-is</span></div>
+          <div class="body">
+            <div class="field">
+              <textarea>Call with LF earlier — she's drowning. Spends around 8 hours a week on inbox triage, calendar juggling, chasing invoices and booking stuff. She said "I just need somebody to take this off my plate, I don't even know where it starts." Nobody else on her team touches it, it's all her. Her time is worth maybe ₱400/hr to the business, she guessed. Budget is around ₱10k/mo, flexible if ROI is obvious. Wants: inbox zero daily, calendar handled, someone to chase payments. Manila-based, English. Also mentioned wanting to grow YouTube leads next year but nothing running today. She asked if AI could write her newsletter — told her we'd look at it after the basics work.</textarea>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:14px; align-items:center;">
+              <a href="#" class="btn primary">Run extraction</a>
+              <span style="font-size:12px; color:var(--dw-muted);">Usually 10–20 seconds · GLM · usage &amp; cost logged per run</span>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ============ STATE 2: REVIEW EXTRACTION ============ -->
+  <div class="state-h"><span class="n">2</span><h2>Review — facts with receipts, grouped client / workflows / problems / goals</h2></div>
+  <p class="state-sub">The working screen. Every extracted field carries its source quote; you edit, fill gaps, confirm. Missing data shows as follow-up questions — nothing is invented to fill them.</p>
+
+  <div class="frame">
+    <div class="shell">
+      <aside class="side">
+        <div class="logo"><span class="mark">DW</span>Dealwright</div>
+        <nav class="nav">
+          <div class="sect">Work</div>
+          <a href="#"><span class="ico">▦</span>Dashboard</a>
+          <a href="#"><span class="ico">👥</span>Clients <span class="cnt">12</span></a>
+          <a href="#" class="active"><span class="ico">🎙</span>Discovery sessions <span class="cnt">5</span></a>
+          <a href="#"><span class="ico">📄</span>Proposals <span class="cnt">8</span></a>
+          <div class="sect">Setup</div>
+          <a href="#"><span class="ico">🧩</span>Service catalog</a>
+          <a href="#"><span class="ico">✅</span>My skills &amp; bench</a>
+          <a href="#"><span class="ico">🔗</span>Integrations</a>
+          <a href="#"><span class="ico">⚙</span>Settings</a>
+        </nav>
+        <div class="who"><b>Robb</b>Dealwright</div>
+      </aside>
+
+      <main class="main">
+        <div class="top">
+          <h1>LF — Personal assistant &amp; life admin <small>Session · Oct 1, 2026</small></h1>
+          <span class="chip review">In review</span>
+          <a href="#" class="btn ghost">Save draft</a>
+          <a href="#" class="btn primary">Confirm &amp; compute estimate</a>
+          <div class="avatar">R</div>
+        </div>
+
+        <!-- provenance strip -->
+        <div class="panel">
+          <div class="prov" style="border-top:none;">
+            <span>Extraction <b>ruleset v3</b></span>
+            <span>Model <b>glm-4.x</b></span>
+            <span>Run <b>14.2s · ₱0.41 logged</b></span>
+            <span>16 facts extracted · <b style="color:var(--dw-green-600);">13 confirmed</b> · <b style="color:var(--dw-red-600);">2 missing</b></span>
+          </div>
+
+          <div class="note amber" style="margin:14px 16px 2px;"><b style="color:var(--dw-red-600);">2 follow-up questions</b> — extraction couldn't find these in the notes. Ask the client, or leave blank and the estimate goes qualitative for that row. Nothing is guessed.</div>
+
+          <div style="padding:10px 16px 14px;">
+            <div style="font-size:13px; padding:7px 0; border-bottom:1px dashed var(--dw-line);"><b style="color:var(--dw-ink);">Q1.</b> How many hours a week go to the newsletter today? <span class="chip missing">blocks automation row</span></div>
+            <div style="font-size:13px; padding:7px 0;"><b style="color:var(--dw-ink);">Q2.</b> Who chases the invoice follow-ups when she's busy? <span class="chip missing">blocks delegation row</span></div>
+          </div>
+        </div>
+
+        <!-- CLIENT FACTS -->
+        <div class="panel">
+          <div class="head"><b>1 · Client facts</b><span class="chip info">every field traces to the notes</span></div>
+          <div class="body">
+            <div class="frow">
+              <div class="field"><label>Business / name</label><input value="LF"></div>
+              <div class="field"><label>Industry</label><input value="Coaching &amp; consulting"></div>
+              <div class="field"><label>Timezone</label><select><option>Asia/Manila</option></select></div>
+              <div class="field"><label>Language</label><input value="English"></div>
+            </div>
+            <div class="frow" style="margin-top:10px;">
+              <div class="field" style="max-width:220px;"><label>Budget ceiling (monthly)</label><input value="₱10,000"><div class="why">Matching hard filter — never shown to the client.</div></div>
+            </div>
+            <span class="src">"Budget is around ₱10k/mo, flexible if ROI is obvious. Manila-based, English."</span>
+          </div>
+        </div>
+
+        <!-- WORKFLOWS -->
+        <div class="panel">
+          <div class="head"><b>2 · Workflows</b><span class="chip info">who does it today decides the ROI mode</span></div>
+
+          <div class="wf">
+            <div class="wfhead"><b>Inbox triage, calendar &amp; booking admin</b><span class="chip mode green">→ delegation mode</span></div>
+            <div class="wfgrid">
+              <div class="field" style="flex:2;">
+                <label>Performed by today</label>
+                <div class="seg"><span class="on">Client</span><span class="off">Employee</span><span class="off">Nobody</span><span class="off">Outsourced</span></div>
+                <div class="why">"Client" + hours = the engine computes a delegation estimate.</div>
+              </div>
+              <div class="field" style="max-width:130px;"><label>Hours / week</label><input value="8"></div>
+              <div class="field" style="max-width:130px;"><label>Time value / hr</label><input value="₱400"></div>
+              <div class="field" style="max-width:120px;"><label>People doing it</label><input value="1"></div>
+            </div>
+            <div style="padding:0 14px 12px;">
+              <label style="font-size:11.5px; font-weight:700; color:var(--dw-ink);">Required skills</label>
+              <div><span class="chip skill">Calendar management</span><span class="chip skill">Calls &amp; bookings</span><span class="chip skill">Task systems</span></div>
+              <span class="src">"around 8 hours a week on inbox triage, calendar juggling, chasing invoices and booking stuff… her time is worth maybe ₱400/hr"</span>
+            </div>
+          </div>
+
+          <div class="wf wgap">
+            <div class="wfhead"><b>Newsletter writing</b><span class="chip missing">missing hours → qualitative</span></div>
+            <div class="wfgrid">
+              <div class="field" style="flex:2;">
+                <label>Performed by today</label>
+                <div class="seg"><span class="on">Client</span><span class="off">Employee</span><span class="off">Nobody</span><span class="off">Outsourced</span></div>
+              </div>
+              <div class="field flag" style="max-width:130px;"><label>Hours / week</label><input value="" placeholder="ask Q1"></div>
+              <div class="field" style="max-width:130px;"><label>Time value / hr</label><input value="₱400"></div>
+              <div class="field" style="max-width:120px;"><label>People doing it</label><input value="1"></div>
+            </div>
+            <div style="padding:0 14px 12px;">
+              <span class="src">"She asked if AI could write her newsletter — told her we'd look at it after the basics work."</span>
+            </div>
+          </div>
+
+          <div class="wf">
+            <div class="wfhead"><b>YouTube lead generation</b><span class="chip mode gold">→ qualitative (nobody today)</span></div>
+            <div class="wfgrid">
+              <div class="field" style="flex:2;">
+                <label>Performed by today</label>
+                <div class="seg"><span class="off">Client</span><span class="off">Employee</span><span class="on">Nobody</span><span class="off">Outsourced</span></div>
+                <div class="why">No current hours → no invented baseline. Engine reports qualitative only.</div>
+              </div>
+              <div class="field" style="flex:1; min-width:220px;">
+                <label>Future inputs (optional, revenue mode later)</label>
+                <input value="leads/mo · value per lead — collect after launch" disabled>
+              </div>
+            </div>
+            <div style="padding:0 14px 12px;">
+              <span class="src">"Also mentioned wanting to grow YouTube leads next year but nothing running today."</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROBLEMS & GOALS -->
+        <div class="cols">
+          <div class="col">
+            <div class="panel">
+              <div class="head"><b>3 · Problems</b><span class="chip info">proposal narration only — nothing computes from these</span></div>
+              <div class="body">
+                <div style="font-size:13px; padding:6px 0;">Drowning in admin; doesn't know where to start.</div>
+                <span class="src">"she's drowning… 'I just need somebody to take this off my plate, I don't even know where it starts.'"</span>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="panel">
+              <div class="head"><b>4 · Goals</b></div>
+              <div class="body">
+                <div style="font-size:13px; padding:6px 0;">Inbox zero daily · calendar handled · payments chased · YouTube leads next year.</div>
+                <span class="src">"Wants: inbox zero daily, calendar handled, someone to chase payments."</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="note" style="margin-top:2px;"><b>Confirm</b> locks these facts as session data. The estimate then runs on <i>exactly</i> what you confirmed — hours quantized to 0.1h before any money math, benchmarks from platform settings <b>2026.10</b> snapshotted into the estimate.</div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ============ STATE 3: ESTIMATE ============ -->
+  <div class="state-h"><span class="n">3</span><h2>Estimate — the math is frozen here, then the proposal pulls it</h2></div>
+  <p class="state-sub">Recompute happens on save, never on keystroke. Numbers snapshot band values + version; amber = estimate, always labelled. The proposal generator reads this snapshot — it never re-runs the engine.</p>
+
+  <div class="frame">
+    <div class="shell">
+      <aside class="side">
+        <div class="logo"><span class="mark">DW</span>Dealwright</div>
+        <nav class="nav">
+          <div class="sect">Work</div>
+          <a href="#"><span class="ico">▦</span>Dashboard</a>
+          <a href="#"><span class="ico">👥</span>Clients <span class="cnt">12</span></a>
+          <a href="#" class="active"><span class="ico">🎙</span>Discovery sessions <span class="cnt">5</span></a>
+          <a href="#"><span class="ico">📄</span>Proposals <span class="cnt">8</span></a>
+          <div class="sect">Setup</div>
+          <a href="#"><span class="ico">🧩</span>Service catalog</a>
+          <a href="#"><span class="ico">✅</span>My skills &amp; bench</a>
+          <a href="#"><span class="ico">🔗</span>Integrations</a>
+          <a href="#"><span class="ico">⚙</span>Settings</a>
+        </nav>
+        <div class="who"><b>Robb</b>Dealwright</div>
+      </aside>
+
+      <main class="main">
+        <div class="top">
+          <h1>LF — Estimate <small>Computed from 13 confirmed facts · Oct 1, 2026</small></h1>
+          <span class="chip estimated">Estimate ready</span>
+          <a href="#" class="btn ghost">Edit assumptions</a>
+          <a href="#" class="btn primary">Generate proposal →</a>
+          <div class="avatar">R</div>
+        </div>
+
+        <div class="panel">
+          <div class="head">
+            <b>Delegation — inbox, calendar &amp; booking admin</b>
+            <span class="chip estimate">estimate</span>
+            <div class="scen" style="margin-left:auto;"><span>Conservative</span><span class="on">Expected</span><span>Optimistic</span></div>
+          </div>
+          <div class="body tight">
+            <table>
+              <tr><th></th><th class="money">Hours freed / mo</th><th class="money">Value of time</th><th class="money">VA cost (₱120/hr, stored)</th><th class="money">Net / mo</th><th class="money">Payback</th></tr>
+              <tr><td><b>Expected</b> · 90% handoff <span class="chip estimate">estimate</span></td>
+                  <td class="money">31.2</td><td class="money">₱12,480</td><td class="money">₱3,744</td><td class="money"><b>₱8,736</b></td><td class="money">—</td></tr>
+            </table>
+            <div class="body" style="border-top:1px solid var(--dw-line); padding-top:12px;">
+              <div class="kv" style="max-width:560px;">
+                <div><span>Conservative · 75%</span><b>26.0 h → net <span class="money">₱7,280</span></b></div>
+                <div><span>Optimistic · 100%</span><b>34.6 h → net <span class="money">₱9,688</span></b></div>
+                <div><span>Newsletter row</span><span class="chip missing">qualitative — hours missing</span></div>
+                <div><span>YouTube row</span><span class="chip missing">qualitative — nobody performs it today</span></div>
+                <div><span>Benchmarks</span><b>settings 2026.10 · snapshotted</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="note"><b>Proposal reads, never recomputes.</b> Generate proposal pulls these stored rows + catalog prices you pick + matching output. The LLM writes the words around them under guardrails; every peso stays traceable to a stored field.</div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ============ DESIGN NOTES ============ -->
+  <div class="state-h"><span class="n">§</span><h2>Design notes — what's locked in this mockup</h2></div>
+  <ul class="dnote" style="list-style:disc; padding-left:18px; line-height:1.9;">
+    <li><b>Session = facts only.</b> No prices, no ROI, no voice, no VA picks. Test for any field: <i>which engine reads this?</i></li>
+    <li><b>Chip semantics hold:</b> red = missing/gap (follow-ups, blocked rows), amber = estimate labels everywhere numbers are shown, teal = neutral info (provenance, mode explanations), green = confirmed.</li>
+    <li><b>Provenance is visible:</b> ruleset version, model, run cost, confirmed/missing counts — the audit trail is a first-class UI element, not a log file.</li>
+    <li><b>Nothing invented:</b> missing hours → the row goes qualitative with a visible reason; "nobody today" → qualitative, no fake baseline; revenue inputs stay disabled until the workflow actually runs.</li>
+    <li><b>Estimate freezes math:</b> band values + version snapshot on compute; scenario toggle re-renders stored rows; proposal generation consumes the snapshot.</li>
+  </ul>
+
+</div>
+</body>
+</html>
