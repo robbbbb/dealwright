@@ -45,3 +45,25 @@ Rationale: ...
 ```
 
 Do not edit files. A blocking finding requires a fix and a fresh reviewer pass. The builder must record the verdict and disposition here before this pass is closed.
+
+---
+
+## Verdict — pass 14 (recorded 2026-10-01)
+
+Fresh GLM-5.3 reviewer (read-only, independent session) reran all six gates matching recorded evidence (188 passed in-tree and in a clean worktree at `837102d` — proving no committed test depends on Robb's uncommitted hand edits; ruff clean; `makemigrations --check` clean; `git diff --check` clean; `sqlmigrate team 0009` shows every op as a no-op). Checklist adjudicated against the actual diff: delivery_mode unreachable from the settings route while remaining a stored solo-default field; negative money/hours fail `full_clean` on all three fields on both models (including an independent VA-side live probe) with DB CHECK backstops still tested; docs and backlog residuals accurate; locked decisions 1–4 hold.
+
+```text
+Verdict: APPROVED
+Blocking findings:
+1. None.
+Minor findings:
+1. No committed view test pins the member-engagement route's negative-POST behavior (PRG + zero writes); covered today via shared mixin validators and verified live by this reviewer — add a route-level test next time team/ is open.
+2. VA-side full_clean test covers only rate_per_hour (provider side is parametrized over all three fields); inherited behavior confirmed independently — parametrize for symmetry.
+Rationale: All six gates rerun and match the card's evidence exactly (188 passed in-tree and in a clean worktree at 837102d, proving no test depends on Robb's uncommitted hand edits; ruff clean; makemigrations --check clean; git diff --check clean). Every checklist item adjudicated against the actual diff: delivery_mode is unreachable from the settings route while remaining a stored solo-default field (locked decision 1); negative money/hours fail full_clean with friendly field errors on all three fields on both models (verified, including independent VA-side probe) with DB CHECK backstops still tested and live; migration 0009 is a verified schema no-op; docs and backlog residuals are accurate; styleguide and locked decisions 1–4 hold. No estimate, guardrail, token, secrets, or test-coupling violations found.
+```
+
+**Disposition of minors — applied directly (3779f98, gates rerun green: 191 passed, ruff clean):**
+1. Route-level engagement negative-POST test committed (`test_member_engagement_negative_rate_writes_nothing` — PRG, zero writes).
+2. VA-side `full_clean` test now parametrized over all three fields (symmetry with the provider side).
+
+**Pass closed.** Scope commits `837102d`, `3779f98` stand as reviewed.

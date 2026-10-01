@@ -112,7 +112,7 @@ Live call transcription · automated interviews · marketplace payments · publi
 
 No Settings screen exists in mocks or cards; the MVP surface folds into existing cards as follows:
 
-- **Profile & delivery terms** — name, branding_name, persona, engagement terms — resolved 2026-10-01 (`/team/settings/`, sidebar-wired). **Delivery_mode toggle removed (Robb, 2026-10-01):** the solo/team choice moves into the proposal/LLM flow — see design-log 2026-10-01; `ProviderProfile.delivery_mode` remains the stored solo-default that Cards 5/8 read. Status: resolved; review pass 14 pending.
+- **Profile & delivery terms** — name, branding_name, persona, engagement terms — resolved 2026-10-01 (`/team/settings/`, sidebar-wired). **Delivery_mode toggle removed (Robb, 2026-10-01):** the solo/team choice moves into the proposal/LLM flow — see design-log 2026-10-01; `ProviderProfile.delivery_mode` remains the stored solo-default that Cards 5/8 read. Status: resolved — review pass 14 APPROVED (docs/reviews/pass-14-dispatch.md).
 - **Integrations** — webhook URL + token mint/regenerate/revoke, "send test event" button, n8n docs link — the only new UI Card 10 forces. Status: open (Card 10 scope).
 - **Security** — links to the already-built allauth surfaces (password change, email manage, MFA + recovery codes). Status: open (Card 9 wiring).
 - **Billing** — placeholder only; post-pilot per pre-launch checklist. Status: deferred.
