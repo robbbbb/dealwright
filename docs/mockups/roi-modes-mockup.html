@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dealwright — Dynamic ROI Modes</title>
+<style>
+  :root {
+    /* ===== Dealwright tokens (theme.html v1, 2026-09-28) ===== */
+    --dw-green-950: #04241B;
+    --dw-green-900: #0B3D2E;
+    --dw-green-800: #0E5941;
+    --dw-green-700: #116E4F;
+    --dw-green-600: #15825D;
+    --dw-green-500: #1DA06E;
+    --dw-green-100: #D7F0E4;
+    --dw-green-50:  #EFF8F3;
+    --dw-gold-600:  #B79121;
+    --dw-gold-100:  #FBF3D9;
+    --dw-amber-text:#9A6B13;
+    --dw-amber-bg:  #FDF3E2;
+    --dw-red-600:   #C0392B;
+    --dw-red-bg:    #FBE9E9;
+    --dw-teal-600:  #0E7490;
+    --dw-teal-bg:   #E0F2F7;
+    --dw-ink:       #16241D;
+    --dw-body:      #374151;
+    --dw-muted:     #6B7280;
+    --dw-line:      #E6E8EE;
+    --dw-canvas:    #F6F8F7;
+    --dw-grad: linear-gradient(135deg, var(--dw-green-800), var(--dw-green-900));
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--dw-canvas); color: var(--dw-body); line-height: 1.55; font-size: 14px;
+  }
+  .hero {
+    background: var(--dw-grad); color: #fff; padding: 40px 24px 48px; text-align: center;
+  }
+  .hero h1 { font-size: 26px; margin-bottom: 8px; letter-spacing: -.02em; }
+  .hero p { opacity: .9; max-width: 700px; margin: 0 auto; font-size: 14px; }
+  .hero .badge {
+    display: inline-block; background: rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.4); padding: 4px 14px; border-radius: 999px;
+    font-size: 11px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px;
+  }
+  .wrap { max-width: 920px; margin: -24px auto 48px; padding: 0 20px; }
+  section.card {
+    background: #fff; border-radius: 14px; padding: 28px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06); margin-bottom: 28px;
+  }
+  h2 { font-size: 18px; margin-bottom: 4px; color: var(--dw-ink); }
+  h2 .step {
+    display: inline-block; background: var(--dw-green-700); color: #fff; border-radius: 8px;
+    padding: 2px 10px; font-size: 12px; vertical-align: 2px; margin-right: 8px;
+  }
+  h3 { font-size: 14px; color: var(--dw-ink); margin: 18px 0 6px; }
+  .sub { color: var(--dw-muted); font-size: 13px; margin-bottom: 18px; }
+  .estimate-tag {
+    display: inline-block; background: var(--dw-amber-bg); color: var(--dw-amber-text);
+    border: 1px solid var(--dw-amber-text); border-radius: 999px;
+    font-size: 10.5px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+    padding: 2px 10px; vertical-align: 2px; margin-left: 6px;
+  }
+  .chip {
+    display: inline-block; border-radius: 999px; padding: 2px 10px;
+    font-size: 11px; font-weight: 700; margin: 0 4px 4px 0;
+  }
+  .chip.automation { background: var(--dw-green-100); color: var(--dw-green-800); }
+  .chip.delegation { background: var(--dw-teal-bg); color: var(--dw-teal-600); }
+  .chip.revenue    { background: var(--dw-gold-100); color: var(--dw-gold-600); }
+  .chip.qualitative{ background: var(--dw-canvas); color: var(--dw-muted); border: 1px solid var(--dw-line); }
+  .chip.who-client  { background: var(--dw-green-50); color: var(--dw-green-800); }
+  .chip.who-nobody  { background: var(--dw-red-bg); color: var(--dw-red-600); }
+  .chip.who-emp     { background: var(--dw-teal-bg); color: var(--dw-teal-600); }
+  .chip.src         { background: var(--dw-canvas); color: var(--dw-muted); border: 1px solid var(--dw-line); font-weight: 600; }
+  .chip.src.bench   { background: var(--dw-teal-bg); color: var(--dw-teal-600); border: none; }
+  .chip.src.session { background: var(--dw-green-50); color: var(--dw-green-800); border: none; }
+  .chip.src.override{ background: var(--dw-amber-bg); color: var(--dw-amber-text); border: none; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 4px; font-size: 13px; }
+  th {
+    text-align: left; color: var(--dw-muted); font-size: 11px; letter-spacing: .6px;
+    text-transform: uppercase; border-bottom: 2px solid var(--dw-line); padding: 8px 10px;
+  }
+  td { border-bottom: 1px solid var(--dw-line); padding: 9px 10px; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td.money { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--dw-ink); white-space: nowrap; }
+  th.money { text-align: right; }
+  tr.total td { background: var(--dw-green-50); font-weight: 700; color: var(--dw-ink); }
+  .mode-badge {
+    display: inline-flex; align-items: center; gap: 6px; border-radius: 8px;
+    padding: 4px 12px; font-size: 12px; font-weight: 800; letter-spacing: .4px; text-transform: uppercase;
+  }
+  .mode-badge.delegation { background: var(--dw-teal-bg); color: var(--dw-teal-600); }
+  .mode-badge.automation { background: var(--dw-green-100); color: var(--dw-green-800); }
+  .mode-badge.qualitative{ background: var(--dw-canvas); color: var(--dw-muted); border: 1px dashed var(--dw-line); }
+  .formula {
+    background: var(--dw-green-50); border: 1px solid var(--dw-line); border-radius: 10px;
+    padding: 10px 14px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12.5px; color: var(--dw-green-900); margin: 10px 0; overflow-x: auto;
+  }
+  .note {
+    border-radius: 10px; padding: 10px 14px; font-size: 12.5px; margin: 10px 0;
+  }
+  .note.teal { background: var(--dw-teal-bg); color: var(--dw-teal-600); }
+  .note.amber { background: var(--dw-amber-bg); color: var(--dw-amber-text); }
+  .fine { color: var(--dw-muted); font-size: 11.5px; margin-top: 12px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 700px) { .cols { grid-template-columns: 1fr; } }
+  .rulebox { background: var(--dw-green-950); color: #E7F0EC; border-radius: 12px; padding: 18px 22px; font-size: 13px; }
+  .rulebox b { color: #fff; }
+  .rulebox ol { margin-left: 18px; }
+  .rulebox li { margin: 6px 0; }
+  .q { border-left: 3px solid var(--dw-teal-600); background: #fff; border-radius: 0 10px 10px 0;
+       padding: 8px 14px; margin: 8px 0; font-size: 13px; }
+  .q b { color: var(--dw-teal-600); }
+  .svc { border: 1px solid var(--dw-line); border-radius: 10px; padding: 12px 16px; margin: 8px 0; }
+  .svc b { color: var(--dw-ink); }
+  .svc .cat { color: var(--dw-muted); font-size: 11.5px; margin-left: 6px; }
+  .flow { font-size: 12.5px; color: var(--dw-muted); }
+  .flow b { color: var(--dw-ink); }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="badge">Design mockup · Card 3 planning</span>
+  <h1>Dynamic ROI — one engine, four honest modes</h1>
+  <p>Social media VAs, automation builds, private-audience work: the estimate isn't one formula.
+     Each catalog service declares what it may claim; the session decides what can actually be computed.
+     The engine picks the mode — and when nothing can be computed, it says so instead of inventing numbers.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ============ 1. BENEFIT PROFILES ============ -->
+  <section class="card">
+    <h2><span class="step">1</span>Catalog side — every service declares a benefit profile</h2>
+    <div class="sub">A claim classifier, not a number. It says which levers a service may ever use in an estimate —
+      seeded per catalog row, provider-editable. Your price-only catalog stays price-only: no percentages, no dollar figures live here.</div>
+
+    <div class="svc"><b>Lead capture &amp; CRM automation</b><span class="cat">Lead capture &amp; CRM automation</span><br>
+      <span class="chip automation">Automation</span><span class="chip revenue">Revenue-eligible*</span>
+    </div>
+    <div class="svc"><b>Customer support &amp; onboarding</b><span class="cat">Customer support &amp; onboarding</span><br>
+      <span class="chip automation">Automation</span><span class="chip delegation">Delegation</span>
+    </div>
+    <div class="svc"><b>Social media management &amp; scheduling</b><span class="cat">Social media management</span><br>
+      <span class="chip delegation">Delegation</span><span class="chip qualitative">Qualitative</span>
+    </div>
+    <div class="svc"><b>Private-audience podcast</b><span class="cat">Podcast &amp; content distribution</span><br>
+      <span class="chip qualitative">Qualitative only</span>
+    </div>
+
+    <div class="note amber"><b>*Revenue-eligible ≠ revenue-computed.</b> Revenue math also needs session data
+      (lead volumes, lead value). Without it, those benefits stay qualitative. Estimates always.</div>
+  </section>
+
+  <!-- ============ 2. SESSION SIDE ============ -->
+  <section class="card">
+    <h2><span class="step">2</span>Session side — workflows record who does the work today</h2>
+    <div class="sub">One new field on every workflow row unlocks delegation mode: <b>performed by</b>.
+      The engine intersects what the service may claim with what the session actually captured.</div>
+
+    <table>
+      <tr><th>Workflow</th><th>Performed by</th><th class="money">Hours / wk</th><th class="money">Time value</th></tr>
+      <tr><td>Posting, replying, DMs on 3 platforms</td><td><span class="chip who-client">Client</span></td><td class="money">6.0</td><td class="money">₱300/hr</td></tr>
+      <tr><td>Inquiry follow-ups &amp; CRM updates</td><td><span class="chip who-emp">Admin staff</span></td><td class="money">4.0</td><td class="money">₱180/hr</td></tr>
+      <tr><td>Podcast editing &amp; publishing</td><td><span class="chip who-nobody">Nobody today</span></td><td class="money">—</td><td class="money">—</td></tr>
+    </table>
+
+    <h3>Mode selection (per workflow × service — computed, never guessed)</h3>
+    <div class="formula">
+      automation allowed + hours &amp; cost captured        → <b>AUTOMATION</b> math<br>
+      delegation allowed + performed-by ≠ nobody          → <b>DELEGATION</b> math<br>
+      revenue allowed + lead data captured                → <b>REVENUE</b> math<br>
+      otherwise                                           → <b>QUALITATIVE</b> + follow-up questions
+    </div>
+    <div class="flow">Example: <b>Social media VA × "posting &amp; DMs" (Client, 6h/wk)</b> → delegation mode. <b>Private podcast × "nobody today"</b> → qualitative only.</div>
+  </section>
+
+  <!-- ============ 3. DELEGATION ESTIMATE ============ -->
+  <section class="card">
+    <h2><span class="step">3</span>Estimate — Social media VA <span class="mode-badge delegation">Delegation mode</span> <span class="estimate-tag">Estimates only</span></h2>
+    <div class="sub">"You get your evenings back" — computed honestly. The client's own hours are the benefit;
+      the VA retainer is the cost. No reduction percentage is invented.</div>
+
+    <div class="formula">net = hours handed off × client's time value − VA retainer &nbsp;·&nbsp; payback = setup ÷ monthly net</div>
+
+    <table>
+      <tr><th>Scenario</th><th class="money">Hrs / mo</th><th class="money">Client time value</th><th class="money">VA retainer</th><th class="money">Net / mo</th><th class="money">Payback</th></tr>
+      <tr><td>Conservative</td><td class="money">20.0</td><td class="money">₱6,000</td><td class="money">₱2,500</td><td class="money">₱3,500</td><td class="money">1.0 mo</td></tr>
+      <tr><td>Expected</td><td class="money">26.0</td><td class="money">₱7,800</td><td class="money">₱2,500</td><td class="money">₱5,300</td><td class="money">0.7 mo</td></tr>
+      <tr class="total"><td>Optimistic</td><td class="money">31.2</td><td class="money">₱9,360</td><td class="money">₱2,500</td><td class="money">₱6,860</td><td class="money">0.5 mo</td></tr>
+    </table>
+
+    <h3>Assumptions (all editable — recomputes on save)</h3>
+    <table>
+      <tr><th>Assumption</th><th>Value</th><th>Source</th></tr>
+      <tr><td>Hours handed off / wk</td><td>6.0 → 26.0/mo</td><td><span class="chip src session">From session</span></td></tr>
+      <tr><td>Client time value</td><td>₱300/hr</td><td><span class="chip src session">From session</span></td></tr>
+      <tr><td>VA retainer (monthly)</td><td>₱2,500</td><td><span class="chip src session">Catalog / stored rate</span></td></tr>
+      <tr><td>Handoff share</td><td>100%</td><td><span class="chip src override">Provider override</span></td></tr>
+      <tr><td>Scenario spread</td><td>×1.0 / ×1.2 / ×1.3</td><td><span class="chip src bench">Benchmark band v1</span></td></tr>
+    </table>
+
+    <div class="note teal">Non-financial benefits listed separately, never converted to pesos:
+      consistent posting cadence · faster DM response · brand presence. Often the real buying reason.</div>
+    <div class="fine">Figures are estimates derived from stated assumptions. No guarantee of savings or outcomes is made or implied. Currency is passed through as declared (no conversion, ever).</div>
+  </section>
+
+  <!-- ============ 4. AUTOMATION ESTIMATE ============ -->
+  <section class="card">
+    <h2><span class="step">4</span>Estimate — CRM follow-up automation <span class="mode-badge automation">Automation mode</span> <span class="estimate-tag">Estimates only</span></h2>
+    <div class="sub">Same client, different workflow: a rule-based flow shrinks the task itself. The pastor-case math, now dynamic.</div>
+
+    <div class="formula">hours saved = monthly hours × reduction band (40–80%, benchmark v1) · savings = hours saved × hourly cost</div>
+
+    <table>
+      <tr><th>Scenario</th><th class="money">Reduction</th><th class="money">Hrs saved / mo</th><th class="money">Labor value / mo</th></tr>
+      <tr><td>Conservative</td><td class="money">50%</td><td class="money">6.0</td><td class="money">₱1,800</td></tr>
+      <tr><td>Expected</td><td class="money">65%</td><td class="money">7.8</td><td class="money">₱2,340</td></tr>
+      <tr class="total"><td>Optimistic</td><td class="money">75%</td><td class="money">9.0</td><td class="money">₱2,700</td></tr>
+    </table>
+    <div class="fine">Payback vs setup appears when a setup price exists and monthly net &gt; 0 — otherwise it shows "—", never a division by zero or a made-up number.</div>
+  </section>
+
+  <!-- ============ 5. QUALITATIVE CASE ============ -->
+  <section class="card">
+    <h2><span class="step">5</span>Estimate — Private-audience podcast <span class="mode-badge qualitative">Qualitative only</span></h2>
+    <div class="sub">Nobody does this workflow today, and the audience is private by design. There are no hours to reclaim
+      and reach projections are forbidden. The engine says so — and asks for what would unlock math.</div>
+
+    <div class="note teal"><b>No figures computed — nothing estimated.</b> This service claims consistency and presence,
+      not labor savings or growth. The proposal sells it on story + transparent pricing.</div>
+
+    <h3>Follow-up questions (would unlock computation)</h3>
+    <div class="q"><b>Q.</b> Who will own podcast production after this — you, a team member, or the VA?</div>
+    <div class="q"><b>Q.</b> Roughly how many hours per episode do you spend when you do publish?</div>
+    <div class="fine">Answers re-run mode selection on save. Until then, the estimate stays honestly empty of numbers.</div>
+  </section>
+
+  <!-- ============ 6. RULES ============ -->
+  <section class="card">
+    <h2><span class="step">6</span>The honesty rules (engine guardrails)</h2>
+    <div class="rulebox">
+      <ol>
+        <li><b>One mode per estimate line.</b> Automation and delegation are never blended into one number — no double-counted claims. Extra efficiency (e.g., a VA using schedulers) is narrative, not math.</li>
+        <li><b>Nobody does it today → qualitative.</b> Hours that don't exist can't be reclaimed. No invented baselines.</li>
+        <li><b>Bands are selected, never invented.</b> Benchmark values ship as versioned data with sources; every figure on screen traces to a stored assumption (session, benchmark band, or provider override — each labelled).</li>
+        <li><b>The LLM never does math.</b> It extracts facts and writes narrative; every peso comes from this deterministic engine.</li>
+        <li><b>No FX, ever.</b> Currency passes through as declared.</li>
+        <li><b>Everything is an estimate</b> — labelled as such, recomputed on save, assumptions shown everywhere.</li>
+      </ol>
+    </div>
+  </section>
+
+  <p class="fine" style="text-align:center; padding-bottom: 24px;">
+    Dealwright · dynamic ROI modes mockup · 2026-10-01 · all figures illustrative placeholders, estimates only
+  </p>
+
+</div>
+
+</body>
+</html>
