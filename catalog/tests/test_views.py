@@ -164,6 +164,19 @@ class TestServiceCreate:
         assert "category" in response.context["form"].errors
         assert pro.services.count() == 0
 
+    def test_post_cross_owner_category_pk_is_invalid_choice(self, client) -> None:
+        """Tenancy through the form: another provider's category pk is never a
+        valid choice (pass 11 review probe, locked as a test)."""
+        pro = _client_for(client)
+        foreign = category_for(make_user("tenancy-probe"), "Foreign cat")
+        response = client.post(
+            reverse("catalog:service_create"),
+            _service_data(category=foreign.pk),
+        )
+        assert response.status_code == 200
+        assert "category" in response.context["form"].errors
+        assert pro.services.count() == 0
+
     def test_invalid_data_shows_error_and_creates_nothing(self, client) -> None:
         pro = _client_for(client)
         category = category_for(pro, "Content & Social")

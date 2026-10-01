@@ -207,19 +207,10 @@ def test_edit_team_member_rate(client, user, va) -> None:
     assert va.availability_hours_per_week == 35
 
 
-def test_member_detail_groups_profile_terms_and_capabilities(client, user, va) -> None:
-    _login(client, user)
-
-    response = client.get(reverse("team:member_detail", args=[va.slug]))
-    html = response.content.decode()
-
-    assert response.status_code == 200
-    assert "Member profile" in html
-    assert "Engagement terms" in html
-    assert "Capabilities" in html
-    assert html.index('id="member-profile-heading"') < html.index(
-        'id="capabilities-heading"'
-    )
+# NOTE: test_member_detail_groups_profile_terms_and_capabilities was removed in
+# pass 11 review — it asserted markup from the still-uncommitted member_detail
+# redesign (headings exist only in working-tree edits). Restore it when that
+# redesign lands (reviewed scope), keeping its assertions with the template.
 
 
 # --- skills on a team member ---------------------------------------------------------
