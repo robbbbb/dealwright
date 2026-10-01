@@ -34,3 +34,23 @@ Rationale: ...
 ```
 
 Do not edit files. A blocking finding requires a fix and a fresh reviewer pass. The builder must record the verdict and disposition here before this pass is closed.
+
+---
+
+## Verdict — pass 15 (recorded 2026-10-01)
+
+Fresh GLM-5.3 reviewer (read-only, independent session) reran all gates in a clean detached worktree (193 passed / 90 warnings, ruff clean, `makemigrations --check` clean, `git diff --check` clean — exact match with recorded evidence; no committed test depends on Robb's uncommitted edits) and adjudicated the checklist on **rendered pages**: `min="0"` confirmed on all three numeric inputs in both forms (member detail renders the EngagementForm; its GET is 405 by design); sidebar shows exactly one active item on every GET-reachable page — Settings-only on `/team/settings/`, skills-link on `/team/`, `/team/members/`, member detail, `/team/add/` — with dashboard/catalog conditions untouched; all 15 negative-rejection tests still green.
+
+```text
+Verdict: APPROVED
+Blocking findings:
+1. None. All four gates pass in a clean-HEAD worktree (193 passed / 90 warnings, ruff clean, no migrations, diff --check clean), matching the card's evidence exactly; no committed test depends on Robb's uncommitted edits; both fixes verified on rendered pages.
+Minor findings:
+1. test_provider_settings_number_inputs_carry_min_zero pins a raw byte-count of min="0" — brittle if an unrelated min="0" input joins the settings page. Fail-loud; disposition: accept for MVP, no fix required.
+2. The sidebar test counts active-class occurrences without asserting which anchor is active — weaker than the behavior it protects. Fail-loud; disposition: accept, optionally tighten in a later UI card.
+Rationale: min="0" confirmed on rate_per_hour, project_rate (step preserved) and availability_hours_per_week in both ProviderProfileForm (/team/settings/) and EngagementForm (member detail; engagement POST route 405s on GET by design); sidebar shows exactly one active item on every GET-reachable page with Settings-only on /team/settings/ and skills-link elsewhere, dashboard/catalog conditions untouched; pass-14 negative-rejection tests (15 selected) all green; diff contains no widget or template drift beyond the two described fixes.
+```
+
+**Disposition of minors:** both accepted as-is per the reviewer's own suggestion — smoke-tier tests that fail loud (a false failure prompts a look, never a silent pass); tighten only in a future UI card if they ever bite.
+
+**Pass closed.** Scope commit `45f847b` stands as reviewed.
