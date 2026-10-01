@@ -72,6 +72,12 @@ def skill_registry_delete(request: HttpRequest, skill: str) -> HttpResponse:
 
 
 @login_required
+def member_list(request: HttpRequest) -> HttpResponse:
+    """Full roster page — team home previews only the first four members."""
+    return render(request, "team/member_list.html", {"vas": selectors.list_vas(request.user)})
+
+
+@login_required
 def member_add(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         form = TeamMemberForm(request.POST)

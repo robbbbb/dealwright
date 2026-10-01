@@ -1,0 +1,30 @@
+{% extends "app-base.html" %}
+{% block title %}Team roster — Dealwright{% endblock %}
+{% block app_content %}
+<div class="mx-auto max-w-[1100px]">
+  <a href="{% url 'team:team_home' %}" class="text-[12px] font-bold text-dw-700 no-underline hover:underline">← Back to team</a>
+  <header class="mt-2 mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-[21px] font-extrabold leading-tight tracking-[-.3px] text-dw-ink">Team roster <span class="ml-1 text-[13px] font-normal text-dw-muted">{{ vas|length }}</span></h1>
+      <p class="mt-1 text-[12.5px] leading-5 text-dw-muted">Availability and skills shape every shortlist.</p>
+    </div>
+    <a href="{% url 'team:member_add' %}" class="inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-[10px] bg-dw-700 px-4 text-[13px] font-bold text-white no-underline shadow-[0_1px_2px_rgba(4,36,27,.16)] hover:bg-dw-800 sm:self-auto">
+      <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
+      Add team member
+    </a>
+  </header>
+
+  {% if vas %}
+  <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    {% for va in vas %}{% include "team/_member_card.html" %}{% endfor %}
+  </div>
+  {% else %}
+  <div class="rounded-[14px] border border-dw-line bg-white px-5 py-10 text-center sm:px-6">
+    <span class="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-dw-50 text-dw-700" aria-hidden="true">＋</span>
+    <h2 class="mt-3 text-[13px] font-extrabold text-dw-ink">Build your delivery team</h2>
+    <p class="mx-auto mt-1 max-w-md text-[12px] leading-[1.55] text-dw-muted">Add a member, then capture their rates, availability, and skills for transparent matching.</p>
+    <a href="{% url 'team:member_add' %}" class="mt-4 inline-flex items-center justify-center rounded-[9px] border border-dw-line bg-white px-3 py-2 text-[11.5px] font-bold text-dw-700 no-underline hover:bg-dw-50">Add your first member</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

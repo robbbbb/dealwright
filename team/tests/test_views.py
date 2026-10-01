@@ -56,11 +56,81 @@ def test_team_page_lists_vas_and_my_skills(client, user, va, skill) -> None:
     assert "My skills" in content
     assert "Add a skill" in content
     assert "Team roster" in content
+    assert "Manage skill list" in content
+    assert content.index("Team roster") < content.index("Manage skill list")
     assert "Maria" in content
     assert "Kim" in content
     assert "Rates not set" in content  # identity-only member, honest state
     assert "₱250" in content  # engagement-complete member shows the real rate
     assert "Email marketing" in content
+
+
+# --- roster preview cap + full roster page -------------------------------------------
+
+
+def _make_members(owner, count: int) -> None:
+    for i in range(count):
+        create_va_profile(owner=owner, display_name=f"Member {i}")
+
+
+def test_team_home_caps_roster_preview_at_four(client, user) -> None:
+    _make_members(user, 5)
+    _login(client, user)
+
+    response = client.get(reverse("team:team_home"))
+    content = response.content.decode()
+
+    assert response.status_code == 200
+    assert "Member 3" in content  # four cards shown
+    assert "Member 4" not in content  # fifth card held back
+    assert reverse("team:member_list") in content  # see-all link present
+    assert "See all 5 members" in content
+
+
+def test_team_home_shows_all_when_four_or_fewer(client, user) -> None:
+    _make_members(user, 4)
+    _login(client, user)
+
+    response = client.get(reverse("team:team_home"))
+    content = response.content.decode()
+
+    assert response.status_code == 200
+    assert "Member 3" in content
+    assert "See all" not in content
+
+
+def test_member_list_requires_login(client) -> None:
+    response = client.get(reverse("team:member_list"))
+
+    assert response.status_code == 302
+    assert "/accounts/login/" in response.url
+
+
+def test_member_list_shows_every_member(client, user, va) -> None:
+    _make_members(user, 6)
+    _login(client, user)
+
+    response = client.get(reverse("team:member_list"))
+    content = response.content.decode()
+
+    assert response.status_code == 200
+    assert "Maria" in content
+    for i in range(6):
+        assert f"Member {i}" in content
+
+
+def test_member_list_is_scoped_to_owner(client, user) -> None:
+    other = user.__class__.objects.create_user(
+        username="lea", password="test-pass-123456"
+    )
+    create_va_profile(owner=other, display_name="Maria")
+    _login(client, user)
+
+    response = client.get(reverse("team:member_list"))
+    content = response.content.decode()
+
+    assert response.status_code == 200
+    assert "Maria" not in content
 
 
 def test_add_my_skill_from_team_page(client, user, skill) -> None:
@@ -135,6 +205,21 @@ def test_edit_team_member_rate(client, user, va) -> None:
     va.refresh_from_db()
     assert va.rate_per_hour == 275
     assert va.availability_hours_per_week == 35
+
+
+def test_member_detail_groups_profile_terms_and_capabilities(client, user, va) -> None:
+    _login(client, user)
+
+    response = client.get(reverse("team:member_detail", args=[va.slug]))
+    html = response.content.decode()
+
+    assert response.status_code == 200
+    assert "Member profile" in html
+    assert "Engagement terms" in html
+    assert "Capabilities" in html
+    assert html.index('id="member-profile-heading"') < html.index(
+        'id="capabilities-heading"'
+    )
 
 
 # --- skills on a team member ---------------------------------------------------------

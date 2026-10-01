@@ -1,0 +1,36 @@
+{% load dw_money %}
+{# Shared roster card — used by team home (preview, capped) and the full roster page. #}
+<article class="group flex min-w-0 flex-col rounded-xl border border-dw-line bg-white p-4 transition-shadow hover:shadow-[0_5px_18px_rgba(4,36,27,.07)]">
+  <div class="flex items-start gap-3">
+    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-dw-50 text-[12px] font-extrabold uppercase text-dw-700">{{ va.display_name|slice:":1" }}</span>
+    <div class="min-w-0 flex-1">
+      <div class="flex items-start justify-between gap-2">
+        <h3 class="truncate text-[13.5px] font-extrabold text-dw-ink">{{ va.display_name }}</h3>
+        {% if va.is_active %}
+          <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-dw-teal-bg px-2 py-px text-[9.5px] font-bold text-dw-teal"><span class="h-1.5 w-1.5 rounded-full bg-dw-teal"></span>Active</span>
+        {% else %}
+          <span class="inline-flex shrink-0 items-center rounded-full border border-dw-line px-2 py-px text-[9.5px] font-bold text-dw-muted">Inactive</span>
+        {% endif %}
+      </div>
+      <p class="mt-0.5 truncate text-[11px] text-dw-muted">{{ va.timezone }}</p>
+    </div>
+  </div>
+
+  <dl class="mt-4 grid grid-cols-3 divide-x divide-dw-line rounded-[10px] bg-dw-canvas px-1 py-2.5">
+    <div class="min-w-0 px-2">
+      <dt class="text-[8.5px] font-bold uppercase tracking-[.5px] text-dw-muted">Rate</dt>
+      <dd class="mt-0.5 truncate text-[11px] font-bold text-dw-ink">{% if va.engagement_incomplete %}<span class="text-dw-teal">Not set</span>{% elif va.rate_basis == "project" %}{{ va.currency|dw_symbol }}{{ va.project_rate }}{% else %}{{ va.currency|dw_symbol }}{{ va.rate_per_hour }}/hr{% endif %}</dd>
+    </div>
+    <div class="min-w-0 px-2">
+      <dt class="text-[8.5px] font-bold uppercase tracking-[.5px] text-dw-muted">Available</dt>
+      <dd class="mt-0.5 truncate text-[11px] font-bold text-dw-ink">{{ va.availability_hours_per_week }} hrs/wk</dd>
+    </div>
+    <div class="min-w-0 px-2">
+      <dt class="text-[8.5px] font-bold uppercase tracking-[.5px] text-dw-muted">Skills</dt>
+      <dd class="mt-0.5 text-[11px] font-bold text-dw-ink">{{ va.capabilities.count }}</dd>
+    </div>
+  </dl>
+
+  {% if va.engagement_incomplete %}<p class="mt-3 rounded-lg bg-dw-teal-bg px-2.5 py-2 text-[10.5px] leading-[1.45] text-dw-teal">Rates not set — add terms before this member can be shortlisted.</p>{% endif %}
+  <a class="mt-auto inline-flex items-center gap-1 pt-3 text-[11.5px] font-bold text-dw-700 no-underline group-hover:underline" href="{% url 'team:member_detail' va.slug %}">Open profile <span aria-hidden="true">→</span></a>
+</article>

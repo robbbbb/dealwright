@@ -3,43 +3,150 @@
 {% block title %}My skills & team — Dealwright{% endblock %}
 {% block app_content %}
 <div class="mx-auto max-w-[1320px]">
-  <header class="mb-6 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+  <header class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
     <div class="max-w-2xl">
       <p class="mb-1.5 text-[10.5px] font-extrabold uppercase tracking-[1.1px] text-dw-600">Delivery setup</p>
-      <h1 class="text-[24px] font-extrabold leading-tight tracking-[-.35px] text-dw-ink">My skills &amp; team</h1>
-      <p class="mt-2 text-[13px] leading-5 text-dw-muted">Build the delivery profile Dealwright uses to qualify opportunities and recommend the right person for the work.</p>
+      <h1 class="text-[26px] font-extrabold leading-tight tracking-[-.45px] text-dw-ink">My skills &amp; team</h1>
+      <p class="mt-2 text-[13px] leading-5 text-dw-muted">Show Dealwright what you can deliver and who is ready for client work.</p>
     </div>
-
-    <dl class="grid w-full grid-cols-3 overflow-hidden rounded-xl border border-dw-line bg-white shadow-[0_1px_2px_rgba(4,36,27,.04)] lg:w-auto lg:min-w-[430px]">
-      <div class="border-r border-dw-line px-4 py-3">
-        <dt class="text-[9.5px] font-bold uppercase tracking-[.65px] text-dw-muted">My skills</dt>
-        <dd class="mt-0.5 text-[19px] font-extrabold leading-tight text-dw-ink">{{ my_skills|length }}</dd>
-      </div>
-      <div class="border-r border-dw-line px-4 py-3">
-        <dt class="text-[9.5px] font-bold uppercase tracking-[.65px] text-dw-muted">Team</dt>
-        <dd class="mt-0.5 text-[19px] font-extrabold leading-tight text-dw-ink">{{ vas|length }}</dd>
-      </div>
-      <div class="px-4 py-3">
-        <dt class="text-[9.5px] font-bold uppercase tracking-[.65px] text-dw-muted">Mode</dt>
-        <dd class="mt-1 truncate text-[12px] font-bold text-dw-700">{{ profile.get_delivery_mode_display }}</dd>
-      </div>
-    </dl>
+    <a href="{% url 'team:member_add' %}" class="inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-[10px] bg-dw-700 px-4 text-[13px] font-bold text-white no-underline shadow-[0_1px_2px_rgba(4,36,27,.16)] hover:bg-dw-800 lg:self-auto">
+      <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
+      Add team member
+    </a>
   </header>
 
-  <div class="flex flex-col gap-5">
-    <section aria-labelledby="skill-list-heading" class="overflow-hidden rounded-[14px] border border-dw-line bg-white shadow-[0_1px_2px_rgba(4,36,27,.03)]">
+  <dl class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+    <div class="rounded-xl border border-dw-line bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(4,36,27,.04)]">
+      <dt class="flex items-center gap-2 text-[9.5px] font-bold uppercase tracking-[.7px] text-dw-muted"><span class="h-1.5 w-1.5 rounded-full bg-dw-600"></span>Your skills</dt>
+      <dd class="mt-1 flex items-baseline gap-1.5"><strong class="text-[21px] font-extrabold leading-none text-dw-ink">{{ my_skills|length }}</strong><span class="text-[11px] text-dw-muted">recorded</span></dd>
+    </div>
+    <div class="rounded-xl border border-dw-line bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(4,36,27,.04)]">
+      <dt class="flex items-center gap-2 text-[9.5px] font-bold uppercase tracking-[.7px] text-dw-muted"><span class="h-1.5 w-1.5 rounded-full bg-dw-teal"></span>Team members</dt>
+      <dd class="mt-1 flex items-baseline gap-1.5"><strong class="text-[21px] font-extrabold leading-none text-dw-ink">{{ vas|length }}</strong><span class="text-[11px] text-dw-muted">on your roster</span></dd>
+    </div>
+    <div class="rounded-xl border border-dw-line bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(4,36,27,.04)]">
+      <dt class="text-[9.5px] font-bold uppercase tracking-[.7px] text-dw-muted">Delivery mode</dt>
+      <dd class="mt-1 text-[13px] font-extrabold text-dw-700">{{ profile.get_delivery_mode_display }}</dd>
+    </div>
+  </dl>
+
+  <div class="grid items-start gap-5 xl:grid-cols-[minmax(0,.9fr)_minmax(0,1.35fr)]">
+    <section aria-labelledby="my-skills-heading" class="overflow-hidden rounded-[14px] border border-dw-line bg-white shadow-[0_1px_2px_rgba(4,36,27,.03)]">
       <div class="flex items-start justify-between gap-4 border-b border-dw-line px-5 py-4 sm:px-6">
-        <div>
-          <h2 id="skill-list-heading" class="text-[15px] font-extrabold text-dw-ink">Skill list</h2>
-          <p class="mt-0.5 text-[12px] leading-[1.55] text-dw-muted">The options everything else picks from — your skills, your team, and your service requirements. Add a skill once; remove it only when nothing uses it.</p>
+        <div class="flex min-w-0 items-start gap-3">
+          <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-dw-50 text-dw-700" aria-hidden="true">
+            <svg class="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 10 1.6 1.7 3.5-4"/><path d="M10 2.7 12 4l2.4-.1.7 2.3 2 1.4-.9 2.3.6 2.4-2.1 1.2-.9 2.2-2.4-.3-1.8 1.6-1.8-1.6-2.4.3-.9-2.2-2.1-1.2.6-2.4-.9-2.3 2-1.4.7-2.3L7.2 4 10 2.7Z"/></svg>
+          </span>
+          <div>
+            <h2 id="my-skills-heading" class="text-[15px] font-extrabold text-dw-ink">My skills</h2>
+            <p class="mt-0.5 text-[12px] leading-[1.55] text-dw-muted">The work you personally deliver.</p>
+          </div>
         </div>
-        <span class="shrink-0 rounded-full bg-dw-50 px-2.5 py-1 text-[10px] font-bold text-dw-700">{{ registry_skills|length }}</span>
+        <span class="shrink-0 rounded-full bg-dw-teal-bg px-2.5 py-1 text-[10px] font-bold text-dw-teal">Self-reported</span>
       </div>
 
-      <form method="post" action="{% url 'team:skill_create' %}" class="flex flex-col gap-2.5 border-b border-dw-line px-5 py-4 sm:flex-row sm:items-center sm:px-6">
+      {% if my_skills %}
+      <div class="divide-y divide-dw-line">
+        {% for cap in my_skills %}
+        <article class="px-5 py-4 sm:px-6">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="font-bold text-dw-ink">{{ cap.skill }}</h3>
+                {% include "team/_level_chip.html" %}
+              </div>
+              <p class="mt-1.5 text-[12px] leading-[1.55] text-dw-muted">{{ cap.tasks|linebreaksbr|default:"No tasks described yet" }}</p>
+            </div>
+            <form method="post" action="{% url 'team:skill_delete' cap.slug %}" class="m-0 shrink-0">
+              {% csrf_token %}
+              <button type="submit" class="cursor-pointer border-0 bg-transparent p-1 text-[11px] font-bold text-dw-red hover:underline">Remove</button>
+            </form>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="px-5 py-5 sm:px-6">
+        <div class="flex items-start gap-3 rounded-xl border border-dashed border-dw-line bg-dw-canvas/70 px-4 py-3.5">
+          <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-dw-600" aria-hidden="true">＋</span>
+          <div>
+            <p class="text-[12.5px] font-bold text-dw-ink">Start with the work you sell most often</p>
+            <p class="mt-0.5 text-[11.5px] leading-[1.5] text-dw-muted">Choose a skill and describe the tasks you can confidently own.</p>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="border-t border-dw-line bg-dw-canvas/45 px-5 py-4 sm:px-6">
+        <h3 class="text-[13px] font-extrabold text-dw-ink">Add a skill</h3>
+        <p class="mt-0.5 text-[11.5px] text-dw-muted">Be specific enough to reuse this wording in a proposal.</p>
+        <form method="post" action="{% url 'team:team_home' %}" class="mt-3">
+          {% csrf_token %}
+          <div class="grid gap-x-3 sm:grid-cols-[minmax(0,1fr)_140px]">
+            <div class="dw-field">{{ skill_form.skill.label_tag }}{{ skill_form.skill }}{{ skill_form.skill.errors }}</div>
+            <div class="dw-field">{{ skill_form.level.label_tag }}{{ skill_form.level }}{{ skill_form.level.errors }}</div>
+          </div>
+          <div class="dw-field">{{ skill_form.tasks.label_tag }}{{ skill_form.tasks }}{{ skill_form.tasks.errors }}</div>
+          <button type="submit" class="inline-flex min-h-10 w-full cursor-pointer items-center justify-center rounded-[10px] border-0 bg-dw-700 px-[18px] text-[13px] font-bold text-white shadow-[0_1px_2px_rgba(4,36,27,.14)] hover:bg-dw-800 sm:w-auto">Add skill</button>
+        </form>
+      </div>
+    </section>
+
+    <section aria-labelledby="team-roster-heading" class="overflow-hidden rounded-[14px] border border-dw-line bg-white shadow-[0_1px_2px_rgba(4,36,27,.03)]">
+      <div class="flex items-start justify-between gap-4 border-b border-dw-line px-5 py-4 sm:px-6">
+        <div class="flex min-w-0 items-start gap-3">
+          <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-dw-50 text-dw-700" aria-hidden="true">
+            <svg class="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7.2 9.2a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2.2 16.8v-1.2a5 5 0 0 1 10 0v1.2M13 8.5a2.5 2.5 0 0 0 0-4.9M14.1 11a4.2 4.2 0 0 1 3.7 4.2v1"/></svg>
+          </span>
+          <div>
+            <h2 id="team-roster-heading" class="text-[15px] font-extrabold text-dw-ink">Team roster <span class="ml-1 text-[11px] font-normal text-dw-muted">{{ vas|length }}</span></h2>
+            <p class="mt-0.5 text-[12px] leading-[1.55] text-dw-muted">Availability and skills shape every shortlist.</p>
+          </div>
+        </div>
+        <a href="{% url 'team:member_add' %}" class="inline-flex shrink-0 items-center gap-1 text-[11.5px] font-bold text-dw-700 no-underline hover:underline sm:hidden">Add <span aria-hidden="true">＋</span></a>
+      </div>
+
+      {% if vas %}
+      <div class="grid gap-3 p-4 sm:grid-cols-2 sm:p-5">
+        {% for va in vas|slice:":4" %}{% include "team/_member_card.html" %}{% endfor %}
+      </div>
+      {% if vas|length > 4 %}
+      <div class="border-t border-dw-line px-5 py-3.5 text-center sm:px-6">
+        <a href="{% url 'team:member_list' %}" class="inline-flex items-center gap-1 text-[12px] font-bold text-dw-700 no-underline hover:underline">See all {{ vas|length }} members <span aria-hidden="true">→</span></a>
+      </div>
+      {% endif %}
+      {% else %}
+      <div class="px-5 py-10 text-center sm:px-6">
+        <span class="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-dw-50 text-dw-700" aria-hidden="true">＋</span>
+        <h3 class="mt-3 text-[13px] font-extrabold text-dw-ink">Build your delivery team</h3>
+        <p class="mx-auto mt-1 max-w-md text-[12px] leading-[1.55] text-dw-muted">Add a member, then capture their rates, availability, and skills for transparent matching.</p>
+        <a href="{% url 'team:member_add' %}" class="mt-4 inline-flex items-center justify-center rounded-[9px] border border-dw-line bg-white px-3 py-2 text-[11.5px] font-bold text-dw-700 no-underline hover:bg-dw-50">Add your first member</a>
+      </div>
+      {% endif %}
+    </section>
+  </div>
+
+  <details class="group mt-5 overflow-hidden rounded-[14px] border border-dw-line bg-white shadow-[0_1px_2px_rgba(4,36,27,.03)]">
+    <summary class="flex cursor-pointer list-none items-center gap-3 px-5 py-4 sm:px-6 [&::-webkit-details-marker]:hidden">
+      <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-dw-50 text-dw-700" aria-hidden="true"><svg class="h-[17px] w-[17px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 5.5h12M4 10h12M4 14.5h8"/></svg></span>
+      <span class="min-w-0 flex-1">
+        <span class="block text-[14px] font-extrabold text-dw-ink">Manage skill list</span>
+        <span class="mt-0.5 block text-[11.5px] leading-[1.5] text-dw-muted">Add or remove the shared options used by you, your team, and your service catalog.</span>
+      </span>
+      <span class="rounded-full bg-dw-50 px-2.5 py-1 text-[10px] font-bold text-dw-700">{{ registry_skills|length }}</span>
+      <svg class="h-3.5 w-3.5 shrink-0 text-dw-muted transition-transform group-open:rotate-180" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
+    </summary>
+
+    <div class="border-t border-dw-line">
+      <form method="post" action="{% url 'team:skill_create' %}" class="border-b border-dw-line bg-dw-canvas/45 px-5 py-4 sm:px-6">
         {% csrf_token %}
-        {{ registry_form.name.label_tag }}{{ registry_form.name }}{{ registry_form.name.errors }}
-        <button type="submit" class="min-h-[38px] shrink-0 cursor-pointer rounded-[10px] bg-dw-700 px-4 text-[13px] font-bold text-white hover:bg-dw-800">Add to skill list</button>
+        <label for="{{ registry_form.name.id_for_label }}" class="text-[12px] font-bold text-dw-ink">Add a new skill</label>
+        <p class="mb-2 mt-0.5 text-[11px] text-dw-muted">Create it here once, then select it anywhere Dealwright asks for a skill.</p>
+        <div class="flex flex-col gap-2 sm:flex-row">
+          {{ registry_form.name }}
+          <button type="submit" class="min-h-[40px] shrink-0 cursor-pointer rounded-[10px] border-0 bg-dw-700 px-4 text-[13px] font-bold text-white hover:bg-dw-800">Add to skill list</button>
+        </div>
+        {{ registry_form.name.errors }}
       </form>
 
       {% if registry_skills %}
@@ -51,216 +158,16 @@
           {% if rs.uses == 0 %}
           <form method="post" action="{% url 'team:skill_registry_delete' rs.slug %}" class="m-0">
             {% csrf_token %}
-            <button type="submit" title="Not used anywhere yet" class="cursor-pointer border-0 bg-transparent p-0 text-[10px] font-bold text-dw-red hover:opacity-70">✕</button>
+            <button type="submit" title="Remove unused skill" aria-label="Remove {{ rs.name }} from skill list" class="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-[10px] font-bold text-dw-red hover:bg-dw-red-bg">✕</button>
           </form>
           {% endif %}
         </li>
         {% endfor %}
       </ul>
       {% else %}
-      <p class="px-5 py-4 text-[12.5px] text-dw-muted sm:px-6">Your skill list is empty — add your first skill above, or load the default catalog to seed common ones.</p>
+      <p class="px-5 py-4 text-[12.5px] text-dw-muted sm:px-6">Your skill list is empty. Add your first skill above, or load the default catalog to seed common options.</p>
       {% endif %}
-    </section>
-
-    <section aria-labelledby="my-skills-heading" class="overflow-hidden rounded-[14px] border border-dw-line bg-white shadow-[0_1px_2px_rgba(4,36,27,.03)]">
-      <div class="flex items-start justify-between gap-4 border-b border-dw-line px-5 py-4 sm:px-6">
-        <div class="flex min-w-0 items-start gap-3">
-          <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-dw-50 text-dw-700" aria-hidden="true">
-            <svg class="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 10 1.6 1.7 3.5-4"/><path d="M10 2.7 12 4l2.4-.1.7 2.3 2 1.4-.9 2.3.6 2.4-2.1 1.2-.9 2.2-2.4-.3-1.8 1.6-1.8-1.6-2.4.3-.9-2.2-2.1-1.2.6-2.4-.9-2.3 2-1.4.7-2.3L7.2 4 10 2.7Z"/></svg>
-          </span>
-          <div>
-            <h2 id="my-skills-heading" class="text-[15px] font-extrabold text-dw-ink">My skills</h2>
-            <p class="mt-0.5 text-[12px] leading-[1.55] text-dw-muted">What you personally deliver. Tasks become the concrete capability line used in proposals.</p>
-          </div>
-        </div>
-        <span class="shrink-0 rounded-full bg-dw-teal-bg px-2.5 py-1 text-[10px] font-bold text-dw-teal">Self-reported</span>
-      </div>
-
-      {% if my_skills %}
-      <div class="hidden overflow-x-auto md:block">
-        <table class="w-full min-w-[680px] text-[13px]">
-          <thead>
-            <tr class="border-b border-dw-line bg-dw-50 text-left text-[10px] uppercase tracking-[.65px] text-dw-muted">
-              <th class="px-6 py-2.5 font-bold">Skill</th>
-              <th class="px-4 py-2.5 font-bold">Level</th>
-              <th class="px-4 py-2.5 font-bold">Tasks</th>
-              <th class="px-6 py-2.5 text-right font-bold"><span class="sr-only">Actions</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for cap in my_skills %}
-            <tr class="border-b border-dw-line last:border-b-0 hover:bg-dw-canvas/60">
-              <td class="px-6 py-3.5 font-bold text-dw-ink">{{ cap.skill }}</td>
-              <td class="px-4 py-3.5">{% include "team/_level_chip.html" %}</td>
-              <td class="max-w-[560px] px-4 py-3.5 text-[12px] leading-[1.55] text-dw-muted">{{ cap.tasks|linebreaksbr|default:"No tasks described yet" }}</td>
-              <td class="px-6 py-3.5 text-right">
-                <form method="post" action="{% url 'team:skill_delete' cap.slug %}" class="m-0">
-                  {% csrf_token %}
-                  <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[11.5px] font-bold text-dw-red hover:underline">Remove</button>
-                </form>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      <div class="divide-y divide-dw-line md:hidden">
-        {% for cap in my_skills %}
-        <article class="px-5 py-4">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <h3 class="font-bold text-dw-ink">{{ cap.skill }}</h3>
-              <div class="mt-1.5">{% include "team/_level_chip.html" %}</div>
-            </div>
-            <form method="post" action="{% url 'team:skill_delete' cap.slug %}" class="m-0">
-              {% csrf_token %}
-              <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-[11.5px] font-bold text-dw-red hover:underline">Remove</button>
-            </form>
-          </div>
-          <p class="mt-2 text-[12px] leading-[1.55] text-dw-muted">{{ cap.tasks|linebreaksbr|default:"No tasks described yet" }}</p>
-        </article>
-        {% endfor %}
-      </div>
-      {% else %}
-      <div class="mx-5 my-5 flex items-start gap-3 rounded-xl border border-dashed border-dw-line bg-dw-canvas/70 px-4 py-3.5 sm:mx-6">
-        <span class="mt-0.5 text-dw-600" aria-hidden="true">＋</span>
-        <div>
-          <p class="text-[12.5px] font-bold text-dw-ink">Start with the work you sell most often</p>
-          <p class="mt-0.5 text-[11.5px] text-dw-muted">Add a skill, choose your proficiency, and describe the tasks you can confidently own.</p>
-        </div>
-      </div>
-      {% endif %}
-
-      <div class="border-t border-dw-line bg-dw-canvas/45 px-5 py-4 sm:px-6 sm:py-5">
-        <div class="mb-3">
-          <h3 class="text-[13px] font-extrabold text-dw-ink">Add a skill</h3>
-          <p class="mt-0.5 text-[11.5px] text-dw-muted">Keep the task list specific—clients should immediately understand what you can take off their plate.</p>
-        </div>
-        <form method="post" action="{% url 'team:team_home' %}" class="m-0">
-          {% csrf_token %}
-          <div class="grid gap-x-3 gap-y-1 lg:grid-cols-[minmax(200px,.9fr)_160px_minmax(280px,1.25fr)_auto] lg:items-start">
-            <div class="dw-field">{{ skill_form.skill.label_tag }}{{ skill_form.skill }}{{ skill_form.skill.errors }}</div>
-            <div class="dw-field">{{ skill_form.level.label_tag }}{{ skill_form.level }}{{ skill_form.level.errors }}</div>
-            <div class="dw-field">{{ skill_form.tasks.label_tag }}{{ skill_form.tasks }}{{ skill_form.tasks.errors }}</div>
-            <button type="submit" class="mt-1 h-[42px] cursor-pointer rounded-[10px] border-0 bg-dw-700 px-[18px] text-[13px] font-bold text-white shadow-[0_1px_2px_rgba(4,36,27,.14)] hover:bg-dw-800 lg:mt-[22px]">Add skill</button>
-          </div>
-        </form>
-      </div>
-    </section>
-
-    <section aria-labelledby="team-roster-heading" class="overflow-hidden rounded-[14px] border border-dw-line bg-white shadow-[0_1px_2px_rgba(4,36,27,.03)]">
-      <div class="flex flex-col gap-3 border-b border-dw-line px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <div class="flex min-w-0 items-start gap-3">
-          <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-dw-50 text-dw-700" aria-hidden="true">
-            <svg class="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7.2 9.2a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2.2 16.8v-1.2a5 5 0 0 1 10 0v1.2M13 8.5a2.5 2.5 0 0 0 0-4.9M14.1 11a4.2 4.2 0 0 1 3.7 4.2v1"/></svg>
-          </span>
-          <div>
-            <h2 id="team-roster-heading" class="text-[15px] font-extrabold text-dw-ink">Team roster <span class="ml-1 text-[11px] font-normal text-dw-muted">{{ vas|length }}</span></h2>
-            <p class="mt-0.5 text-[12px] leading-[1.55] text-dw-muted">Rates, availability, and skills determine who appears in a client shortlist.</p>
-          </div>
-        </div>
-        <a href="{% url 'team:member_add' %}" class="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-[10px] bg-dw-700 px-3.5 py-2 text-[12px] font-bold text-white no-underline shadow-[0_1px_2px_rgba(4,36,27,.14)] hover:bg-dw-800">
-          <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
-          Add team member
-        </a>
-      </div>
-
-      {% if vas %}
-      <div class="hidden overflow-x-auto md:block">
-        <table class="w-full min-w-[880px] text-[13px]">
-          <thead>
-            <tr class="border-b border-dw-line bg-dw-50 text-left text-[10px] uppercase tracking-[.65px] text-dw-muted">
-              <th class="px-6 py-2.5 font-bold">Member</th>
-              <th class="px-4 py-2.5 font-bold">Rate</th>
-              <th class="px-4 py-2.5 font-bold">Availability</th>
-              <th class="px-4 py-2.5 font-bold">Timezone</th>
-              <th class="px-4 py-2.5 font-bold">Status</th>
-              <th class="px-4 py-2.5 font-bold">Skills</th>
-              <th class="px-6 py-2.5 text-right font-bold"><span class="sr-only">Actions</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for va in vas %}
-            <tr class="group border-b border-dw-line last:border-b-0 hover:bg-dw-canvas/60">
-              <td class="px-6 py-3.5">
-                <a class="flex items-center gap-2.5 text-dw-ink no-underline" href="{% url 'team:member_detail' va.slug %}">
-                  <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-dw-50 text-[11px] font-extrabold uppercase text-dw-700">{{ va.display_name|slice:":1" }}</span>
-                  <span class="font-bold group-hover:text-dw-700">{{ va.display_name }}</span>
-                </a>
-              </td>
-              <td class="px-4 py-3.5">
-                {% if va.engagement_incomplete %}
-                  <span class="inline-flex items-center rounded-full bg-dw-teal-bg px-2 py-px text-[9.5px] font-bold text-dw-teal">Rates not set</span>
-                {% elif va.rate_basis == "project" %}
-                  <span class="font-bold text-dw-ink">{{ va.currency|dw_symbol }}{{ va.project_rate }}</span> <span class="text-[11px] text-dw-muted">/ project</span>
-                {% else %}
-                  <span class="font-bold text-dw-ink">{{ va.currency|dw_symbol }}{{ va.rate_per_hour }}</span> <span class="text-[11px] text-dw-muted">/ hr</span>
-                {% endif %}
-              </td>
-              <td class="px-4 py-3.5"><span class="font-semibold text-dw-ink">{{ va.availability_hours_per_week }}</span> <span class="text-[11px] text-dw-muted">hrs/wk</span></td>
-              <td class="px-4 py-3.5 text-[12px] text-dw-body">{{ va.timezone }}</td>
-              <td class="px-4 py-3.5">
-                {% if va.is_active %}
-                  <span class="inline-flex items-center gap-1.5 rounded-full bg-dw-teal-bg px-2 py-px text-[9.5px] font-bold text-dw-teal"><span class="h-1.5 w-1.5 rounded-full bg-dw-teal"></span>Active</span>
-                {% else %}
-                  <span class="inline-flex items-center rounded-full border border-dw-line px-2 py-px text-[9.5px] font-bold text-dw-muted">Inactive</span>
-                {% endif %}
-              </td>
-              <td class="px-4 py-3.5"><span class="font-semibold text-dw-ink">{{ va.capabilities.count }}</span> <span class="text-[11px] text-dw-muted">skill{{ va.capabilities.count|pluralize }}</span></td>
-              <td class="px-6 py-3.5 text-right"><a class="inline-flex items-center gap-1 text-[11.5px] font-bold text-dw-700 no-underline hover:underline" href="{% url 'team:member_detail' va.slug %}">Open profile <span aria-hidden="true">→</span></a></td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      <div class="divide-y divide-dw-line md:hidden">
-        {% for va in vas %}
-        <article class="px-5 py-4">
-          <div class="flex items-start justify-between gap-3">
-            <div class="flex min-w-0 items-center gap-2.5">
-              <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-dw-50 text-[11px] font-extrabold uppercase text-dw-700">{{ va.display_name|slice:":1" }}</span>
-              <div class="min-w-0">
-                <h3 class="truncate font-bold text-dw-ink">{{ va.display_name }}</h3>
-                <p class="truncate text-[11px] text-dw-muted">{{ va.timezone }}</p>
-              </div>
-            </div>
-            {% if va.is_active %}
-              <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-dw-teal-bg px-2 py-px text-[9.5px] font-bold text-dw-teal"><span class="h-1.5 w-1.5 rounded-full bg-dw-teal"></span>Active</span>
-            {% else %}
-              <span class="inline-flex shrink-0 items-center rounded-full border border-dw-line px-2 py-px text-[9.5px] font-bold text-dw-muted">Inactive</span>
-            {% endif %}
-          </div>
-          <dl class="mt-3 grid grid-cols-3 rounded-[10px] bg-dw-canvas px-3 py-2.5">
-            <div>
-              <dt class="text-[9px] font-bold uppercase tracking-[.45px] text-dw-muted">Rate</dt>
-              <dd class="mt-0.5 text-[11.5px] font-bold text-dw-ink">
-                {% if va.engagement_incomplete %}<span class="text-dw-teal">Not set</span>{% elif va.rate_basis == "project" %}{{ va.currency|dw_symbol }}{{ va.project_rate }}{% else %}{{ va.currency|dw_symbol }}{{ va.rate_per_hour }}/hr{% endif %}
-              </dd>
-            </div>
-            <div>
-              <dt class="text-[9px] font-bold uppercase tracking-[.45px] text-dw-muted">Available</dt>
-              <dd class="mt-0.5 text-[11.5px] font-bold text-dw-ink">{{ va.availability_hours_per_week }} hrs/wk</dd>
-            </div>
-            <div>
-              <dt class="text-[9px] font-bold uppercase tracking-[.45px] text-dw-muted">Skills</dt>
-              <dd class="mt-0.5 text-[11.5px] font-bold text-dw-ink">{{ va.capabilities.count }}</dd>
-            </div>
-          </dl>
-          <a class="mt-3 inline-flex items-center gap-1 text-[11.5px] font-bold text-dw-700 no-underline hover:underline" href="{% url 'team:member_detail' va.slug %}">Open profile <span aria-hidden="true">→</span></a>
-        </article>
-        {% endfor %}
-      </div>
-      {% else %}
-      <div class="px-5 py-8 text-center sm:px-6">
-        <span class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-dw-50 text-dw-700" aria-hidden="true">＋</span>
-        <h3 class="mt-3 text-[13px] font-extrabold text-dw-ink">Build your delivery team</h3>
-        <p class="mx-auto mt-1 max-w-md text-[12px] text-dw-muted">Add your first team member, then capture their rates, availability, and skills for transparent matching.</p>
-        <a href="{% url 'team:member_add' %}" class="mt-3 inline-flex items-center justify-center rounded-[9px] border border-dw-line bg-white px-3 py-2 text-[11.5px] font-bold text-dw-700 no-underline hover:bg-dw-50">Add your first member</a>
-      </div>
-      {% endif %}
-    </section>
-  </div>
+    </div>
+  </details>
 </div>
 {% endblock %}
