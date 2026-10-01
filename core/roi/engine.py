@@ -16,7 +16,7 @@ assumption (workflow input, benchmark band, or provider override).
 from __future__ import annotations
 
 from dataclasses import dataclass
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 
 TWO_DP = Decimal("0.01")
 ONE_DP = Decimal("0.1")
@@ -50,7 +50,7 @@ def band_from(config: dict) -> Band:
     """Build a Band from a config dict ({"low": 40, "mid": 60, "high": 80})."""
     try:
         return Band(*(Decimal(str(config[key])) for key in ("low", "mid", "high")))
-    except (KeyError, TypeError) as exc:
+    except (KeyError, TypeError, InvalidOperation) as exc:
         raise ValueError(f"Malformed benchmark band: {config!r}") from exc
 
 
@@ -107,10 +107,6 @@ class ModeEstimate:
     currency: str  # passthrough label (Q3: no FX)
     lines: dict[str, ScenarioLine]  # conservative / expected / optimistic
     band_used: Band  # the band (or point) that produced the scenarios
-
-    def rollup(self) -> dict[str, Decimal]:
-        """Net per scenario — the sum over this single line (rollup base)."""
-        return {key: line.net for key, line in self.lines.items()}
 
 
 def _money(value: Decimal) -> Decimal:
@@ -253,7 +249,14 @@ def select_mode(
 
 
 def rollup(estimates: list[ModeEstimate]) -> dict[str, Decimal]:
-    """Sum net across workflow estimates per scenario (multi-workflow rollup)."""
+    """Sum net across workflow estimates per scenario (multi-workflow rollup).
+
+    Single-currency by contract: mixing currencies would silently produce
+    nonsense — a named "never" in the guardrail language (no FX, no blending).
+    """
+    currencies = {est.currency for est in estimates}
+    if len(currencies) > 1:
+        raise ValueError(f"Mixed-currency rollup is not allowed: {sorted(currencies)}")
     totals = {key: Decimal("0.00") for key in SCENARIO_KEYS}
     for est in estimates:
         for key, line in est.lines.items():

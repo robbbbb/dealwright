@@ -39,6 +39,10 @@ class TestBand:
         with pytest.raises(ValueError, match="Malformed benchmark band"):
             band_from({"low": 40})
 
+    def test_non_numeric_band_value_raises_value_error(self) -> None:
+        with pytest.raises(ValueError, match="Malformed benchmark band"):
+            band_from({"low": "x", "mid": 60, "high": 80})
+
     def test_point_estimate_is_degenerate_band(self) -> None:
         assert band_point(D("75")).scenarios() == {
             "conservative": D("75"), "expected": D("75"), "optimistic": D("75"),
@@ -84,8 +88,7 @@ class TestWorkflowInput:
 class TestPastorCase:
     def test_expected_numbers(self) -> None:
         """12h/mo, 75% reduction, ₱300/hr → 9h, ₱2,700 (build-plan anchor)."""
-        inp = WorkflowInput("client", hours_per_week=D("12") / D("4.33"), hourly_cost=D("300"))
-        est = automation_estimate(inp, band_point(D("75")))
+        est = automation_estimate(_pastor_input(), band_point(D("75")))
         line = est.lines["expected"]
         assert line.hours == D("9.0")
         assert line.value == D("2700.00")
@@ -93,8 +96,7 @@ class TestPastorCase:
         assert line.cost == D("0.00")
 
     def test_band_produces_three_scenarios(self) -> None:
-        inp = WorkflowInput("client", hours_per_week=D("12") / D("4.33"), hourly_cost=D("300"))
-        est = automation_estimate(inp, Band(D("50"), D("75"), D("80")))
+        est = automation_estimate(_pastor_input(), Band(D("50"), D("75"), D("80")))
         assert [est.lines[k].hours for k in ("conservative", "expected", "optimistic")] == [
             D("6.0"), D("9.0"), D("9.6"),
         ]
@@ -107,9 +109,37 @@ class TestPastorCase:
         assert est.lines["expected"].value == D("8100.00")  # 3 × ₱2,700
 
     def test_payback_against_setup(self) -> None:
-        inp = WorkflowInput("client", hours_per_week=D("12") / D("4.33"), hourly_cost=D("300"))
-        est = automation_estimate(inp, band_point(D("75")), setup_low=D("5400"))
+        est = automation_estimate(_pastor_input(), band_point(D("75")), setup_low=D("5400"))
         assert est.lines["expected"].payback_months == D("2.0")
+
+    def test_payback_none_without_setup(self) -> None:
+        est = automation_estimate(_pastor_input(), band_point(D("75")))
+        assert all(line.payback_months is None for line in est.lines.values())
+
+    def test_payback_none_when_net_is_zero(self) -> None:
+        """Zero benefit → payback None — never a division by zero (build-plan edge)."""
+        est = automation_estimate(_pastor_input(), band_point(D("0")))
+        assert all(line.value == D("0.00") for line in est.lines.values())
+        assert all(line.payback_months is None for line in est.lines.values())
+
+    def test_payback_none_when_net_is_negative(self) -> None:
+        est = delegation_estimate(
+            _lf_input(), Band(D("100"), D("100"), D("100")), D("500"),  # VA > time value
+        )
+        assert est.lines["expected"].net < 0
+        assert est.lines["expected"].payback_months is None
+
+    def test_missing_hours_or_cost_raises_not_zero(self) -> None:
+        """Compute paths refuse incomplete data — they never return silent zeros."""
+        with pytest.raises(ValueError, match="Capture hours per week"):
+            automation_estimate(WorkflowInput("client", None, D("300")), band_point(D("75")))
+        with pytest.raises(ValueError, match="Capture hours per week"):
+            delegation_estimate(
+                WorkflowInput("client", D("8"), None), Band(D("75"), D("90"), D("100")), D("120"),
+            )
+
+    def test_monthly_hours_none_without_hours(self) -> None:
+        assert WorkflowInput("client", None, D("300")).monthly_hours is None
 
     def test_zero_employees_rejected_not_silently_zero(self) -> None:
         inp = WorkflowInput("client", hours_per_week=D("12"), hourly_cost=D("300"), employees=0)
@@ -118,6 +148,10 @@ class TestPastorCase:
 
 
 # --- TDD anchor 2: LF case (delegation) ------------------------------------------------
+
+
+def _pastor_input() -> WorkflowInput:
+    return WorkflowInput("client", hours_per_week=D("12") / D("4.33"), hourly_cost=D("300"))
 
 
 def _lf_input() -> WorkflowInput:
@@ -149,6 +183,10 @@ class TestLFCase:
     def test_currency_passthrough(self) -> None:
         est = delegation_estimate(_lf_input(), Band(D("75"), D("90"), D("100")), D("120"))
         assert est.currency == "PHP"
+
+    def test_negative_va_rate_rejected(self) -> None:
+        with pytest.raises(ValueError, match="va_hourly_rate must be >= 0"):
+            delegation_estimate(_lf_input(), Band(D("75"), D("90"), D("100")), D("-1"))
 
     def test_zero_va_rate_gives_full_value_as_net(self) -> None:
         est = delegation_estimate(_lf_input(), Band(D("100"), D("100"), D("100")), D("0"))
@@ -191,10 +229,13 @@ class TestRevenueGain:
             "conservative": D("2500.00"), "expected": D("3750.00"), "optimistic": D("5000.00"),
         }
 
-    def test_never_reaches_automation_net(self) -> None:
+    def test_revenue_gain_structurally_outside_estimates(self) -> None:
+        """Quarantine is structural: ModeEstimate carries no revenue field, and
+        revenue_gain output is never an input to any estimate/rollup path."""
         inp = WorkflowInput("client", hours_per_week=D("12") / D("4.33"), hourly_cost=D("300"))
         est = automation_estimate(inp, band_point(D("75")))
-        assert all(line.net == line.value for line in est.lines.values())  # labor only
+        assert not any("revenue" in f for f in est.__dataclass_fields__)
+        assert not any("revenue" in f for f in est.lines["expected"].__dataclass_fields__)
 
     def test_negative_lead_inputs_rejected(self) -> None:
         with pytest.raises(ValueError, match="lead inputs"):
@@ -220,6 +261,15 @@ class TestRollup:
 
     def test_empty_rollup_is_zero(self) -> None:
         assert all(v == D("0.00") for v in rollup([]).values())
+
+    def test_mixed_currency_rollup_rejected(self) -> None:
+        php = delegation_estimate(_lf_input(), Band(D("75"), D("90"), D("100")), D("120"))
+        usd = delegation_estimate(
+            WorkflowInput("client", hours_per_week=D("8"), hourly_cost=D("400")),
+            Band(D("75"), D("90"), D("100")), D("120"), currency="USD",
+        )
+        with pytest.raises(ValueError, match="Mixed-currency rollup"):
+            rollup([php, usd])
 
 
 # --- config wiring ---------------------------------------------------------------------

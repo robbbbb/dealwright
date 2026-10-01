@@ -51,6 +51,7 @@ def test_signed_in_users_get_dashboard(client: Client) -> None:
         "Proposals", "Service catalog", "My skills", "Integrations", "Settings",
     ):
         assert nav_item in content, f"missing sidebar item: {nav_item}"
+    assert "ROI estimates" not in content  # removed 2026-10-01: ROI is settings config, not a page
     # Stat labels render; counts are honest zeros — no mockup demo numbers
     for label in ("Clients", "Sessions · this month", "Proposals sent", "Win rate",
                   "Client benefit"):
