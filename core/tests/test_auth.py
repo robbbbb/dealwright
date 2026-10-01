@@ -477,3 +477,40 @@ def test_reauthenticate_rejects_wrong_password(client: Client) -> None:
 
     assert response.status_code == 200
     assert "Dealwright" in response.content.decode()  # error stays on brand
+
+
+# --- set password (Google-only accounts; themed pass 19) ----------------------
+
+
+@pytest.mark.django_db
+def test_password_set_page_themed_for_google_users(client: Client) -> None:
+    """Passwordless (Google) users land here from Settings -> Security — on brand."""
+    user = create_user()
+    user.set_unusable_password()
+    user.save()
+    client.force_login(user)
+
+    response = client.get(reverse("account_set_password"))
+
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert "Set a password" in content
+    assert "Dealwright" in content  # themed, not allauth default
+    assert 'name="password1"' in content
+
+
+@pytest.mark.django_db
+def test_password_set_round_trip(client: Client) -> None:
+    user = create_user()
+    user.set_unusable_password()
+    user.save()
+    client.force_login(user)
+
+    response = client.post(
+        reverse("account_set_password"),
+        {"password1": "fresh-harbor-mint-77", "password2": "fresh-harbor-mint-77"},
+    )
+
+    assert response.status_code == 302
+    user.refresh_from_db()
+    assert user.check_password("fresh-harbor-mint-77")

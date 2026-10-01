@@ -28,9 +28,17 @@
       <li class="flex items-center justify-between gap-3 py-2.5">
         <div>
           <p class="text-[13px] font-bold text-dw-ink">Password</p>
-          <p class="text-[11px] text-dw-muted">Use a long, unique password.</p>
+          {% if user.has_usable_password %}
+            <p class="text-[11px] text-dw-muted">Use a long, unique password.</p>
+          {% else %}
+            <p class="text-[11px] text-dw-muted">You sign in with Google — add a password to also sign in with email.</p>
+          {% endif %}
         </div>
-        <a href="{% url 'account_change_password' %}" class="shrink-0 text-[12px] font-bold text-dw-700 no-underline hover:underline">Change</a>
+        {% if user.has_usable_password %}
+          <a href="{% url 'account_change_password' %}" class="shrink-0 text-[12px] font-bold text-dw-700 no-underline hover:underline">Change</a>
+        {% else %}
+          <a href="{% url 'account_set_password' %}" class="shrink-0 text-[12px] font-bold text-dw-700 no-underline hover:underline">Set password</a>
+        {% endif %}
       </li>
       <li class="flex items-center justify-between gap-3 py-2.5">
         <div>

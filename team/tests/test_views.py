@@ -588,3 +588,22 @@ def test_member_engagement_negative_rate_writes_nothing(client, user, va) -> Non
     assert response.status_code == 302
     va.refresh_from_db()
     assert va.rate_per_hour == 250
+
+
+@pytest.mark.django_db
+def test_provider_settings_password_row_adapts_to_google_auth(
+    client, user, provider_profile
+) -> None:
+    """Google-auth accounts have no password — the row offers Set, not Change."""
+    _login(client, user)
+
+    response = client.get(reverse("team:provider_settings"))
+    assert b'href="/accounts/password/change/"' in response.content
+    assert b'href="/accounts/password/set/"' not in response.content
+
+    user.set_unusable_password()
+    user.save()
+    client.force_login(user)  # hash changed under the session — real Google flow stays logged in
+    response = client.get(reverse("team:provider_settings"))
+    assert b'href="/accounts/password/set/"' in response.content
+    assert b'href="/accounts/password/change/"' not in response.content
