@@ -54,3 +54,27 @@ Rationale: ...
 ```
 
 Do not edit files. A blocking finding requires a fix and a fresh reviewer pass. The builder must record the verdict and disposition here before this pass is closed.
+
+---
+
+## Verdict — pass 13 (recorded 2026-10-01)
+
+Fresh GLM-5.3 reviewer (read-only, independent session) reran all six gates in both the working tree and a verified-clean worktree at `4be5ca1` (183 passed / 86 warnings each, matching recorded evidence), and re-verified every checklist item against the actual diff and live behavior: the seven shared fields programmatically identical across both tables (types, defaults, help texts) with table-scoped constraint names; migration 0008 reversed and re-applied on a scratch DB with its CHECK constraints provably rejecting negatives via `objects.create()`; `/team/settings/` resolves to `provider_settings`; tenancy structural (OneToOne + instance-bound form, no owner/pk fields); the invalid-write path reproduced live (only form error is the mixin `clean()` rule, committed tests at view and service layers); the committed suite renders the new page without Robb's uncommitted files (all referenced classes present in committed `app.css`).
+
+```text
+Verdict: APPROVED
+Blocking findings:
+1. None.
+Minor findings:
+1. No Postgres-parity test run this pass (no local daemon); CHECK-constraint SQL is backend-agnostic and the gate list doesn't require it — for the record.
+2. engagement_incomplete compares rate_basis to the string "project" while clean() uses RateBasis.PROJECT — verbatim pre-existing pattern moved into the mixin, cosmetic only.
+3. GET /team/settings/ silently creates the provider profile on first visit via get_provider_profile — pre-existing service semantics reused, observable but acceptable.
+Rationale: All six gates rerun green in both the working tree and a verified-clean worktree at 4be5ca1 (183 passed / 86 warnings in each), matching the card's recorded evidence exactly. Every checklist item was re-verified against the actual diff and live behavior, not summaries: the seven shared fields are programmatically identical across both tables with table-scoped constraint names and an abstract constraint-free mixin; migration 0008 was reversed and re-applied on a scratch DB and its CHECK constraints provably reject negatives at DB level via objects.create(); /team/settings/ resolves to provider_settings; tenancy is structural (OneToOne + instance-bound form with no owner/pk fields); the invalid-write path was reproduced live (the only form error is the mixin clean() rule, with committed tests at both view and service layers); and the committed suite renders the new page without Robb's uncommitted files, with all referenced CSS classes present in the committed app.css. Locked decisions 1-5 (no-FX, persona positioning, shared engagement_incomplete, money/claims discipline, styleguide) are all preserved.
+```
+
+**Disposition of minors:**
+1. Postgres-parity → already a standing backlog item ("Postgres-backed pytest verification pending", Card 0 residuals — no local Docker daemon); no new entry needed. For the record here.
+2. String literal in `engagement_incomplete` → accepted as-is: verbatim preservation of the reviewed-out VAProfile code; changing it post-verdict would churn the reviewed diff for zero behavior change.
+3. Profile creation on first GET → accepted: documented `get_provider_profile` semantics ("created solo-by-default on first need"), identical to the team-home surface; no action.
+
+**Pass closed.** Scope commits `2a28857`, `4be5ca1` stand as reviewed.
