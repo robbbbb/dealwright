@@ -1,60 +1,192 @@
 {% extends "app-base.html" %}
 {% block title %}Settings — Dealwright{% endblock %}
 {% block app_content %}
-<div class="mx-auto max-w-[560px]">
-  <a href="{% url 'home' %}" class="text-[12px] font-bold text-dw-700 no-underline hover:underline">← Back to dashboard</a>
-  <h1 class="mt-2 mb-1 text-[21px] font-extrabold leading-tight text-dw-ink">Settings</h1>
-  <p class="mb-4 text-[12px] text-dw-muted">How you deliver — proposals and matching read these.</p>
+<div class="mx-auto max-w-[1080px]">
+  <a href="{% url 'home' %}" class="inline-flex items-center gap-1.5 text-[12px] font-bold text-dw-700 no-underline hover:underline">
+    <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 3-5 5 5 5"/></svg>
+    Back to dashboard
+  </a>
 
-  <div class="card">
-    <h2 class="mb-2 text-[13px] font-extrabold text-dw-ink">Profile &amp; delivery terms</h2>
-    <form method="post" class="m-0">
-      {% csrf_token %}
-      {% include "team/_form_fields.html" %}
-      <button type="submit" class="btn-primary">Save settings</button>
-    </form>
+  <div class="mb-6 mt-3 sm:flex sm:items-end sm:justify-between sm:gap-6">
+    <div>
+      <p class="mb-1 text-[10px] font-extrabold uppercase tracking-[1.2px] text-dw-600">Workspace setup</p>
+      <h1 class="text-[26px] font-extrabold leading-tight tracking-[-0.02em] text-dw-ink">Settings</h1>
+      <p class="mt-1.5 max-w-[580px] text-[12.5px] text-dw-muted">Set the identity and commercial defaults Dealwright uses when matching work and preparing proposals.</p>
+    </div>
   </div>
 
-  <div class="card mt-4">
-    <h2 class="text-[13px] font-extrabold text-dw-ink">Security</h2>
-    <ul class="mt-1 divide-y divide-dw-line">
-      <li class="flex items-center justify-between gap-3 py-2.5">
-        <div class="min-w-0">
-          <p class="truncate text-[13px] font-bold text-dw-ink">{{ user.email }}</p>
-          <p class="text-[11px] text-dw-muted">Account email — how you sign in.</p>
+  <div class="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
+    <form method="post" class="card m-0 overflow-hidden p-0" aria-label="Provider settings">
+      {% csrf_token %}
+      {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+      {% if form.non_field_errors %}
+        <div class="border-b border-dw-line bg-dw-red-bg px-5 py-3 sm:px-7">
+          <ul class="errorlist m-0">{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>
         </div>
-        <a href="{% url 'account_email' %}" class="shrink-0 text-[12px] font-bold text-dw-700 no-underline hover:underline">Manage</a>
-      </li>
-      <li class="flex items-center justify-between gap-3 py-2.5">
-        <div>
-          <p class="text-[13px] font-bold text-dw-ink">Password</p>
-          {% if user.has_usable_password %}
-            <p class="text-[11px] text-dw-muted">Use a long, unique password.</p>
-          {% else %}
-            <p class="text-[11px] text-dw-muted">You sign in with Google — add a password to also sign in with email.</p>
-          {% endif %}
+      {% endif %}
+
+      <section class="px-5 py-5 sm:px-7 sm:py-6" aria-labelledby="business-identity-heading">
+        <div class="mb-5 flex items-start gap-3">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-dw-50 text-dw-700" aria-hidden="true">
+            <svg class="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16.5h12M6 16.5v-10h8v10M8 9h4M8 12h4M8.5 3.5h3"/></svg>
+          </span>
+          <div>
+            <h2 id="business-identity-heading" class="text-[14px] font-extrabold text-dw-ink">Business identity</h2>
+            <p class="mt-0.5 text-[11.5px] text-dw-muted">How your business is introduced in client-facing work.</p>
+          </div>
         </div>
-        {% if user.has_usable_password %}
-          <a href="{% url 'account_change_password' %}" class="shrink-0 text-[12px] font-bold text-dw-700 no-underline hover:underline">Change</a>
-        {% else %}
-          <a href="{% url 'account_set_password' %}" class="shrink-0 text-[12px] font-bold text-dw-700 no-underline hover:underline">Set password</a>
-        {% endif %}
-      </li>
-      <li class="flex items-center justify-between gap-3 py-2.5">
-        <div>
-          <p class="flex items-center gap-2 text-[13px] font-bold text-dw-ink">
-            Two-factor authentication
-            {% if mfa_enabled %}
-              <span class="inline-flex items-center rounded-full bg-dw-700 px-2 py-px text-[9.5px] font-bold text-white">MFA on</span>
+
+        <div class="dw-field">
+          {{ form.branding_name.label_tag }}
+          {{ form.branding_name }}
+          <p class="dw-hint">Shown on proposals. Leave blank to use your account name.</p>
+          {{ form.branding_name.errors }}
+        </div>
+        <div class="dw-field mb-0">
+          {{ form.persona.label_tag }}
+          {{ form.persona }}
+          <p class="dw-hint">A short positioning statement, such as who you help and what you do best.</p>
+          {{ form.persona.errors }}
+        </div>
+      </section>
+
+      <section class="border-t border-dw-line px-5 py-5 sm:px-7 sm:py-6" aria-labelledby="commercial-defaults-heading">
+        <div class="mb-5 flex items-start gap-3">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-dw-50 text-dw-700" aria-hidden="true">
+            <svg class="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.5h13v9h-13zM6 6.5V4.8c0-.7.6-1.3 1.3-1.3h5.4c.7 0 1.3.6 1.3 1.3v1.7M3.5 10h13M8 10v1.5h4V10"/></svg>
+          </span>
+          <div>
+            <h2 id="commercial-defaults-heading" class="text-[14px] font-extrabold text-dw-ink">Commercial defaults</h2>
+            <p class="mt-0.5 text-[11.5px] text-dw-muted">Your standard pricing, capacity, and working preferences.</p>
+          </div>
+        </div>
+
+        <div class="grid gap-x-4 sm:grid-cols-2">
+          <div class="dw-field">
+            {{ form.rate_basis.label_tag }}
+            {{ form.rate_basis }}
+            <p class="dw-hint">The pricing model used for matching.</p>
+            {{ form.rate_basis.errors }}
+          </div>
+          <div class="dw-field">
+            {{ form.currency.label_tag }}
+            {{ form.currency }}
+            <p class="dw-hint">Prices are compared only in this currency.</p>
+            {{ form.currency.errors }}
+          </div>
+          <div class="dw-field">
+            {{ form.rate_per_hour.label_tag }}
+            <div class="relative">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[12px] font-bold text-dw-muted">{{ profile.currency }}</span>
+              <div class="[&_input]:pl-12">{{ form.rate_per_hour }}</div>
+            </div>
+            <p class="dw-hint">Used for hourly engagements.</p>
+            {{ form.rate_per_hour.errors }}
+          </div>
+          <div class="dw-field">
+            {{ form.project_rate.label_tag }}
+            <div class="relative">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[12px] font-bold text-dw-muted">{{ profile.currency }}</span>
+              <div class="[&_input]:pl-12">{{ form.project_rate }}</div>
+            </div>
+            <p class="dw-hint">Used for fixed-price engagements.</p>
+            {{ form.project_rate.errors }}
+          </div>
+          <div class="dw-field">
+            {{ form.availability_hours_per_week.label_tag }}
+            {{ form.availability_hours_per_week }}
+            <p class="dw-hint">Your typical weekly capacity.</p>
+            {{ form.availability_hours_per_week.errors }}
+          </div>
+          <div class="dw-field">
+            {{ form.timezone.label_tag }}
+            {{ form.timezone }}
+            <p class="dw-hint">Use an IANA timezone, e.g. Asia/Manila.</p>
+            {{ form.timezone.errors }}
+          </div>
+        </div>
+        <div class="dw-field mb-0">
+          {{ form.languages.label_tag }}
+          {{ form.languages }}
+          <p class="dw-hint">Separate languages with commas, e.g. English, Tagalog.</p>
+          {{ form.languages.errors }}
+        </div>
+      </section>
+
+      <div class="flex flex-col gap-3 border-t border-dw-line bg-dw-50/60 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+        <p class="flex items-center gap-2 text-[11px] text-dw-muted">
+          <svg class="h-4 w-4 shrink-0 text-dw-600" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8 3 3 7-7"/></svg>
+          Changes apply to future matches and proposal drafts.
+        </p>
+        <button type="submit" class="btn-primary mt-0 w-full px-6 sm:w-auto">Save changes</button>
+      </div>
+    </form>
+
+    <aside class="card overflow-hidden p-0 xl:sticky xl:top-[88px]" aria-labelledby="security-heading">
+      <div class="border-b border-dw-line px-5 py-4">
+        <div class="flex items-center gap-3">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-dw-50 text-dw-700" aria-hidden="true">
+            <svg class="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5 16 5v4.5c0 3.7-2.5 6.6-6 8-3.5-1.4-6-4.3-6-8V5z"/><path d="m7.4 10 1.7 1.7 3.5-3.8"/></svg>
+          </span>
+          <div>
+            <h2 id="security-heading" class="text-[14px] font-extrabold text-dw-ink">Security</h2>
+            <p class="mt-0.5 text-[11px] text-dw-muted">Sign-in and account protection</p>
+          </div>
+        </div>
+      </div>
+
+      <ul class="divide-y divide-dw-line">
+        <li class="px-5 py-4">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-[11px] font-extrabold uppercase tracking-[.65px] text-dw-muted">Account email</p>
+              <p class="mt-1 truncate text-[12.5px] font-bold text-dw-ink">{{ user.email }}</p>
+            </div>
+            <a href="{% url 'account_email' %}" class="shrink-0 rounded-lg border border-dw-line bg-white px-2.5 py-1.5 text-[11px] font-bold text-dw-700 no-underline hover:bg-dw-50">Manage</a>
+          </div>
+        </li>
+        <li class="px-5 py-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-[12.5px] font-bold text-dw-ink">Password</p>
+              {% if user.has_usable_password %}
+                <p class="mt-1 text-[11px] leading-4 text-dw-muted">Use a long, unique password.</p>
+              {% else %}
+                <p class="mt-1 text-[11px] leading-4 text-dw-muted">Add a password for email sign-in.</p>
+              {% endif %}
+            </div>
+            {% if user.has_usable_password %}
+              <a href="{% url 'account_change_password' %}" class="shrink-0 rounded-lg border border-dw-line bg-white px-2.5 py-1.5 text-[11px] font-bold text-dw-700 no-underline hover:bg-dw-50">Change</a>
             {% else %}
-              <span class="inline-flex items-center rounded-full border border-dw-line px-2 py-px text-[9.5px] font-bold text-dw-muted">Not set up</span>
+              <a href="{% url 'account_set_password' %}" class="shrink-0 rounded-lg border border-dw-line bg-white px-2.5 py-1.5 text-[11px] font-bold text-dw-700 no-underline hover:bg-dw-50">Set</a>
             {% endif %}
-          </p>
-          <p class="text-[11px] text-dw-muted">Authenticator app + one-time recovery codes.</p>
-        </div>
-        <a href="{% url 'mfa_index' %}" class="shrink-0 text-[12px] font-bold text-dw-700 no-underline hover:underline">{% if mfa_enabled %}Manage{% else %}Set up{% endif %}</a>
-      </li>
-    </ul>
+          </div>
+        </li>
+        <li class="px-5 py-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="flex flex-wrap items-center gap-1.5">
+                <p class="text-[12.5px] font-bold text-dw-ink">Two-factor authentication</p>
+                {% if mfa_enabled %}
+                  <span class="inline-flex items-center rounded-full bg-dw-100 px-2 py-px text-[9.5px] font-bold text-dw-800">MFA on</span>
+                {% else %}
+                  <span class="inline-flex items-center rounded-full border border-dw-line px-2 py-px text-[9.5px] font-bold text-dw-muted">Not set up</span>
+                {% endif %}
+              </div>
+              <p class="mt-1 text-[11px] leading-4 text-dw-muted">Protect your account with an authenticator app.</p>
+            </div>
+            <a href="{% url 'mfa_index' %}" class="shrink-0 rounded-lg border border-dw-line bg-white px-2.5 py-1.5 text-[11px] font-bold text-dw-700 no-underline hover:bg-dw-50">{% if mfa_enabled %}Manage{% else %}Set up{% endif %}</a>
+          </div>
+        </li>
+      </ul>
+
+      <div class="border-t border-dw-teal-line bg-dw-teal-bg px-5 py-3.5">
+        <p class="flex gap-2 text-[11px] leading-4 text-dw-teal">
+          <svg class="mt-0.5 h-3.5 w-3.5 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 4.5h.01"/></svg>
+          Two-factor authentication is recommended for accounts that handle client information.
+        </p>
+      </div>
+    </aside>
   </div>
 </div>
 {% endblock %}

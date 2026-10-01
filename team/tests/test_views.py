@@ -481,6 +481,18 @@ def test_provider_settings_get_shows_current_terms(
     assert b"Rodriguez VA Services" in response.content
 
 
+def test_provider_settings_groups_form_for_quick_scanning(client, user) -> None:
+    """UI smoke: settings are split into labelled, navigable sections."""
+    _login(client, user)
+
+    response = client.get(reverse("team:provider_settings"))
+
+    assert b"Business identity" in response.content
+    assert b"Commercial defaults" in response.content
+    assert b'aria-labelledby="business-identity-heading"' in response.content
+    assert b'aria-labelledby="security-heading"' in response.content
+
+
 def test_provider_settings_number_inputs_carry_min_zero(client, user) -> None:
     """Browser-level guard: money/hours inputs advertise min=0 (server validates too)."""
     _login(client, user)
