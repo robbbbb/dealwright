@@ -441,6 +441,15 @@ def test_provider_settings_get_shows_current_terms(
     assert b"Rodriguez VA Services" in response.content
 
 
+def test_provider_settings_number_inputs_carry_min_zero(client, user) -> None:
+    """Browser-level guard: money/hours inputs advertise min=0 (server validates too)."""
+    _login(client, user)
+
+    response = client.get(reverse("team:provider_settings"))
+
+    assert response.content.count(b'min="0"') == 3  # rate_per_hour, project_rate, availability
+
+
 def test_provider_settings_post_saves_terms(client, user, provider_profile) -> None:
     _login(client, user)
 
@@ -518,6 +527,19 @@ def test_settings_url_beats_member_slug(client, user) -> None:
     _login(client, user)
 
     assert client.get("/team/settings/").status_code == 200
+
+
+def test_sidebar_highlights_exactly_one_team_item_per_page(client, user) -> None:
+    """Settings lives in the team namespace — the skills link must not light up
+    with it (pass 15: namespace-wide check was double-highlighting)."""
+    _login(client, user)
+    active = b"bg-white/12 font-bold text-white"
+
+    settings_page = client.get(reverse("team:provider_settings"))
+    team_page = client.get(reverse("team:team_home"))
+
+    assert settings_page.content.count(active) == 1
+    assert team_page.content.count(active) == 1
 
 
 def test_member_engagement_negative_rate_writes_nothing(client, user, va) -> None:

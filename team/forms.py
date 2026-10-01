@@ -44,7 +44,9 @@ class EngagementForm(forms.ModelForm):
                 attrs={"class": _SELECT_CLASS},
                 choices=[("PHP", "PHP"), ("USD", "USD")],
             ),
-            "project_rate": forms.NumberInput(attrs={"step": "0.01"}),
+            "project_rate": forms.NumberInput(attrs={"step": "0.01", "min": "0"}),
+            "rate_per_hour": forms.NumberInput(attrs={"min": "0"}),
+            "availability_hours_per_week": forms.NumberInput(attrs={"min": "0"}),
         }
         help_texts = {
             "rate_basis": "Which rate matching uses — never converted across bases.",
@@ -76,7 +78,9 @@ class ProviderProfileForm(forms.ModelForm):
                 attrs={"class": _SELECT_CLASS},
                 choices=[("PHP", "PHP"), ("USD", "USD")],
             ),
-            "project_rate": forms.NumberInput(attrs={"step": "0.01"}),
+            "project_rate": forms.NumberInput(attrs={"step": "0.01", "min": "0"}),
+            "rate_per_hour": forms.NumberInput(attrs={"min": "0"}),
+            "availability_hours_per_week": forms.NumberInput(attrs={"min": "0"}),
             "persona": forms.Textarea(attrs={"rows": 3}),
         }
         help_texts = {
